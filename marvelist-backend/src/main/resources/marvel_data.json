@@ -1,0 +1,3306 @@
+[
+  {
+    "id": "o1",
+    "title": "Captain America",
+    "year": 1944,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o38",
+    "title": "The Marvel Super Heroes: Captain America",
+    "year": 1966,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o39",
+    "title": "The Marvel Super Heroes: Mighty Thor",
+    "year": 1966,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o40",
+    "title": "The Marvel Super Heroes: Sub-Mariner",
+    "year": 1966,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o41",
+    "title": "The Marvel Super Heroes: Iron Man",
+    "year": 1966,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o42",
+    "title": "The Marvel Super Heroes: Hulk",
+    "year": 1966,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o43",
+    "title": "Fantastic Four",
+    "year": 1967,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 20,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o45",
+    "title": "Spidey Super Stories",
+    "year": 1974,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 60,
+    "tags": [
+      "origin",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "o2",
+    "title": "The Amazing Spider-Man",
+    "year": 1977,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "o3",
+    "title": "The Incredible Hulk",
+    "year": 1977,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o4",
+    "title": "Doctor Strange",
+    "year": 1978,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o47",
+    "title": "The New Fantastic Four",
+    "year": 1978,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o5",
+    "title": "The Amazing Spider-Man Season 1",
+    "year": 1978,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "origin",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "o6",
+    "title": "The Incredible Hulk Season 1",
+    "year": 1978,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o7",
+    "title": "The Incredible Hulk Season 2",
+    "year": 1978,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o8",
+    "title": "Captain America",
+    "year": 1979,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ],
+    "tmdbId": 197467
+  },
+  {
+    "id": "o9",
+    "title": "Captain America II: Death Too Soon",
+    "year": 1979,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o48",
+    "title": "Fred and Barney Meet the Thing",
+    "year": 1979,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ]
+  },
+  {
+    "id": "o49",
+    "title": "Spider-Woman",
+    "year": 1979,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 16,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "o10",
+    "title": "The Incredible Hulk Season 3",
+    "year": 1979,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 23,
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o11",
+    "title": "The Incredible Hulk Season 4",
+    "year": 1980,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 18,
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o12",
+    "title": "The Incredible Hulk Season 5",
+    "year": 1981,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 7,
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o51",
+    "title": "Spider-Man and His Amazing Friends",
+    "year": 1981,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 24,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "o52",
+    "title": "The Incredible Hulk",
+    "year": 1982,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 11328
+  },
+  {
+    "id": "o13",
+    "title": "Howard the Duck",
+    "year": 1986,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "o53",
+    "title": "The Incredible Hulk Returns",
+    "year": 1988,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o14",
+    "title": "The Punisher",
+    "year": 1989,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o15",
+    "title": "The Trial of the Incredible Hulk",
+    "year": 1989,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o16",
+    "title": "Captain America",
+    "year": 1990,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ],
+    "tmdbId": 13995
+  },
+  {
+    "id": "o17",
+    "title": "The Death of the Incredible Hulk",
+    "year": 1990,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o56",
+    "title": "Power Pack",
+    "year": 1991,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o18",
+    "title": "X-Men: The Animated Series Season 1",
+    "year": 1992,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 4574
+  },
+  {
+    "id": "o19",
+    "title": "X-Men: The Animated Series Season 2",
+    "year": 1993,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 4574
+  },
+  {
+    "id": "o20",
+    "title": "X-Men: The Animated Series Season 3",
+    "year": 1994,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 19,
+    "tags": [
+      "origin",
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 4574
+  },
+  {
+    "id": "o21",
+    "title": "The Fantastic Four",
+    "year": 1994,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "o22",
+    "title": "Iron Man: The Animated Series Season 1",
+    "year": 1994,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 3097
+  },
+  {
+    "id": "o23",
+    "title": "Fantastic Four: The Animated Series Season 1",
+    "year": 1994,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 2901
+  },
+  {
+    "id": "o24",
+    "title": "Spider-Man: The Animated Series Season 1",
+    "year": 1994,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 888
+  },
+  {
+    "id": "o25",
+    "title": "X-Men: The Animated Series Season 4",
+    "year": 1995,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 17,
+    "tags": [
+      "origin",
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 4574
+  },
+  {
+    "id": "o26",
+    "title": "Spider-Man: The Animated Series Season 2",
+    "year": 1995,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 14,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 888
+  },
+  {
+    "id": "o27",
+    "title": "Iron Man: The Animated Series Season 2",
+    "year": 1995,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 3097
+  },
+  {
+    "id": "o28",
+    "title": "Fantastic Four: The Animated Series Season 2",
+    "year": 1995,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 2901
+  },
+  {
+    "id": "o29",
+    "title": "X-Men: The Animated Series Season 5",
+    "year": 1996,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 14,
+    "tags": [
+      "origin",
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 4574
+  },
+  {
+    "id": "o30",
+    "title": "The Incredible Hulk: The Animated Series Season 1",
+    "year": 1996,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 6332
+  },
+  {
+    "id": "o31",
+    "title": "Spider-Man: The Animated Series Season 3",
+    "year": 1996,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 14,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 888
+  },
+  {
+    "id": "o32",
+    "title": "Generation X",
+    "year": 1996,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin",
+      "xmen"
+    ]
+  },
+  {
+    "id": "o33",
+    "title": "The Incredible Hulk: The Animated Series Season 2",
+    "year": 1997,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 6332
+  },
+  {
+    "id": "o34",
+    "title": "Spider-Man: The Animated Series Season 4",
+    "year": 1997,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 11,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 888
+  },
+  {
+    "id": "o35",
+    "title": "Silver Surfer: The Animated Series Season 1",
+    "year": 1998,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation"
+    ],
+    "tmdbId": 1130
+  },
+  {
+    "id": "o36",
+    "title": "Spider-Man: The Animated Series Season 5",
+    "year": 1998,
+    "phase": -1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "origin",
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 888
+  },
+  {
+    "id": "o37",
+    "title": "Nick Fury: Agent of S.H.I.E.L.D.",
+    "year": 1998,
+    "phase": -1,
+    "type": "movie",
+    "tags": [
+      "origin"
+    ]
+  },
+  {
+    "id": "f0_1",
+    "title": "Blade",
+    "year": 1998,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f0_2",
+    "title": "Spider-Man Unlimited Season 1",
+    "year": 1999,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 10079
+  },
+  {
+    "id": "f0_3",
+    "title": "The Avengers: United They Stand Season 1",
+    "year": 1999,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "animation",
+      "avengers"
+    ],
+    "tmdbId": 1300
+  },
+  {
+    "id": "f0_4",
+    "title": "X-Men",
+    "year": 2000,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_26",
+    "title": "Mutant X",
+    "year": 2001,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 91,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f0_5",
+    "title": "Blade II",
+    "year": 2002,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_6",
+    "title": "Spider-Man",
+    "year": 2002,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_7",
+    "title": "Daredevil",
+    "year": 2003,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f0_8",
+    "title": "Hulk",
+    "year": 2003,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_9",
+    "title": "X-Men 2",
+    "year": 2003,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_10",
+    "title": "Blade: Trinity",
+    "year": 2004,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_11",
+    "title": "Spider-Man 2",
+    "year": 2004,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_12",
+    "title": "The Punisher",
+    "year": 2004,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_27",
+    "title": "Blade: Blood Thirsty",
+    "year": 2004,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f0_13",
+    "title": "Elektra",
+    "year": 2005,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f0_14",
+    "title": "I Fantastici 4",
+    "year": 2005,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f0_28",
+    "title": "Man-Thing",
+    "year": 2005,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_15",
+    "title": "X-Men: Conflitto finale",
+    "year": 2006,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_16",
+    "title": "Blade: The Series",
+    "year": 2006,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [],
+    "tmdbId": 4619
+  },
+  {
+    "id": "f0_17",
+    "title": "Ultimate Avengers",
+    "year": 2006,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f0_18",
+    "title": "Ultimate Avengers 2",
+    "year": 2006,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f0_29",
+    "title": "Fantastic Four: World's Greatest Heroes",
+    "year": 2006,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f0_19",
+    "title": "The Invincible Iron Man",
+    "year": 2007,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f0_20",
+    "title": "Doctor Strange: The Sorcerer Supreme",
+    "year": 2007,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f0_21",
+    "title": "Ghost Rider",
+    "year": 2007,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f0_22",
+    "title": "Spider-Man 3",
+    "year": 2007,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f0_23",
+    "title": "I Fantastici 4 & Silver Surfer",
+    "year": 2007,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f0_24",
+    "title": "Next Avengers: Heroes of Tomorrow",
+    "year": 2008,
+    "phase": 0,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f0_30",
+    "title": "Iron Man: Armored Adventures Season 1",
+    "year": 2008,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation"
+    ],
+    "tmdbId": 7330
+  },
+  {
+    "id": "f0_31",
+    "title": "Wolverine and the X-Men",
+    "year": 2008,
+    "phase": 0,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation",
+      "xmen"
+    ]
+  },
+  {
+    "id": "f0_25",
+    "title": "Punisher: War Zone",
+    "year": 2008,
+    "phase": 0,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f1_1",
+    "title": "Iron Man",
+    "year": 2008,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_2",
+    "title": "L'Incredibile Hulk",
+    "year": 2008,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_3",
+    "title": "Marvel's The Spectacular Spider-Man Season 1",
+    "year": 2008,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 3854
+  },
+  {
+    "id": "f1_4",
+    "title": "Marvel's The Spectacular Spider-Man Season 2",
+    "year": 2009,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ],
+    "tmdbId": 3854
+  },
+  {
+    "id": "f1_6",
+    "title": "X-Men Le Origini: Wolverine",
+    "year": 2009,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f1_7",
+    "title": "Hulk Vs",
+    "year": 2009,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f1_19",
+    "title": "Marvel Super Heroes: What The--?!",
+    "year": 2009,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f1_20",
+    "title": "The Super Hero Squad Show",
+    "year": 2009,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 52,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f1_8",
+    "title": "Iron Man 2",
+    "year": 2010,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_9",
+    "title": "Planet Hulk",
+    "year": 2010,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f1_24",
+    "title": "Avengers: I più potenti eroi della Terra",
+    "year": 2010,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 52,
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f1_21",
+    "title": "Iron Man: Armored Adventures Season 2",
+    "year": 2011,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation"
+    ],
+    "tmdbId": 7330
+  },
+  {
+    "id": "f1_10",
+    "title": "X-Men: L'inizio",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f1_11",
+    "title": "Thor: Tales of Asgard",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f1_13",
+    "title": "Thor",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_14",
+    "title": "Captain America: Il primo vendicatore",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_5",
+    "title": "The Consultant",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f1_12",
+    "title": "A Funny Thing Happened on the Way to Thor's Hammer",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f1_15",
+    "title": "Ghost Rider: Spirito di vendetta",
+    "year": 2011,
+    "phase": 1,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f1_25",
+    "title": "Wolverine",
+    "year": 2011,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 38247
+  },
+  {
+    "id": "f1_26",
+    "title": "X-Men",
+    "year": 2011,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "animation",
+      "xmen"
+    ],
+    "tmdbId": 43146
+  },
+  {
+    "id": "f1_27",
+    "title": "Blade",
+    "year": 2011,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "animation"
+    ],
+    "tmdbId": 62798
+  },
+  {
+    "id": "f1_16",
+    "title": "Marvel's Ultimate Spider-Man",
+    "year": 2012,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 104,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f1_17",
+    "title": "The Avengers",
+    "year": 2012,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_18",
+    "title": "The Amazing Spider-Man",
+    "year": 2012,
+    "phase": 1,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f1_28",
+    "title": "Fury Files",
+    "year": 2012,
+    "phase": 1,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_1",
+    "title": "Item 47",
+    "year": 2012,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_2",
+    "title": "Iron Man 3",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_16",
+    "title": "Agent Carter",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_3",
+    "title": "Iron Man: Rise of Technovore",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_5",
+    "title": "Wolverine - L'immortale",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_6",
+    "title": "Agents of S.H.I.E.L.D. Season 1",
+    "year": 2013,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_7",
+    "title": "Marvel's Hulk and the Agents of S.M.A.S.H.",
+    "year": 2013,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 33,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_8",
+    "title": "Marvel's Avengers Assemble",
+    "year": 2013,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 121,
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f2_9",
+    "title": "Thor: The Dark World",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_28",
+    "title": "LEGO Marvel Super Heroes: Sovralimentazione massima",
+    "year": 2013,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_29",
+    "title": "Iron Man & Hulk: Heroes United",
+    "year": 2013,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_4",
+    "title": "All Hail the King",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_10",
+    "title": "Captain America: The Winter Soldier",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_11",
+    "title": "The Amazing Spider-Man 2",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_12",
+    "title": "X-Men: Giorni di un futuro passato",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_13",
+    "title": "Guardiani della Galassia Vol. 1",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_14",
+    "title": "Avengers Confidential: Black Widow & Punisher",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_30",
+    "title": "Marvel Disk Wars: The Avengers",
+    "year": 2014,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 51,
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f2_31",
+    "title": "Iron Man & Captain America: Heroes United",
+    "year": 2014,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_15",
+    "title": "Agents of S.H.I.E.L.D. Season 2",
+    "year": 2014,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_17",
+    "title": "Agent Carter Season 1",
+    "year": 2015,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_19",
+    "title": "Daredevil Season 1",
+    "year": 2015,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ],
+    "tmdbId": 61889
+  },
+  {
+    "id": "f2_20",
+    "title": "Avengers: Age of Ultron",
+    "year": 2015,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_21",
+    "title": "Ant-Man",
+    "year": 2015,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_22",
+    "title": "Fantastic 4 (2015)",
+    "year": 2015,
+    "phase": 2,
+    "type": "movie",
+    "tags": []
+  },
+  {
+    "id": "f2_23",
+    "title": "Marvel's Guardians of the Galaxy",
+    "year": 2015,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 55,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_24",
+    "title": "Agents of S.H.I.E.L.D. Season 3",
+    "year": 2015,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_25",
+    "title": "Jessica Jones Season 1",
+    "year": 2015,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_34",
+    "title": "LEGO Marvel Super Heroes: Il ritorno degli Avengers",
+    "year": 2015,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_35",
+    "title": "Marvel Super Hero Adventures: Frost Fight!",
+    "year": 2015,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f2_18",
+    "title": "Agent Carter Season 2",
+    "year": 2016,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f2_26",
+    "title": "Deadpool",
+    "year": 2016,
+    "phase": 2,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f2_27",
+    "title": "Daredevil Season 2",
+    "year": 2016,
+    "phase": 2,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ],
+    "tmdbId": 61889
+  },
+  {
+    "id": "f3_1",
+    "title": "Captain America: Civil War",
+    "year": 2016,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_2",
+    "title": "X-Men: Apocalisse",
+    "year": 2016,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_3",
+    "title": "Agents of S.H.I.E.L.D. Season 4",
+    "year": 2016,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_4",
+    "title": "Team Thor: Part 1",
+    "year": 2016,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_5",
+    "title": "Agents of S.H.I.E.L.D.: Slingshot",
+    "year": 2016,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_8",
+    "title": "Luke Cage Season 1",
+    "year": 2016,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_9",
+    "title": "Doctor Strange",
+    "year": 2016,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_58",
+    "title": "Marvel's Hulk: Nella terra dei mostri",
+    "year": 2016,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_59",
+    "title": "Marvel Video Comics",
+    "year": 2016,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_61",
+    "title": "Marvel Funko",
+    "year": 2016,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 12,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_6",
+    "title": "Team Thor: Part 2",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_7",
+    "title": "No Good Deed",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_10",
+    "title": "Legion Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_11",
+    "title": "Logan - The Wolverine",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_12",
+    "title": "Iron Fist Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_13",
+    "title": "Marvel's Spider-Man",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 54,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f3_14",
+    "title": "Guardiani della Galassia Vol. 2",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_15",
+    "title": "Spider-Man: Homecoming",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_16",
+    "title": "The Defenders",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ],
+    "tmdbId": 62285
+  },
+  {
+    "id": "f3_17",
+    "title": "Inhumans Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_18",
+    "title": "The Gifted Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_19",
+    "title": "Thor: Ragnarok",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_20",
+    "title": "The Punisher Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_21",
+    "title": "Runaways Season 1",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_22",
+    "title": "Agents of S.H.I.E.L.D. Season 5",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 22,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_63",
+    "title": "LEGO Marvel Super Heroes: Guardians of the Galaxy - The Thanos Threat",
+    "year": 2017,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_64",
+    "title": "Rocket & Groot",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_65",
+    "title": "Marvel Future Avengers",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 26,
+    "tags": [
+      "animation",
+      "avengers"
+    ]
+  },
+  {
+    "id": "f3_66",
+    "title": "Marvel Super Hero Adventures",
+    "year": 2017,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 20,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_23",
+    "title": "Team Darryl",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_24",
+    "title": "Black Panther",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_25",
+    "title": "Jessica Jones Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_26",
+    "title": "Legion Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 11,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_27",
+    "title": "Avengers: Infinity War",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_28",
+    "title": "Deadpool 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_29",
+    "title": "Cloak & Dagger Season 1",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": []
+  },
+  {
+    "id": "f3_30",
+    "title": "Luke Cage Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_31",
+    "title": "Ant-Man and the Wasp",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_32",
+    "title": "Iron Fist Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_33",
+    "title": "The Gifted Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 16,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_34",
+    "title": "Venom",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_35",
+    "title": "Daredevil Season 3",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ],
+    "tmdbId": 61889
+  },
+  {
+    "id": "f3_36",
+    "title": "Spider-Man - Un nuovo universo",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_37",
+    "title": "Runaways Season 2",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_68",
+    "title": "LEGO Marvel Super Heroes: Black Panther - Trouble in Wakanda",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_69",
+    "title": "Marvel Rising: Initiation",
+    "year": 2018,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_71",
+    "title": "Marvel Rising: Secret Warriors",
+    "year": 2018,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_38",
+    "title": "The Punisher Season 2",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_39",
+    "title": "Spider-Ham: Caught in a Ham",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f3_40",
+    "title": "Captain Marvel",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_41",
+    "title": "Cloak & Dagger Season 2",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_42",
+    "title": "Avengers: Endgame",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_43",
+    "title": "Agents of S.H.I.E.L.D. Season 6",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_44",
+    "title": "X-Men: Dark Phoenix",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_45",
+    "title": "Jessica Jones Season 3",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "defenders",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_46",
+    "title": "Legion Season 3",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_47",
+    "title": "Spider-Man: Far from Home",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_48",
+    "title": "Peter's To-Do List",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_49",
+    "title": "Runaways Season 3",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_73",
+    "title": "Lego Marvel Spider-Man: Vexed by Venom",
+    "year": 2019,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f3_74",
+    "title": "The Daily Bugle",
+    "year": 2019,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 5,
+    "tags": [
+      "marvel-fan",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f3_50",
+    "title": "Agents of S.H.I.E.L.D. Season 7",
+    "year": 2020,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 13,
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f3_51",
+    "title": "The New Mutants",
+    "year": 2020,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "xmen"
+    ]
+  },
+  {
+    "id": "f3_52",
+    "title": "Helstrom Season 1",
+    "year": 2020,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": []
+  },
+  {
+    "id": "f3_75",
+    "title": "Marvel Battleworld: Mystery of the Thanostones",
+    "year": 2020,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_76",
+    "title": "Lego Marvel Avengers: Climate Conundrum",
+    "year": 2020,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_53",
+    "title": "WandaVision",
+    "year": 2021,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_77",
+    "title": "Marvel Battleworld: Treachery at Twilight",
+    "year": 2021,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f3_54",
+    "title": "The Falcon and the Winter Soldier",
+    "year": 2021,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_55",
+    "title": "M.O.D.O.K.",
+    "year": 2021,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ],
+    "tmdbId": 111312
+  },
+  {
+    "id": "f3_56",
+    "title": "Loki Season 1",
+    "year": 2021,
+    "phase": 3,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f3_79",
+    "title": "LEGO Marvel Avengers: Loki in Training",
+    "year": 2021,
+    "phase": 3,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f4_1",
+    "title": "Black Widow",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_20",
+    "title": "The Good, the Bart, and the Loki",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f4_21",
+    "title": "Deadpool's Maximum Reactions: Korg and Deadpool",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_3",
+    "title": "What If...? Season 1",
+    "year": 2021,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_4",
+    "title": "Shang-Chi e la leggenda dei Dieci Anelli",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_5",
+    "title": "Venom - La furia di Carnage",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_6",
+    "title": "Eternals",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_7",
+    "title": "Hit-Monkey Season 1",
+    "year": 2021,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f4_8",
+    "title": "Hawkeye",
+    "year": 2021,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_9",
+    "title": "Spider-Man: No Way Home",
+    "year": 2021,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_22",
+    "title": "Marvel Spidey e i suoi fantastici amici",
+    "year": 2021,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 47,
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f4_10",
+    "title": "Moon Knight",
+    "year": 2022,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_11",
+    "title": "Morbius",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_12",
+    "title": "Doctor Strange nel Multiverso della Follia",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_13",
+    "title": "Ms. Marvel",
+    "year": 2022,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_14",
+    "title": "Thor: Love and Thunder",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_15",
+    "title": "I Am Groot Season 1",
+    "year": 2022,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 5,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f4_16",
+    "title": "She-Hulk: Attorney at Law",
+    "year": 2022,
+    "phase": 4,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_17",
+    "title": "Werewolf by Night",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f4_18",
+    "title": "Black Panther: Wakanda Forever",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f4_19",
+    "title": "The Guardians of the Galaxy Holiday Special",
+    "year": 2022,
+    "phase": 4,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_1",
+    "title": "Ant-Man and the Wasp: Quantumania",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_2",
+    "title": "Guardiani della Galassia Vol. 3",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_3",
+    "title": "Spider-Man: Across the Spider-Verse",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_4",
+    "title": "Secret Invasion",
+    "year": 2023,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_5",
+    "title": "I Am Groot Season 2",
+    "year": 2023,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 5,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f5_6",
+    "title": "Loki Season 2",
+    "year": 2023,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_7",
+    "title": "The Marvels",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_8",
+    "title": "What If...? Season 2",
+    "year": 2023,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_23",
+    "title": "Moon Girl e Devil Dinosaur",
+    "year": 2023,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 42,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f5_24",
+    "title": "LEGO Marvel Avengers: Codice Rosso",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f5_25",
+    "title": "The Spider Within: A Spider-Verse Story",
+    "year": 2023,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse"
+    ]
+  },
+  {
+    "id": "f5_9",
+    "title": "Echo",
+    "year": 2024,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 5,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_10",
+    "title": "X-Men '97 Season 1",
+    "year": 2024,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation",
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_11",
+    "title": "Madame Web",
+    "year": 2024,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_12",
+    "title": "Hit-Monkey Season 2",
+    "year": 2024,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f5_13",
+    "title": "Deadpool & Wolverine",
+    "year": 2024,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_14",
+    "title": "Agatha All Along",
+    "year": 2024,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_15",
+    "title": "Venom: The Last Dance",
+    "year": 2024,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_16",
+    "title": "Kraven the Hunter",
+    "year": 2024,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_17",
+    "title": "What If...? Season 3",
+    "year": 2024,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_18",
+    "title": "Your Friendly Neighborhood Spider-Man",
+    "year": 2025,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation",
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_19",
+    "title": "Captain America: Brave New World",
+    "year": 2025,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_20",
+    "title": "Daredevil: Born Again Season 1",
+    "year": 2025,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "defenders",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f5_21",
+    "title": "Thunderbolts*",
+    "year": 2025,
+    "phase": 5,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f5_22",
+    "title": "Ironheart",
+    "year": 2025,
+    "phase": 5,
+    "type": "tv",
+    "episodes": 6,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_1",
+    "title": "The Fantastic Four: First Steps",
+    "year": 2025,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f6_2",
+    "title": "Eyes of Wakanda Season 1",
+    "year": 2025,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_3",
+    "title": "Marvel Zombies Season 1",
+    "year": 2025,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_4",
+    "title": "Wonder Man Season 1",
+    "year": 2025,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_16",
+    "title": "Iron Man e i suoi fantastici amici",
+    "year": 2025,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f6_17",
+    "title": "Lego Marvel Avengers: Strange Tails",
+    "year": 2025,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation"
+    ]
+  },
+  {
+    "id": "f6_5",
+    "title": "Daredevil: Born Again Season 2",
+    "year": 2026,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "defenders",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_6",
+    "title": "The Punisher: One Last Kill",
+    "year": 2026,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_7",
+    "title": "Spider-Noir Season 1",
+    "year": 2026,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "spiderverse",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_8",
+    "title": "X-Men '97 Season 2",
+    "year": 2026,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "animation",
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_9",
+    "title": "Spider-Man: Brand New Day",
+    "year": 2026,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ],
+    "doomsday": true
+  },
+  {
+    "id": "f6_10",
+    "title": "Avengers: Endgame - Encore",
+    "year": 2026,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "avengers",
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_11",
+    "title": "VisionQuest",
+    "year": 2026,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ]
+  },
+  {
+    "id": "f6_12",
+    "title": "Avengers: Doomsday",
+    "year": 2026,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_13",
+    "title": "Your Friendly Neighborhood Spider-Man S.2",
+    "year": 2027,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 10,
+    "tags": [
+      "animation",
+      "spiderverse",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_14",
+    "title": "Daredevil: Born Again Season 3",
+    "year": 2027,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "defenders",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_15",
+    "title": "Spider-Man - Beyond The Spiderverse",
+    "year": 2027,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "animation",
+      "spiderverse",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_16",
+    "title": "X-Men '97 Season 3",
+    "year": 2027,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 9,
+    "tags": [
+      "animation",
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_17",
+    "title": "Marvel Zombies - The Winter Soldier",
+    "year": 2027,
+    "phase": 6,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f6_18",
+    "title": "Avengers: Secret Wars",
+    "year": 2027,
+    "phase": 6,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_1",
+    "title": "X-Men",
+    "year": 2028,
+    "phase": 7,
+    "type": "movie",
+    "tags": [
+      "xmen",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_2",
+    "title": "Ghost Rider",
+    "year": 2028,
+    "phase": 7,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_3",
+    "title": "Zodiac",
+    "year": 2028,
+    "phase": 7,
+    "type": "tv",
+    "episodes": 8,
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_4",
+    "title": "Marvel Zombies - The Fist of Khonshu",
+    "year": 2028,
+    "phase": 7,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_5",
+    "title": "Black Panther 3",
+    "year": 2028,
+    "phase": 7,
+    "type": "movie",
+    "tags": [
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  },
+  {
+    "id": "f7_6",
+    "title": "Marvel Zombies - The Last Guardian",
+    "year": 2029,
+    "phase": 7,
+    "type": "tv",
+    "episodes": 4,
+    "tags": [
+      "animation",
+      "mcu",
+      "marvel-fan"
+    ],
+    "inArrivo": true
+  }
+]
