@@ -632,8 +632,25 @@ button:not(:disabled):active { transform: scale(0.97); }
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
   padding-top: 8px;
-  padding-bottom: 96px;
+  padding-bottom: 56px;
 }
+
+// Copyright in fondo alla landing (padding basso per il pulsante AI flottante)
+.home-footer {
+  padding-top: 24px;
+  padding-bottom: 96px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+
+  p { max-width: 720px; margin: 0 auto 8px; }
+  a { color: inherit; text-decoration: underline; }
+  a:hover { color: var(--accent); }
+}
+
+.home-footer-copy { font-weight: 600; color: var(--text-light); }
 
 .feature-card {
   position: relative;

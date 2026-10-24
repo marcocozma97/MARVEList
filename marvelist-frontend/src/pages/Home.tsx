@@ -37,6 +37,19 @@ const Home = () => {
           </div>
         ))}
       </section>
+
+      <footer className="container home-footer">
+        <p className="home-footer-copy">© {new Date().getFullYear()} MARVEList. Tutti i diritti riservati.</p>
+        <p>
+          Marvel, i suoi personaggi, le locandine, i trailer e tutti i contenuti e marchi correlati sono proprietà di
+          Marvel Entertainment, The Walt Disney Company e dei rispettivi titolari dei diritti.
+          MARVEList è un progetto non ufficiale e non è affiliato né approvato da Marvel o Disney.
+        </p>
+        <p>
+          Dati e immagini dei titoli forniti da{' '}
+          <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDB</a>.
+        </p>
+      </footer>
     </div>
   );
 };
