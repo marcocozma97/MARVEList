@@ -492,6 +492,4 @@ Tra le idee per il futuro:
 
 Progetto Capstone realizzato da **Marco Cozma**.
 
-*MARVEList è un progetto didattico non affiliato a Marvel o Disney. Dati e immagini dei titoli sono forniti da [TMDB](https://www.themoviedb.org/); questo prodotto usa l'API di TMDB ma non è approvato né certificato da TMDB.*
-
 </div>
