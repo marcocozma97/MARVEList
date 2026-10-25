@@ -433,9 +433,12 @@ Al primo avvio Hibernate crea le tabelle, il `DataSeeder` carica il catalogo dal
 
 ```bash
 cd marvelist-frontend
+cp .env.example .env        # poi inserisci la chiave TMDB
 npm install
 npm run dev
 ```
+
+Il file `.env` del frontend contiene `VITE_TMDB_API_KEY`, usata per cast, trailer e locandine nelle schede dei titoli.
 
 L'app è su `http://localhost:5173`. Di default il frontend chiama il backend sulla porta 8080 dello stesso host, quindi funziona anche da telefono sulla rete di casa. Per un indirizzo diverso basta impostare `VITE_API_URL`.
 
