@@ -1,16 +1,16 @@
 package com.marvelist.backend.services;
 
 import com.marvelist.backend.entities.User;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.HtmlUtils;
@@ -18,18 +18,27 @@ import org.springframework.web.util.HtmlUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private static final ClassPathResource VERIFICATION_TEMPLATE = new ClassPathResource("templates/email/verification.html");
-    private static final ClassPathResource LOGO = new ClassPathResource("static/email/marvelist-logo.png");
 
-    private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate;
 
-    @Value("${spring.mail.username}")
+    @Value("${brevo.api.url}")
+    private String apiUrl;
+
+    @Value("${brevo.api.key}")
+    private String apiKey;
+
+    @Value("${application.mail.from}")
     private String from;
+
+    @Value("${application.mail.logo-url}")
+    private String logoUrl;
 
     @Value("${application.frontend-url}")
     private String frontendUrl;
@@ -42,13 +51,6 @@ public class EmailService {
 
     public void sendVerificationEmail(User user, String origin) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(from, "MARVEList");
-            helper.setTo(user.getEmail());
-            helper.setSubject("Protocollo MARVEList: Verifica Identità");
-
             // Il link apre la pagina /verify del frontend, che chiama GET /api/v1/auth/verify?token=...
             String verifyLink = frontendBase(origin) + "/verify?token=" + user.getVerificationToken();
 
@@ -56,15 +58,24 @@ public class EmailService {
             String htmlContent = VERIFICATION_TEMPLATE.getContentAsString(StandardCharsets.UTF_8)
                     .replace("{{name}}", HtmlUtils.htmlEscape(user.getName()))
                     .replace("{{link}}", HtmlUtils.htmlEscape(verifyLink))
+                    .replace("{{logo}}", HtmlUtils.htmlEscape(logoUrl))
                     .replace("{{hours}}", String.valueOf(verificationExpirationHours));
 
-            helper.setText(htmlContent, true);
-            // Logo allegato inline: i client email non mostrano gli SVG, quindi usiamo il PNG
-            helper.addInline("marvelistLogo", LOGO, "image/png");
-            mailSender.send(message);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("api-key", apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        } catch (MessagingException | MailException | IOException e) {
-            // Credenziali SMTP errate, Gmail irraggiungibile, ecc.: la registrazione viene annullata
+            Map<String, Object> body = Map.of(
+                    "sender", Map.of("name", "MARVEList", "email", from),
+                    "to", List.of(Map.of("email", user.getEmail())),
+                    "subject", "Protocollo MARVEList: Verifica Identità",
+                    "htmlContent", htmlContent
+            );
+
+            restTemplate.postForEntity(apiUrl, new HttpEntity<>(body, headers), Void.class);
+
+        } catch (RestClientException | IOException e) {
+            // Chiave Brevo errata, servizio irraggiungibile, ecc.: la registrazione viene annullata
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Non siamo riusciti a inviare la mail di conferma. Riprova tra qualche minuto.", e);
         }

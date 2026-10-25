@@ -3,8 +3,8 @@ package com.marvelist.backend;
 import com.marvelist.backend.services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ class EmailServiceTest {
 
     @BeforeEach
     void setUp() {
-        emailService = new EmailService(mock(JavaMailSender.class));
+        emailService = new EmailService(mock(RestTemplate.class));
         ReflectionTestUtils.setField(emailService, "frontendUrl", DEFAULT_URL);
         ReflectionTestUtils.setField(emailService, "allowedOrigins", List.of(DEFAULT_URL, "http://192.168.*.*:5173"));
     }

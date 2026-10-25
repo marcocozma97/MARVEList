@@ -13,6 +13,8 @@ Il diario personale dell'Universo Marvel: ordine di visione, progressi, voti, ma
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
+**[Prova MARVEList online](https://marvelist-frontend.onrender.com)**
+
 ![Home di MARVEList](docs/screenshots/home.png)
 
 </div>
@@ -31,6 +33,7 @@ Il diario personale dell'Universo Marvel: ordine di visione, progressi, voti, ma
 - [Sicurezza](#sicurezza)
 - [Struttura del progetto](#struttura-del-progetto)
 - [Avviare il progetto in locale](#avviare-il-progetto-in-locale)
+- [Deploy su Render](#deploy-su-render)
 - [Test](#test)
 - [Cosa ho imparato e sviluppi futuri](#cosa-ho-imparato-e-sviluppi-futuri)
 
@@ -239,7 +242,7 @@ flowchart LR
     S -- "locandine, durate, date di uscita" --> TMDB
     S -- "chat" --> OR[OpenRouter · Claude]
     S -- "RSS" --> GN[Google News]
-    S -- "SMTP" --> MAIL[Email di conferma]
+    S -- "API HTTPS" --> MAIL[Brevo · email di conferma]
 ```
 
 - Il **catalogo** (285 titoli) vive nel file `marvel_data.json` del backend, nell'ordine di visione. A ogni avvio il `DataSeeder` lo sincronizza con il database, usando titolo + anno come chiave: aggiorna i titoli esistenti **mantenendo gli ID**, e quindi i "visti" degli utenti, e inserisce i nuovi.
@@ -271,12 +274,11 @@ Non ho usato librerie di animazione né di grafica: le intro, i personaggi a 8 b
 | Tecnologia | Perché l'ho scelta |
 | --- | --- |
 | **Java 21** | Versione LTS moderna: *record* per i DTO immutabili, *pattern matching* e API più espressive. |
-| **Spring Boot 4** | Lo standard per le API REST in Java: configurazione automatica, dependency injection e un modulo pronto per ogni esigenza (web, sicurezza, JPA, mail). |
+| **Spring Boot 4** | Lo standard per le API REST in Java: configurazione automatica, dependency injection e un modulo pronto per ogni esigenza (web, sicurezza, JPA). |
 | **Spring Data JPA + Hibernate** | Le relazioni (utenti, titoli visti, preferiti, progressi, maratone) si modellano come entità. I repository generano le query dal nome del metodo (`findAllByUserOrderByStartDateAscIdAsc`). |
 | **PostgreSQL** | Database relazionale affidabile e gratuito. I dati dell'app sono fortemente relazionali e servono vincoli di integrità (un solo progresso per utente e titolo). |
 | **Spring Security + JWT (jjwt)** | Autenticazione *stateless*: niente sessioni sul server, ogni richiesta porta il suo token. È l'ideale con un frontend separato. |
 | **Bean Validation** | Le regole dei dati in ingresso (email valida, password robusta) sono annotazioni sul DTO e i messaggi d'errore arrivano già in italiano al frontend. |
-| **Spring Mail** | Per l'email di conferma della registrazione, con template HTML e logo allegato. |
 | **Lombok** | Elimina getter, setter, costruttori e builder ripetitivi e lascia le entità leggibili. |
 | **Maven** | Gestione delle dipendenze e build standard, con wrapper incluso (`mvnw`). |
 
@@ -287,7 +289,8 @@ Non ho usato librerie di animazione né di grafica: le intro, i personaggi a 8 b
 | **TMDB** | Locandine, trame, cast, trailer, durate, episodi e date di uscita |
 | **OpenRouter** (Claude Haiku 4.5) | Il "cervello" di J.A.I.R.V.I.S. |
 | **Google News RSS** | Le notizie del Daily Bugle, lette dal backend perché il browser le bloccherebbe per CORS |
-| **Gmail SMTP** | Invio delle email di conferma |
+| **Brevo** | Invio delle email di conferma tramite API HTTPS, con template HTML in stile Marvel |
+| **Render** | Hosting di frontend, backend e database |
 
 ---
 
@@ -331,10 +334,10 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 - Password salvate con **BCrypt**, mai in chiaro.
 - **JWT** firmato, con scadenza a 24 ore. Sono pubbliche solo le rotte di autenticazione e le notizie.
 - Account attivo **solo dopo la conferma via email**. Il link porta all'origine del frontend solo se questa è tra quelle ammesse dal CORS, così il token non può essere dirottato su un sito esterno.
-- **CORS** limitato a `localhost` e alla rete di casa.
+- **CORS** limitato a `localhost` e alla rete di casa; online, solo al dominio del frontend.
 - Ogni maratona e ogni progresso è legato all'utente del token: non si possono leggere o modificare i dati di altri.
 - Il parser del feed RSS ha **DTD ed entità esterne disattivate** (protezione da XXE).
-- Le **chiavi segrete** (database, JWT, TMDB, OpenRouter, email) non sono nel codice: arrivano da un file `.env` escluso da git.
+- Le **chiavi segrete** (database, JWT, TMDB, OpenRouter, email) non sono nel codice: in locale arrivano da un file `.env` escluso da git, online dalle variabili d'ambiente di Render.
 
 ---
 
@@ -342,6 +345,7 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 
 ```text
 CAPSTONE/
+├── render.yaml                    # Blueprint di Render: frontend, backend e database
 ├── marvelist-frontend/            # React + TypeScript + Vite
 │   ├── docs/screenshots/          # gli screenshot di questo README
 │   └── src/
@@ -354,6 +358,7 @@ CAPSTONE/
 │       └── styles/main.scss       # tutto lo stile dell'app
 │
 └── marvelist-backend/             # Spring Boot 4 + Java 21
+    ├── Dockerfile                 # immagine per il deploy su Render
     └── src/main/
         ├── java/com/marvelist/backend/
         │   ├── auth/              # registrazione, conferma email, login
@@ -401,7 +406,7 @@ CAPSTONE/
 - **Java 21** (JDK)
 - **PostgreSQL** con un database chiamato `marvelist`
 - Una chiave API di [TMDB](https://www.themoviedb.org/settings/api) e una di [OpenRouter](https://openrouter.ai/keys)
-- Un account Gmail con una *password per le app* (per le email di conferma)
+- Un account [Brevo](https://www.brevo.com) con una chiave API e un mittente verificato (per le email di conferma)
 
 ### 1. Backend
 
@@ -417,8 +422,8 @@ DB_PASSWORD=la_password_di_postgres
 JWT_SECRET_KEY=una_chiave_base64_di_256_bit
 TMDB_API_KEY=...
 OPENROUTER_API_KEY=...
-MAIL_USERNAME=tuo.indirizzo@gmail.com
-MAIL_PASSWORD=password_per_le_app_di_google
+BREVO_API_KEY=la_chiave_api_di_brevo
+MAIL_FROM=indirizzo.mittente@verificato.su.brevo
 ```
 
 Poi avvio il server, che parte su `http://localhost:8080`:
@@ -451,6 +456,40 @@ L'app è su `http://localhost:5173`. Di default il frontend chiama il backend su
 | `npm run preview` | Anteprima della build |
 | `npm run lint` | ESLint |
 | `npm test` | Test Vitest |
+
+---
+
+## Deploy su Render
+
+MARVEList è online su [Render](https://render.com), con tutti e tre i pezzi sul piano gratuito:
+
+| Servizio | Tipo su Render | Indirizzo |
+| --- | --- | --- |
+| Frontend | Static Site | [marvelist-frontend.onrender.com](https://marvelist-frontend.onrender.com) |
+| Backend | Web Service (Docker) | [marvelist-backend.onrender.com](https://marvelist-backend.onrender.com/api/v1/news) |
+| Database | PostgreSQL | rete privata di Render |
+
+L'intera infrastruttura è descritta nel file [`render.yaml`](render.yaml) (*Blueprint*): Render crea i tre servizi, li collega tra loro e rifà il deploy a ogni push su `main`. Ogni servizio guarda solo la propria cartella, quindi una modifica al README non riavvia nulla.
+
+### Le scelte per la produzione
+
+- **Backend in Docker**: Render non ha un runtime Java nativo, quindi il `Dockerfile` compila il progetto con Maven e lo avvia su una JRE 21. All'avvio converte l'indirizzo del database fornito da Render nel formato JDBC.
+- **Email via API HTTPS**: il piano gratuito di Render blocca le porte SMTP, quindi le mail di conferma partono da [Brevo](https://www.brevo.com) con una semplice chiamata REST. Il logo della mail è servito dal frontend (`/email/marvelist-logo.png`).
+- **Routing lato client**: una regola di *rewrite* manda ogni percorso a `index.html`, così ricaricare `/timeline` o `/media/42` non dà 404.
+- **Configurazione dall'ambiente**: database, porta, CORS, indirizzo del frontend e log SQL si impostano con variabili d'ambiente; in locale valgono i default di sempre.
+
+### Rifare il deploy da zero
+
+1. **Brevo**: creo un account gratuito, in *Senders, Domains & Dedicated IPs* aggiungo e verifico l'indirizzo mittente, poi in *SMTP & API → API Keys* genero una chiave API.
+2. **Render**: dalla dashboard scelgo *New → Blueprint*, collego il repository GitHub e Render legge `render.yaml`.
+3. Inserisco i valori richiesti: `TMDB_API_KEY`, `OPENROUTER_API_KEY`, `BREVO_API_KEY`, `MAIL_FROM` (il mittente verificato su Brevo) e `VITE_TMDB_API_KEY`. La chiave JWT e le credenziali del database vengono generate da Render.
+4. Avvio il deploy: prima il database, poi il backend (al primo avvio crea le tabelle e carica il catalogo), infine il frontend.
+
+### Limiti del piano gratuito
+
+- Il backend va in pausa dopo circa 15 minuti senza visite: la prima richiesta dopo la pausa può richiedere un minuto, poi l'app torna veloce.
+- Il database gratuito scade dopo 30 giorni; basta ricrearne uno dal Blueprint.
+- Brevo gratuito consente fino a 300 email al giorno.
 
 ---
 
