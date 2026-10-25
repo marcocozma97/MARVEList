@@ -33,9 +33,9 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: BREVO_API_KEY
+      - key: MAIL_RELAY_URL
         sync: false
-      - key: MAIL_FROM
+      - key: MAIL_RELAY_SECRET
         sync: false
       - key: FRONTEND_URL
         value: https://marvelist-frontend.onrender.com

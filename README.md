@@ -242,7 +242,7 @@ flowchart LR
     S -- "locandine, durate, date di uscita" --> TMDB
     S -- "chat" --> OR[OpenRouter · Claude]
     S -- "RSS" --> GN[Google News]
-    S -- "API HTTPS" --> MAIL[Brevo · email di conferma]
+    S -- "HTTPS" --> MAIL[Google Apps Script · Gmail]
 ```
 
 - Il **catalogo** (285 titoli) vive nel file `marvel_data.json` del backend, nell'ordine di visione. A ogni avvio il `DataSeeder` lo sincronizza con il database, usando titolo + anno come chiave: aggiorna i titoli esistenti **mantenendo gli ID**, e quindi i "visti" degli utenti, e inserisce i nuovi.
@@ -289,7 +289,7 @@ Non ho usato librerie di animazione né di grafica: le intro, i personaggi a 8 b
 | **TMDB** | Locandine, trame, cast, trailer, durate, episodi e date di uscita |
 | **OpenRouter** (Claude Haiku 4.5) | Il "cervello" di J.A.I.R.V.I.S. |
 | **Google News RSS** | Le notizie del Daily Bugle, lette dal backend perché il browser le bloccherebbe per CORS |
-| **Brevo** | Invio delle email di conferma tramite API HTTPS, con template HTML in stile Marvel |
+| **Google Apps Script + Gmail** | Invio delle email di conferma tramite una piccola web app chiamata in HTTPS, con template HTML in stile Marvel e logo incorporato |
 | **Render** | Hosting di frontend, backend e database |
 
 ---
@@ -346,6 +346,7 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 ```text
 CAPSTONE/
 ├── render.yaml                    # Blueprint di Render: frontend, backend e database
+├── docs/mail-relay.gs             # web app di Apps Script per l'invio delle email
 ├── marvelist-frontend/            # React + TypeScript + Vite
 │   ├── docs/screenshots/          # gli screenshot di questo README
 │   └── src/
@@ -406,7 +407,7 @@ CAPSTONE/
 - **Java 21** (JDK)
 - **PostgreSQL** con un database chiamato `marvelist`
 - Una chiave API di [TMDB](https://www.themoviedb.org/settings/api) e una di [OpenRouter](https://openrouter.ai/keys)
-- Un account [Brevo](https://www.brevo.com) con una chiave API e un mittente verificato (per le email di conferma)
+- Un account Google con la web app di [`docs/mail-relay.gs`](docs/mail-relay.gs) pubblicata su Apps Script (per le email di conferma, vedi [Deploy su Render](#deploy-su-render))
 
 ### 1. Backend
 
@@ -422,8 +423,8 @@ DB_PASSWORD=la_password_di_postgres
 JWT_SECRET_KEY=una_chiave_base64_di_256_bit
 TMDB_API_KEY=...
 OPENROUTER_API_KEY=...
-BREVO_API_KEY=la_chiave_api_di_brevo
-MAIL_FROM=indirizzo.mittente@verificato.su.brevo
+MAIL_RELAY_URL=https://script.google.com/macros/s/.../exec
+MAIL_RELAY_SECRET=la_chiave_condivisa_con_lo_script
 ```
 
 Poi avvio il server, che parte su `http://localhost:8080`:
@@ -474,22 +475,22 @@ L'intera infrastruttura è descritta nel file [`render.yaml`](render.yaml) (*Blu
 ### Le scelte per la produzione
 
 - **Backend in Docker**: Render non ha un runtime Java nativo, quindi il `Dockerfile` compila il progetto con Maven e lo avvia su una JRE 21. All'avvio converte l'indirizzo del database fornito da Render nel formato JDBC.
-- **Email via API HTTPS**: il piano gratuito di Render blocca le porte SMTP, quindi le mail di conferma partono da [Brevo](https://www.brevo.com) con una semplice chiamata REST. Il logo della mail è servito dal frontend (`/email/marvelist-logo.png`).
+- **Email via HTTPS**: il piano gratuito di Render blocca le porte SMTP, quindi il backend non parla più direttamente con Gmail. Invia la mail (HTML e logo in base64) a una web app di Google Apps Script ([`docs/mail-relay.gs`](docs/mail-relay.gs)), che controlla una chiave segreta condivisa e la spedisce dal mio account Gmail. Lo script risponde con un redirect alla pagina dell'esito, che il backend legge per sapere se l'invio è andato a buon fine.
 - **Routing lato client**: una regola di *rewrite* manda ogni percorso a `index.html`, così ricaricare `/timeline` o `/media/42` non dà 404.
 - **Configurazione dall'ambiente**: database, porta, CORS, indirizzo del frontend e log SQL si impostano con variabili d'ambiente; in locale valgono i default di sempre.
 
 ### Rifare il deploy da zero
 
-1. **Brevo**: creo un account gratuito, in *Senders, Domains & Dedicated IPs* aggiungo e verifico l'indirizzo mittente, poi in *SMTP & API → API Keys* genero una chiave API.
+1. **Apps Script**: su [script.google.com](https://script.google.com) creo un nuovo progetto e incollo il contenuto di `docs/mail-relay.gs`. In *Impostazioni progetto → Proprietà script* aggiungo `SECRET` con una chiave casuale, poi in *Esegui il deployment → Nuovo deployment* scelgo *App web*, eseguita come me e accessibile a *Chiunque*. Autorizzo l'invio di email e copio l'URL che termina con `/exec`.
 2. **Render**: dalla dashboard scelgo *New → Blueprint*, collego il repository GitHub e Render legge `render.yaml`.
-3. Inserisco i valori richiesti: `TMDB_API_KEY`, `OPENROUTER_API_KEY`, `BREVO_API_KEY`, `MAIL_FROM` (il mittente verificato su Brevo) e `VITE_TMDB_API_KEY`. La chiave JWT e le credenziali del database vengono generate da Render.
+3. Inserisco i valori richiesti: `TMDB_API_KEY`, `OPENROUTER_API_KEY`, `MAIL_RELAY_URL` (l'URL della web app), `MAIL_RELAY_SECRET` (la stessa chiave della proprietà `SECRET`) e `VITE_TMDB_API_KEY`. La chiave JWT e le credenziali del database vengono generate da Render.
 4. Avvio il deploy: prima il database, poi il backend (al primo avvio crea le tabelle e carica il catalogo), infine il frontend.
 
 ### Limiti del piano gratuito
 
 - Il backend va in pausa dopo circa 15 minuti senza visite: la prima richiesta dopo la pausa può richiedere un minuto, poi l'app torna veloce.
 - Il database gratuito scade dopo 30 giorni; basta ricrearne uno dal Blueprint.
-- Brevo gratuito consente fino a 300 email al giorno.
+- Con un account Gmail personale Apps Script invia fino a circa 100 email al giorno.
 
 ---
 

@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -25,20 +28,15 @@ import java.util.Map;
 public class EmailService {
 
     private static final ClassPathResource VERIFICATION_TEMPLATE = new ClassPathResource("templates/email/verification.html");
+    private static final ClassPathResource LOGO = new ClassPathResource("static/email/marvelist-logo.png");
 
     private final RestTemplate restTemplate;
 
-    @Value("${brevo.api.url}")
-    private String apiUrl;
+    @Value("${mail.relay.url}")
+    private String relayUrl;
 
-    @Value("${brevo.api.key}")
-    private String apiKey;
-
-    @Value("${application.mail.from}")
-    private String from;
-
-    @Value("${application.mail.logo-url}")
-    private String logoUrl;
+    @Value("${mail.relay.secret}")
+    private String relaySecret;
 
     @Value("${application.frontend-url}")
     private String frontendUrl;
@@ -58,24 +56,32 @@ public class EmailService {
             String htmlContent = VERIFICATION_TEMPLATE.getContentAsString(StandardCharsets.UTF_8)
                     .replace("{{name}}", HtmlUtils.htmlEscape(user.getName()))
                     .replace("{{link}}", HtmlUtils.htmlEscape(verifyLink))
-                    .replace("{{logo}}", HtmlUtils.htmlEscape(logoUrl))
                     .replace("{{hours}}", String.valueOf(verificationExpirationHours));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("api-key", apiKey);
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            // Logo allegato inline: i client email non mostrano gli SVG, quindi usiamo il PNG
+            String logo = Base64.getEncoder().encodeToString(LOGO.getContentAsByteArray());
 
             Map<String, Object> body = Map.of(
-                    "sender", Map.of("name", "MARVEList", "email", from),
-                    "to", List.of(Map.of("email", user.getEmail())),
+                    "secret", relaySecret,
+                    "to", user.getEmail(),
                     "subject", "Protocollo MARVEList: Verifica Identità",
-                    "htmlContent", htmlContent
+                    "html", htmlContent,
+                    "logo", logo
             );
 
-            restTemplate.postForEntity(apiUrl, new HttpEntity<>(body, headers), Void.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(relayUrl, new HttpEntity<>(body, headers), String.class);
+            URI resultUrl = response.getHeaders().getLocation();
+            Map<?, ?> result = resultUrl != null ? restTemplate.getForObject(resultUrl, Map.class) : null;
+
+            if (result == null || !Boolean.TRUE.equals(result.get("ok"))) {
+                throw new RestClientException("Invio non confermato dal relay: " + result);
+            }
 
         } catch (RestClientException | IOException e) {
-            // Chiave Brevo errata, servizio irraggiungibile, ecc.: la registrazione viene annullata
+            // Relay irraggiungibile, chiave errata, limite di Gmail raggiunto, ecc.: la registrazione viene annullata
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Non siamo riusciti a inviare la mail di conferma. Riprova tra qualche minuto.", e);
         }
