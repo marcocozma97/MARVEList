@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,14 +22,11 @@ import static org.mockito.Mockito.*;
 
 class CommentServiceTest {
 
-    private static final String PNG = "data:image/png;base64," + Base64.getEncoder().encodeToString(
-            new byte[]{(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A, 0, 0});
-    private static final String GIF = "https://media2.giphy.com/media/v1.abc/giphy.gif?cid=123&ct=g";
+    private static final String GIF = "https://static.klipy.com/ii/935d7ab9d8c6202580a668421940ec81/14/af/eUbp2uNc.webp";
 
     private CommentRepository comments;
     private CommentService service;
     private User tony;
-    private User peter;
     private Media loki;
 
     @BeforeEach
@@ -41,7 +37,7 @@ class CommentServiceTest {
         service = new CommentService(comments, mediaRepository, users);
 
         tony = User.builder().id(1L).name("Tony").nickname("IronMan").email("tony@stark.it").role(Role.USER).build();
-        peter = User.builder().id(2L).name("Peter").email("peter@parker.it").role(Role.USER).build();
+        User peter = User.builder().id(2L).name("Peter").email("peter@parker.it").role(Role.USER).build();
         loki = Media.builder().id(10L).title("Loki Season 1").type("SERIE_TV").episodes(6).build();
 
         when(users.findByEmail("tony@stark.it")).thenReturn(Optional.of(tony));
@@ -59,12 +55,12 @@ class CommentServiceTest {
     }
 
     @Test
-    void unCommentoConTestoEImmagineVieneSalvato() {
-        var response = service.create("tony@stark.it", 10L, new CommentRequest("  Che finale!  ", 6, true, null, PNG));
+    void unCommentoConTestoEGifVieneSalvato() {
+        var response = service.create("tony@stark.it", 10L, new CommentRequest("  Che finale!  ", 6, true, GIF));
 
         assertEquals("Che finale!", response.text());
         assertEquals("IronMan", response.authorName());
-        assertEquals("/comments/99/image", response.imageUrl());
+        assertEquals(GIF, response.gifUrl());
         assertTrue(response.spoiler());
         assertTrue(response.mine());
         assertEquals(6, response.episode());
@@ -72,37 +68,26 @@ class CommentServiceTest {
 
     @Test
     void unCommentoVuotoVieneRifiutato() {
-        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("   ", null, false, null, null))));
+        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("   ", null, false, null))));
         verify(comments, never()).save(any());
     }
 
     @Test
-    void immagineEGifInsiemeNonSonoAmmesse() {
-        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest(null, null, false, GIF, PNG))));
-    }
-
-    @Test
-    void soloLeGifDiGiphySonoAccettate() {
-        assertNotNull(service.create("tony@stark.it", 10L, new CommentRequest(null, null, false, GIF, null)).gifUrl());
+    void soloLeGifDiKlipySonoAccettate() {
+        assertNotNull(service.create("tony@stark.it", 10L, new CommentRequest(null, null, false, GIF)).gifUrl());
         assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L,
-                new CommentRequest(null, null, false, "https://evil.example.com/x.gif", null))));
-    }
-
-    @Test
-    void unImmagineCheNonCorrispondeAlFormatoDichiaratoVieneRifiutata() {
-        String fake = "data:image/png;base64," + Base64.getEncoder().encodeToString("<script>".getBytes());
-        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest(null, null, false, null, fake))));
+                new CommentRequest(null, null, false, "https://evil.example.com/x.gif"))));
     }
 
     @Test
     void unEpisodioFuoriDallaStagioneVieneRifiutato() {
-        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("Ciao", 7, false, null, null))));
+        assertEquals(HttpStatus.BAD_REQUEST, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("Ciao", 7, false, null))));
     }
 
     @Test
     void troppiCommentiInUnMinutoVengonoBloccati() {
         when(comments.countByUserAndCreatedAtAfter(any(), any())).thenReturn(6L);
-        assertEquals(HttpStatus.TOO_MANY_REQUESTS, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("Ciao", null, false, null, null))));
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS, status(() -> service.create("tony@stark.it", 10L, new CommentRequest("Ciao", null, false, null))));
     }
 
     @Test

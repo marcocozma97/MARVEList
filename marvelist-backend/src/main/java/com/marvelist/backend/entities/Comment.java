@@ -35,10 +35,6 @@ public class Comment {
     @Column(length = 600)
     private String gifUrl;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "image_id")
-    private CommentImage image;
-
     @Column(nullable = false)
     private boolean spoiler;
 

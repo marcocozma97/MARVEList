@@ -3,16 +3,12 @@ package com.marvelist.backend.controllers;
 import com.marvelist.backend.dto.CommentDtos.CommentCount;
 import com.marvelist.backend.dto.CommentDtos.CommentRequest;
 import com.marvelist.backend.dto.CommentDtos.CommentResponse;
-import com.marvelist.backend.entities.CommentImage;
 import com.marvelist.backend.services.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.CacheControl;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -43,14 +39,5 @@ public class CommentController {
     public ResponseEntity<Void> delete(@PathVariable Long commentId, Authentication authentication) {
         commentService.delete(authentication.getName(), commentId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/comments/{commentId}/image")
-    public ResponseEntity<byte[]> image(@PathVariable Long commentId) {
-        CommentImage image = commentService.getImage(commentId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(image.getContentType()))
-                .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable())
-                .body(image.getData());
     }
 }

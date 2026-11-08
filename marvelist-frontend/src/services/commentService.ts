@@ -7,7 +7,6 @@ export interface CommentItem {
   authorAvatar: string | null;
   text: string | null;
   gifUrl: string | null;
-  imageUrl: string | null;
   spoiler: boolean;
   createdAt: string;
   mine: boolean;
@@ -18,10 +17,7 @@ export interface NewComment {
   episode?: number | null;
   spoiler: boolean;
   gifUrl?: string | null;
-  image?: string | null;
 }
-
-export const commentImageSrc = (imageUrl: string) => `${api.defaults.baseURL}${imageUrl}`;
 
 export const commentService = {
   list: async (mediaId: number, episode?: number | null): Promise<CommentItem[]> => {

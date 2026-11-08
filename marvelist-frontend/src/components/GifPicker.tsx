@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { giphyService, type GifResult } from '../services/giphyService';
+import { gifService, type GifResult } from '../services/gifService';
 
 interface GifPickerProps {
   onPick: (gif: GifResult) => void;
@@ -19,7 +19,7 @@ const GifPicker = ({ onPick, onClose }: GifPickerProps) => {
   useEffect(() => {
     let active = true;
     const timer = window.setTimeout(() => {
-      giphyService.search(query)
+      gifService.search(query)
         .then(gifs => { if (active) { setResults(gifs); setError(false); } })
         .catch(() => { if (active) setError(true); })
         .finally(() => { if (active) setIsLoading(false); });
@@ -52,7 +52,7 @@ const GifPicker = ({ onPick, onClose }: GifPickerProps) => {
 
       <div className="gif-grid" aria-busy={isLoading}>
         {error ? (
-          <p className="gif-empty">GIPHY non risponde: riprova tra poco.</p>
+          <p className="gif-empty">Le GIF non sono disponibili: riprova tra poco.</p>
         ) : isLoading && !results.length ? (
           Array.from({ length: 9 }, (_, i) => <span key={i} className="gif-skeleton" />)
         ) : results.length ? (
@@ -66,7 +66,7 @@ const GifPicker = ({ onPick, onClose }: GifPickerProps) => {
         )}
       </div>
 
-      <p className="gif-attribution">Powered by <strong>GIPHY</strong></p>
+      <p className="gif-attribution">Powered by <strong>KLIPY</strong></p>
     </div>
   );
 };

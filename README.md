@@ -54,13 +54,13 @@ Per il mio progetto Capstone ho quindi deciso di costruire l'app che avrei volut
 | **Timeline** | Tre livelli di visione (MCU, Marvel Fan, Marvel GOD), titoli divisi per fase in accordion, ricerca, presa visione di un'intera fase |
 | **Schede titolo** | Trama, cast e trailer da TMDB, minuti visti per i film, episodi per le serie, voto da 0,5 a 10 scudi, preferiti, "Guarda dopo" |
 | **Schede episodio** | Ogni episodio di una stagione ha la sua scheda: immagine e sinossi da TMDB, visto, voto a scudi e passaggio al precedente o al successivo |
-| **Community** | In fondo a ogni scheda (film, stagione, episodio) i commenti dei fan, con immagini dal dispositivo, GIF di GIPHY ed etichetta *Spoiler*. I commenti degli altri restano dietro un avviso spoiler finché non confermo di aver visto il titolo |
+| **Community** | In fondo a ogni scheda (film, stagione, episodio) i commenti dei fan, con GIF di KLIPY ed etichetta *Spoiler*. I commenti degli altri restano dietro un avviso spoiler finché non confermo di aver visto il titolo |
 | **Profilo** | Statistiche (film, serie, ore di visione, voto medio), grado da *Recluta S.H.I.E.L.D.* a *GOD OF MARVEL*, nickname e avatar, "Continua a guardare", preferiti |
 | **Maratone** | Scelgo titoli, date e ritmo (film a settimana, episodi al giorno) e l'app genera il calendario giorno per giorno |
 | **Road To** | Percorsi pronti per prepararsi ai grandi eventi: *Doomsday*, *Endgame*, *Spiderverse* |
 | **News** | Le notizie Marvel degli ultimi 14 giorni in stile *Daily Bugle*, con collegamento alle schede del catalogo |
 | **J.A.I.R.V.I.S.** | Chat con un'IA esperta di MCU, fumetti e serie, che conosce anche il funzionamento dell'app |
-| **FAQ** | 24 domande e risposte con ricerca e filtri, presentate dall'Osservatore |
+| **FAQ** | 25 domande e risposte con ricerca e filtri, presentate dall'Osservatore |
 | **Account** | Registrazione con conferma via email, login con JWT |
 
 ---
@@ -448,7 +448,7 @@ npm install
 npm run dev
 ```
 
-Il file `.env` del frontend contiene `VITE_TMDB_API_KEY`, usata per cast, trailer e locandine nelle schede dei titoli, e `VITE_GIPHY_API_KEY` ([developers.giphy.com](https://developers.giphy.com/dashboard/)), usata per cercare le GIF dei commenti: senza, il pulsante GIF resta disattivato.
+Il file `.env` del frontend contiene `VITE_TMDB_API_KEY`, usata per cast, trailer e locandine nelle schede dei titoli, e `VITE_KLIPY_API_KEY` ([partner.klipy.com](https://partner.klipy.com/)), usata per cercare le GIF dei commenti: senza, il pulsante GIF resta disattivato.
 
 L'app è su `http://localhost:5173`. Di default il frontend chiama il backend sulla porta 8080 dello stesso host, quindi funziona anche da telefono sulla rete di casa. Per un indirizzo diverso basta impostare `VITE_API_URL`.
 
@@ -496,7 +496,7 @@ Il backend è descritto nel file [`render.yaml`](render.yaml) (*Blueprint*). Ren
    - `MAIL_RELAY_URL` (l'URL della web app) e `MAIL_RELAY_SECRET` (la stessa chiave della proprietà `SECRET`)
 
    La chiave JWT viene generata da Render. Al primo avvio il backend crea le tabelle e carica il catalogo.
-4. **Vercel**: importo il repository, imposto *Root Directory* su `marvelist-frontend` (Vercel riconosce Vite da solo) e chiamo il progetto `marvelist`. Aggiungo le variabili `VITE_API_URL` (`https://marvelist-backend.onrender.com/api/v1`) , `VITE_TMDB_API_KEY` e `VITE_GIPHY_API_KEY`, poi avvio il deploy.
+4. **Vercel**: importo il repository, imposto *Root Directory* su `marvelist-frontend` (Vercel riconosce Vite da solo) e chiamo il progetto `marvelist`. Aggiungo le variabili `VITE_API_URL` (`https://marvelist-backend.onrender.com/api/v1`) , `VITE_TMDB_API_KEY` e `VITE_KLIPY_API_KEY`, poi avvio il deploy.
 
 ### Limiti del piano gratuito
 

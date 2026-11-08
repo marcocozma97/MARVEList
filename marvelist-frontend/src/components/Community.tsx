@@ -2,9 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
-import { commentService, commentImageSrc, type CommentItem } from '../services/commentService';
-import { giphyEnabled, type GifResult } from '../services/giphyService';
-import { compressImage } from '../utils/image';
+import { commentService, type CommentItem } from '../services/commentService';
+import { gifsEnabled, type GifResult } from '../services/gifService';
 import { fullDate, MAX_COMMENT_LENGTH, timeAgo } from '../utils/community';
 import Avatar from './Avatar';
 import GifPicker from './GifPicker';
@@ -35,12 +34,6 @@ const gateKey = (mediaId: number, episode?: number | null) => `marvelist_spoiler
 const errorMessage = (e: unknown, fallback: string) =>
   (e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? (e instanceof Error ? e.message : fallback);
 
-const ImageIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="16" rx="3" /><circle cx="9" cy="10" r="2" /><path d="m21 16-5-5-9 9" />
-  </svg>
-);
-
 const TrashIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
@@ -59,18 +52,14 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
   const [listError, setListError] = useState<string | null>(null);
   const [openSpoilers, setOpenSpoilers] = useState<number[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
-  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const [text, setText] = useState('');
   const [spoiler, setSpoiler] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
   const [gif, setGif] = useState<GifResult | null>(null);
   const [showGifs, setShowGifs] = useState(false);
-  const [isPreparingImage, setIsPreparingImage] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [sentNote, setSentNote] = useState<string | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -93,13 +82,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
     if (isAuthenticated && revealed && comments === null) fetchComments();
   }, [isAuthenticated, revealed, comments, fetchComments]);
 
-  useEffect(() => {
-    if (!lightbox) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setLightbox(null); } };
-    window.addEventListener('keydown', onKey, true);
-    return () => window.removeEventListener('keydown', onKey, true);
-  }, [lightbox]);
-
   const reveal = () => {
     try {
       sessionStorage.setItem(gateKey(mediaId, episode), '1');
@@ -115,30 +97,14 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
     el.style.height = `${Math.min(el.scrollHeight, 320)}px`;
   };
 
-  const pickImage = async (file: File | undefined) => {
-    if (!file) return;
-    setFormError(null);
-    setIsPreparingImage(true);
-    try {
-      setImage(await compressImage(file));
-      setGif(null);
-    } catch (e) {
-      setFormError(errorMessage(e, "Impossibile usare questa immagine"));
-    } finally {
-      setIsPreparingImage(false);
-      if (fileInput.current) fileInput.current.value = '';
-    }
-  };
-
   const pickGif = useCallback((picked: GifResult) => {
     setGif(picked);
-    setImage(null);
     setShowGifs(false);
   }, []);
   const closeGifs = useCallback(() => setShowGifs(false), []);
 
   const trimmed = text.trim();
-  const canSend = (trimmed.length > 0 || !!image || !!gif) && trimmed.length <= MAX_COMMENT_LENGTH && !isSending && !isPreparingImage;
+  const canSend = (trimmed.length > 0 || !!gif) && trimmed.length <= MAX_COMMENT_LENGTH && !isSending;
 
   const send = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -146,10 +112,9 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
     setIsSending(true);
     setFormError(null);
     try {
-      const created = await commentService.create(mediaId, { text: trimmed, episode, spoiler, gifUrl: gif?.url ?? null, image });
+      const created = await commentService.create(mediaId, { text: trimmed, episode, spoiler, gifUrl: gif?.url ?? null });
       setText('');
       setSpoiler(false);
-      setImage(null);
       setGif(null);
       requestAnimationFrame(autoGrow);
       setCount(c => (c ?? 0) + 1);
@@ -215,40 +180,23 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
                 onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) send(); }}
               />
 
-              {(image || gif || isPreparingImage) && (
+              {gif && (
                 <div className="cm-attachment">
-                  {isPreparingImage ? (
-                    <span className="cm-attachment-loading">Preparo l'immagine…</span>
-                  ) : (
-                    <img src={image ?? gif!.url} alt={gif ? gif.title || 'GIF scelta' : 'Immagine scelta'} />
-                  )}
-                  {!isPreparingImage && (
-                    <button type="button" className="cm-attachment-remove" onClick={() => { setImage(null); setGif(null); }} aria-label="Rimuovi l'allegato">×</button>
-                  )}
-                  {gif && <span className="cm-attachment-tag">GIF</span>}
+                  <img src={gif.url} alt={gif.title || 'GIF scelta'} />
+                  <button type="button" className="cm-attachment-remove" onClick={() => setGif(null)} aria-label="Rimuovi la GIF">×</button>
+                  <span className="cm-attachment-tag">GIF</span>
                 </div>
               )}
 
               <div className="cm-toolbar">
-                <input
-                  ref={fileInput}
-                  type="file"
-                  accept="image/*"
-                  className="visually-hidden"
-                  tabIndex={-1}
-                  onChange={(e) => pickImage(e.target.files?.[0])}
-                />
-                <button type="button" className="cm-tool" onClick={() => fileInput.current?.click()} disabled={isPreparingImage} title="Aggiungi un'immagine dal dispositivo">
-                  <ImageIcon /><span>Immagine</span>
-                </button>
                 <div className="cm-tool-wrap">
                   <button
                     type="button"
                     className={`cm-tool cm-tool-gif ${showGifs ? 'active' : ''}`}
                     onClick={() => setShowGifs(v => !v)}
-                    disabled={!giphyEnabled}
+                    disabled={!gifsEnabled}
                     aria-expanded={showGifs}
-                    title={giphyEnabled ? 'Aggiungi una GIF' : 'GIF non disponibili'}
+                    title={gifsEnabled ? 'Aggiungi una GIF' : 'GIF non disponibili'}
                   >GIF</button>
                   {showGifs && <GifPicker onPick={pickGif} onClose={closeGifs} />}
                 </div>
@@ -319,11 +267,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
 
                       <div className={`cm-content ${hidden ? 'is-hidden' : ''}`} aria-hidden={hidden}>
                         {c.text && <p className="cm-text">{c.text}</p>}
-                        {c.imageUrl && (
-                          <button type="button" className="cm-media" onClick={() => setLightbox(commentImageSrc(c.imageUrl!))} tabIndex={hidden ? -1 : 0} aria-label="Apri l'immagine">
-                            <img src={commentImageSrc(c.imageUrl)} alt="Immagine del commento" loading="lazy" />
-                          </button>
-                        )}
                         {c.gifUrl && <img className="cm-gif" src={c.gifUrl} alt="GIF" loading="lazy" />}
                       </div>
                       {hidden ? (
@@ -340,13 +283,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
             </ul>
           )}
         </>
-      )}
-
-      {lightbox && (
-        <div className="cm-lightbox" role="dialog" aria-label="Immagine del commento" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Immagine del commento a schermo intero" />
-          <button type="button" className="close-btn cm-lightbox-close" aria-label="Chiudi">×</button>
-        </div>
       )}
     </section>
   );

@@ -26,6 +26,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
         <>Assolutamente no! Stark Industries finanzia interamente questo progetto.</>),
       item('Serve un account?',
         <>Sì: Timeline, Road To, maratone e J.A.I.R.V.I.S. sono legati al tuo profilo, così ritrovi visti, voti e progressi su qualsiasi dispositivo. <Link to="/register">Registrati</Link> in pochi secondi: è gratis.</>),
+      item("Come posso segnalare un problema o proporre un'idea?",
+        <>Scrivici a <a href="mailto:marvelist.app@gmail.com">marvelist.app@gmail.com</a>: segnalazioni di errori, idee su cosa aggiungere, titoli mancanti o qualsiasi altra cosa. Leggiamo tutto!</>),
     ],
   },
   {

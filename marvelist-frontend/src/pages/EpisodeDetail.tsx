@@ -111,12 +111,6 @@ const EpisodeDetail = () => {
     saveEpisodes(watched ? list.filter(e => e !== episode) : [...list, episode].sort((a, b) => a - b));
   };
 
-  const watchAndNext = () => {
-    if (!progress) return;
-    if (!watched) saveEpisodes([...progress.watchedEpisodes, episode].sort((a, b) => a - b));
-    goTo(episode + 1);
-  };
-
   const rate = async (value: number | null) => {
     const previous = ratings;
     setRatings(r => {
@@ -209,15 +203,9 @@ const EpisodeDetail = () => {
                   <span aria-hidden="true">←</span> Precedente
                 </button>
                 <Link to={`/media/${media.id}`} className="btn-ghost episode-nav-btn episode-nav-all">Tutti gli episodi</Link>
-                {progress && !upcoming && !watched && total > 0 && episode < total ? (
-                  <button type="button" className="btn-marvel btn-inline episode-nav-btn" onClick={watchAndNext}>
-                    Visto, vai al prossimo <span aria-hidden="true">→</span>
-                  </button>
-                ) : (
-                  <button type="button" className="btn-ghost episode-nav-btn" onClick={() => goTo(episode + 1)} disabled={total > 0 && episode >= total}>
-                    Successivo <span aria-hidden="true">→</span>
-                  </button>
-                )}
+                <button type="button" className="btn-ghost episode-nav-btn" onClick={() => goTo(episode + 1)} disabled={total > 0 && episode >= total}>
+                  Successivo <span aria-hidden="true">→</span>
+                </button>
               </nav>
             </div>
           </div>
