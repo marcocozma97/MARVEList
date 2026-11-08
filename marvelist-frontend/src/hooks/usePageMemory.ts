@@ -6,7 +6,7 @@ import { useNavigationType } from 'react-router-dom';
 // sessionStorage può non essere disponibile (navigazione privata): in quel caso si riparte dai default.
 const PREFIX = 'marvelist_page_';
 
-const read = <T,>(key: string, fallback: T): T => {
+export const readPageState = <T,>(key: string, fallback: T): T => {
   try {
     const raw = window.sessionStorage.getItem(PREFIX + key);
     return raw === null ? fallback : JSON.parse(raw) as T;
@@ -21,7 +21,7 @@ const write = (key: string, value: unknown) => {
 
 // Come useState, ma il valore sopravvive all'uscita dalla pagina
 export const usePageState = <T,>(key: string | null, initial: T) => {
-  const [value, setValue] = useState<T>(() => key ? read(key, initial) : initial);
+  const [value, setValue] = useState<T>(() => key ? readPageState(key, initial) : initial);
   useEffect(() => { if (key) write(key, value); }, [key, value]);
   return [value, setValue] as const;
 };
@@ -39,7 +39,7 @@ export const useScrollMemory = (key: string, ready: boolean) => {
 
   useEffect(() => {
     if (!ready || restored.current) return;
-    const y = read(key + '_scroll', 0);
+    const y = readPageState(key + '_scroll', 0);
     // Un frame di attesa: le card devono essere già disegnate
     const frame = requestAnimationFrame(() => {
       window.scrollTo({ top: y, behavior: 'instant' });

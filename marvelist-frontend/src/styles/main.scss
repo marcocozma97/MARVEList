@@ -1793,6 +1793,81 @@ $stop-dot: 14px;
   gap: 12px;
 }
 
+.detail-step-btn {
+  position: fixed;
+  top: 50%;
+  z-index: 1030;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(18, 18, 18, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-light);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.25s var(--ease-spring), opacity 0.2s;
+  svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  &:hover:not(:disabled), &:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: translateY(-50%) scale(1.08);
+    outline: none;
+  }
+  &:disabled { opacity: 0.25; cursor: default; }
+}
+.detail-step-prev { left: max(18px, env(safe-area-inset-left)); }
+.detail-step-next { right: max(18px, env(safe-area-inset-right)); }
+.detail-step-label {
+  position: absolute;
+  top: 50%;
+  max-width: 220px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+}
+.detail-step-prev .detail-step-label { left: calc(100% + 10px); }
+.detail-step-next .detail-step-label { right: calc(100% + 10px); }
+.detail-step-btn:hover .detail-step-label, .detail-step-btn:focus-visible .detail-step-label { opacity: 1; }
+
+@media (max-width: 1199px) {
+  .detail-step {
+    position: fixed;
+    left: 50%;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 1030;
+    display: flex;
+    gap: 14px;
+    transform: translateX(-50%);
+  }
+  .detail-step-btn {
+    position: static;
+    width: 48px;
+    height: 48px;
+    transform: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    svg { width: 20px; height: 20px; }
+    &:hover:not(:disabled), &:focus-visible { transform: scale(1.06); }
+  }
+  .detail-step-label { display: none; }
+}
+
 .detail-body { display: flex; gap: 32px; }
 
 .detail-poster-wrap { flex-shrink: 0; width: 280px; }
@@ -5281,7 +5356,8 @@ $jv-blue: #38bdf8;
 .spoiler-gate {
   position: relative;
   overflow: hidden;
-  margin: 0 0 22px;
+  width: 100%;
+  margin: 22px 0 0;
   padding: 34px 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(var(--later-rgb), 0.4);
@@ -5309,10 +5385,23 @@ $jv-blue: #38bdf8;
   box-shadow: 0 0 0 8px rgba(var(--later-rgb), 0.12), 0 0 30px rgba(var(--later-rgb), 0.35);
   animation: gate-pulse 2.4s ease-in-out infinite;
 }
-.spoiler-gate-title { margin: 4px 0 0; font-size: clamp(1.9rem, 6vw, 2.8rem); color: var(--later); letter-spacing: 2px; text-transform: uppercase; }
-.spoiler-gate-text { margin: 0; max-width: 520px; color: #d6d6d6; line-height: 1.6; }
-.spoiler-gate-seen { margin: 0; font-size: 0.85rem; color: #9ff0bf; }
-.spoiler-gate .btn-marvel { margin-top: 6px; }
+.spoiler-gate-title { display: block; margin: 4px 0 0; font-family: 'Anton', sans-serif; font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.1; color: var(--later); letter-spacing: 2px; text-transform: uppercase; }
+.spoiler-gate-text { display: block; margin: 0; max-width: 520px; color: #d6d6d6; line-height: 1.6; }
+.spoiler-gate-seen { display: block; margin: 0; font-size: 0.85rem; color: #9ff0bf; }
+.spoiler-gate.is-locked {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  &:hover, &:focus-visible {
+    border-color: rgba(var(--later-rgb), 0.85);
+    box-shadow: 0 0 34px rgba(var(--later-rgb), 0.22);
+    transform: translateY(-2px);
+    outline: none;
+  }
+  &:hover .spoiler-gate-cta, &:focus-visible .spoiler-gate-cta { filter: brightness(1.12); }
+}
+.spoiler-gate-cta { margin-top: 6px; pointer-events: none; }
 
 @keyframes gate-pulse {
   0%, 100% { box-shadow: 0 0 0 8px rgba(var(--later-rgb), 0.12), 0 0 30px rgba(var(--later-rgb), 0.35); }

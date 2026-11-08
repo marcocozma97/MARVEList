@@ -148,6 +148,15 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
   const remaining = MAX_COMMENT_LENGTH - text.length;
   const showGate = isAuthenticated && !revealed && (count ?? 0) > 0;
 
+  const gateContent = (
+    <>
+      <span className="spoiler-gate-icon" aria-hidden="true">!</span>
+      <span className="spoiler-gate-title">Spoiler alert!</span>
+      <span className="spoiler-gate-text">{GATE_TEXT[kind]}</span>
+      {seen && <span className="spoiler-gate-seen">✔ Risulta che l'hai già visto</span>}
+    </>
+  );
+
   return (
     <section className="community" aria-labelledby="community-title">
       <div className="community-head">
@@ -157,23 +166,14 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
         )}
       </div>
 
-      <div className="spoiler-gate" role="region" aria-labelledby={`gate-${mediaId}-${episode ?? 'all'}`}>
-        <span className="spoiler-gate-icon" aria-hidden="true">!</span>
-        <h3 id={`gate-${mediaId}-${episode ?? 'all'}`} className="spoiler-gate-title">Spoiler alert!</h3>
-        <p className="spoiler-gate-text">{GATE_TEXT[kind]}</p>
-        {isAuthenticated && seen && <p className="spoiler-gate-seen">✔ Risulta che l'hai già visto</p>}
-        {showGate && (
-          <button type="button" className="btn-marvel btn-inline btn-lg-pill" onClick={reveal}>
-            Ho visto, mostra {count === 1 ? 'il commento' : `i ${count} commenti`}
-          </button>
-        )}
-      </div>
-
       {!isAuthenticated ? (
-        <div className="community-login">
-          <p><strong>Unisciti alla discussione.</strong> Accedi per leggere i commenti degli altri fan e lasciare il tuo.</p>
-          <Link to="/login" className="btn-marvel btn-inline btn-sm-pill">Accedi</Link>
-        </div>
+        <>
+          <div className="community-login">
+            <p><strong>Unisciti alla discussione.</strong> Accedi per leggere i commenti degli altri fan e lasciare il tuo.</p>
+            <Link to="/login" className="btn-marvel btn-inline btn-sm-pill">Accedi</Link>
+          </div>
+          <div className="spoiler-gate">{gateContent}</div>
+        </>
       ) : (
         <>
           <form className={`cm-composer ${spoiler ? 'is-spoiler' : ''}`} onSubmit={send}>
@@ -232,6 +232,17 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
               {sentNote && <p className="save-note" role="status">{sentNote}</p>}
             </div>
           </form>
+
+          {showGate ? (
+            <button type="button" className="spoiler-gate is-locked" onClick={reveal}>
+              {gateContent}
+              <span className="btn-marvel btn-inline btn-lg-pill spoiler-gate-cta">
+                Ho visto, sblocca {count === 1 ? 'il commento' : `i ${count} commenti`}
+              </span>
+            </button>
+          ) : (
+            <div className="spoiler-gate">{gateContent}</div>
+          )}
 
           {count === null ? (
             <div className="cm-loading" aria-busy="true"><span /><span /></div>

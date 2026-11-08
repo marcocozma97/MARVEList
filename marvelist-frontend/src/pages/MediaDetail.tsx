@@ -10,6 +10,8 @@ import ShieldRating from '../components/ShieldRating';
 import MediaPoster from '../components/MediaPoster';
 import Community from '../components/Community';
 import { isUpcoming, releaseLabel } from '../utils/upcoming';
+import { matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
+import { readPageState } from '../hooks/usePageMemory';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -30,6 +32,11 @@ const MediaDetail = () => {
   const [isSavingMinutes, setIsSavingMinutes] = useState(false);
   const [saveNote, setSaveNote] = useState<string | null>(null);
   const [episodeRatings, setEpisodeRatings] = useState<Record<number, number>>({});
+  const [catalog, setCatalog] = useState<MediaItem[]>([]);
+
+  useEffect(() => {
+    mediaService.getAllMedia().then(setCatalog).catch(() => setCatalog([]));
+  }, []);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -87,15 +94,31 @@ const MediaDetail = () => {
     else navigate('/timeline');
   }, [navigate]);
 
+  const timelineOrder = readPageState<VisionOrder>('timeline_filter', 'MCU');
+  const order: VisionOrder = dbMedia && !matchesVisionOrder(dbMedia, timelineOrder) ? dbMedia.visionOrder : timelineOrder;
+  const sequence = sortByViewingOrder(catalog.filter(m => matchesVisionOrder(m, order)));
+  const position = dbMedia ? sequence.findIndex(m => m.id === dbMedia.id) : -1;
+  const prevMedia = position > 0 ? sequence[position - 1] : null;
+  const nextMedia = position >= 0 && position < sequence.length - 1 ? sequence[position + 1] : null;
+
+  const goToMedia = useCallback((target: MediaItem | null) => {
+    if (!target) return;
+    navigate(`/media/${target.id}`, { replace: true });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [navigate]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const typing = !!target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
-      if (e.key === 'Escape' && !typing) close();
+      if (typing) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') goToMedia(prevMedia);
+      else if (e.key === 'ArrowRight') goToMedia(nextMedia);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [close]);
+  }, [close, goToMedia, prevMedia, nextMedia]);
 
   if (isLoading) {
     return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
@@ -212,6 +235,31 @@ const MediaDetail = () => {
 
       <div className="container detail-container">
         <section className="detail-panel" aria-labelledby="detail-title">
+
+          {position >= 0 && (
+            <nav className="detail-step" aria-label={`Timeline ${VISION_ORDER_LABELS[order]}`}>
+              <button
+                type="button"
+                className="detail-step-btn detail-step-prev"
+                onClick={() => goToMedia(prevMedia)}
+                disabled={!prevMedia}
+                aria-label={prevMedia ? `Titolo precedente: ${prevMedia.title}` : 'Nessun titolo precedente'}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                {prevMedia && <span className="detail-step-label">{prevMedia.title}</span>}
+              </button>
+              <button
+                type="button"
+                className="detail-step-btn detail-step-next"
+                onClick={() => goToMedia(nextMedia)}
+                disabled={!nextMedia}
+                aria-label={nextMedia ? `Titolo successivo: ${nextMedia.title}` : 'Nessun titolo successivo'}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                {nextMedia && <span className="detail-step-label">{nextMedia.title}</span>}
+              </button>
+            </nav>
+          )}
 
           {/* In alto a destra: cerchio "visto" e X per tornare indietro */}
           <div className="detail-top-actions">
