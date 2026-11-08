@@ -58,12 +58,6 @@ const LockIcon = () => (
   </svg>
 );
 
-const ChevronIcon = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 15l6-6 6 6" />
-  </svg>
-);
-
 interface ReplyFormProps {
   initialText: string;
   onSend: (text: string, spoiler: boolean) => Promise<boolean>;
@@ -171,8 +165,8 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && open && comments === null) fetchComments();
-  }, [isAuthenticated, open, comments, fetchComments]);
+    if (isAuthenticated && (open || seen) && (count ?? 0) > 0 && comments === null) fetchComments();
+  }, [isAuthenticated, open, seen, count, comments, fetchComments]);
 
   const autoGrow = () => {
     const el = textarea.current;
@@ -201,9 +195,15 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
       setSpoiler(false);
       setGif(null);
       requestAnimationFrame(autoGrow);
+      const showsList = open || seen || !count;
       setCount(c => (c ?? 0) + 1);
-      if (comments) setComments([created, ...comments]);
-      setSentNote(open ? 'Commento pubblicato!' : 'Commento pubblicato! Apri i commenti qui sotto per vederlo insieme agli altri.');
+      if (!count) {
+        setOpen(true);
+        setComments([created]);
+      } else if (comments) {
+        setComments([created, ...comments]);
+      }
+      setSentNote(showsList ? 'Commento pubblicato!' : 'Commento pubblicato! Premi il pulsante qui sotto per vederlo insieme agli altri.');
       window.setTimeout(() => setSentNote(null), 4000);
     } catch (err) {
       setFormError(errorMessage(err, 'Impossibile pubblicare il commento. Riprova.'));
@@ -273,7 +273,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
         <span className="spoiler-gate-title">Spoiler alert</span>
         <span className="spoiler-gate-text">
           {GATE_TEXT[kind]}
-          {seen && <span className="spoiler-gate-seen"> · ✔ Risulta che l'hai già visto</span>}
         </span>
       </span>
     </>
@@ -355,7 +354,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
             <p><strong>Unisciti alla discussione.</strong> Accedi per leggere i commenti degli altri fan e lasciare il tuo.</p>
             <Link to="/login" className="btn-marvel btn-inline btn-sm-pill">Accedi</Link>
           </div>
-          <div className="spoiler-gate">{gateCopy}</div>
         </>
       ) : (
         <>
@@ -416,28 +414,23 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
             </div>
           </form>
 
-          <button
-            type="button"
-            className={`spoiler-gate is-locked ${open ? 'is-open' : ''}`}
-            onClick={() => setOpen(v => !v)}
-            aria-expanded={open}
-            aria-controls={`cm-list-${mediaId}-${episode ?? 'all'}`}
-          >
-            {gateCopy}
-            <span className="spoiler-gate-cta">
-              {open ? <ChevronIcon /> : <LockIcon />}
-              {open ? 'Nascondi i commenti' : count ? `Mostra ${count === 1 ? 'il commento' : `${count} commenti`}` : 'Mostra i commenti'}
-            </span>
-          </button>
-
-          {!open ? null : count === 0 ? (
+          {count === null ? (
+            <div className="cm-loading" aria-busy="true"><span /><span /></div>
+          ) : count === 0 ? (
             <div className="empty-box cm-empty">Nessun commento ancora: scrivi il primo!</div>
+          ) : !open && !seen ? (
+            <button type="button" className="spoiler-gate is-locked" onClick={() => setOpen(true)}>
+              {gateCopy}
+              <span className="spoiler-gate-cta">
+                <LockIcon /> Mostra {count === 1 ? 'il commento' : `${count} commenti`}
+              </span>
+            </button>
           ) : listError ? (
             <div className="alert-marvel">{listError} <button type="button" className="btn-chip ms-2" onClick={retry}>Riprova</button></div>
           ) : comments === null ? (
             <div className="cm-loading" aria-busy="true"><span /><span /></div>
           ) : (
-            <ul className="cm-list" id={`cm-list-${mediaId}-${episode ?? 'all'}`}>
+            <ul className="cm-list">
               {comments.map(c => (
                 <li key={c.id} className="cm-thread">
                   {renderComment(c, c.id)}

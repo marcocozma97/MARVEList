@@ -472,7 +472,7 @@ const MediaDetail = () => {
           </div>
         </div>
 
-        <Community key={dbMedia.id} mediaId={dbMedia.id} kind={isFilm ? 'film' : 'season'} seen={!!progress?.seen} />
+        <Community key={dbMedia.id} mediaId={dbMedia.id} kind={isFilm ? 'film' : 'season'} seen={!!progress?.seen || (!isFilm && allEpisodesSeen)} />
       </div>
     </div>
   );

@@ -523,11 +523,15 @@ button:not(:disabled):active { transform: scale(0.97); }
   .site-nav-jairvis { margin: 4px 0 0; text-align: center; padding: 11px 16px; }
 
   .site-nav-user {
-    margin: 10px 0 0;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-    justify-content: space-between;
+    order: -1;
+    margin: 0 0 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
   }
+  .site-nav-user .site-nav-profile { flex: 1 1 auto; }
   .site-nav-profile { padding: 4px 16px 4px 4px; }
   .site-nav-menu > .btn-marvel { margin-top: 8px; }
 }
@@ -5359,7 +5363,6 @@ $jv-blue: #38bdf8;
 .spoiler-gate-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .spoiler-gate-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: var(--later); }
 .spoiler-gate-text { font-size: 0.88rem; color: #d6d6d6; line-height: 1.45; }
-.spoiler-gate-seen { color: #9ff0bf; white-space: nowrap; }
 .spoiler-gate-cta {
   flex-shrink: 0;
   display: inline-flex;
@@ -5373,11 +5376,6 @@ $jv-blue: #38bdf8;
   font-weight: 700;
   white-space: nowrap;
   transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
-}
-.spoiler-gate.is-locked.is-open {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.025);
-  .spoiler-gate-cta { background: rgba(255, 255, 255, 0.08); color: #fff; }
 }
 .spoiler-gate.is-locked {
   cursor: pointer;
