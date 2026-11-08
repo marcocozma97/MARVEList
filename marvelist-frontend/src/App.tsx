@@ -17,6 +17,7 @@ import JairvisChat from './components/JairvisChat';
 import ScrollTopButton from './components/ScrollTopButton';
 import Jairvis from './pages/Jairvis';
 import MediaDetail from './pages/MediaDetail';
+import EpisodeDetail from './pages/EpisodeDetail';
 import MarathonForm from './pages/MarathonForm';
 import MarathonDetail from './pages/MarathonDetail';
 import InfinityIntro from './components/InfinityIntro';
@@ -53,6 +54,7 @@ const Shell = () => {
           <Route path="/news" element={<News />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/media/:id" element={<MediaDetail />} />
+          <Route path="/media/:id/episodes/:episode" element={<EpisodeDetail />} />
           <Route path="/jairvis" element={<Jairvis />} />
           <Route path="/marathons/new" element={<MarathonForm />} />
           <Route path="/marathons/:id" element={<MarathonDetail />} />

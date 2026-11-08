@@ -107,6 +107,16 @@ export const mediaService = {
     return response.data;
   },
 
+  getEpisodeRatings: async (mediaId: number): Promise<Record<number, number>> => {
+    const response = await api.get(`/media/${mediaId}/episode-ratings`);
+    return response.data;
+  },
+
+  rateEpisode: async (mediaId: number, episode: number, rating: number | null): Promise<Record<number, number>> => {
+    const response = await api.put(`/media/${mediaId}/episodes/${episode}/rating`, { rating });
+    return response.data;
+  },
+
   // Salva l'ID, la locandina (ed eventualmente durata/episodi) nel database
   syncTmdbData: async (id: number, tmdbId: number, posterPath: string, extra?: { runtime?: number; episodes?: number }): Promise<void> => {
     await api.put(`/media/${id}/sync`, null, {

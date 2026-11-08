@@ -2,9 +2,11 @@ package com.marvelist.backend.services;
 
 import com.marvelist.backend.dto.ProgressRequest;
 import com.marvelist.backend.dto.ProgressResponse;
+import com.marvelist.backend.entities.EpisodeRating;
 import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.entities.UserProgress;
+import com.marvelist.backend.repositories.EpisodeRatingRepository;
 import com.marvelist.backend.repositories.MediaRepository;
 import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.UserRepository;
@@ -15,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,6 +30,7 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final UserRepository userRepository;
     private final UserProgressRepository progressRepository;
+    private final EpisodeRatingRepository episodeRatingRepository;
 
     public List<Media> getAllMedia() {
         return mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc();
@@ -228,15 +233,44 @@ public class MediaService {
 
     @Transactional
     public ProgressResponse updateRating(String userEmail, Long mediaId, Double rating) {
-        if (rating != null && (rating < 0.5 || rating > 10 || rating * 2 != Math.floor(rating * 2))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il voto deve andare da 0.5 a 10, a passi di 0.5");
-        }
+        requireValidRating(rating);
         User user = findUser(userEmail);
         Media media = findMedia(mediaId);
         UserProgress progress = findOrCreateProgress(user, media);
         progress.setRating(rating);
         progressRepository.save(progress);
         return toResponse(user, media, progress);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Integer, Double> getEpisodeRatings(String userEmail, Long mediaId) {
+        User user = findUser(userEmail);
+        Media media = findMedia(mediaId);
+        return episodeRatingRepository.findAllByUserAndMedia(user, media).stream()
+                .collect(Collectors.toMap(EpisodeRating::getEpisodeNumber, EpisodeRating::getRating, (a, b) -> b, TreeMap::new));
+    }
+
+    @Transactional
+    public Map<Integer, Double> rateEpisode(String userEmail, Long mediaId, Integer episode, Double rating) {
+        requireValidRating(rating);
+        User user = findUser(userEmail);
+        Media media = findMedia(mediaId);
+        requireReleased(media);
+        if (!"SERIE_TV".equals(media.getType()) || episode == null || episode < 1
+                || (media.getEpisodes() != null && episode > media.getEpisodes())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Episodio non valido");
+        }
+
+        var existing = episodeRatingRepository.findByUserAndMediaAndEpisodeNumber(user, media, episode);
+        if (rating == null) {
+            existing.ifPresent(episodeRatingRepository::delete);
+        } else {
+            EpisodeRating vote = existing.orElseGet(() -> EpisodeRating.builder().user(user).media(media).episodeNumber(episode).build());
+            vote.setRating(rating);
+            episodeRatingRepository.save(vote);
+        }
+        episodeRatingRepository.flush();
+        return getEpisodeRatings(userEmail, mediaId);
     }
 
     // Salva i dati trovati su TMDB (durata ed episodi solo se mancano: quelli del JSON hanno la precedenza)
@@ -271,6 +305,12 @@ public class MediaService {
 
     private Set<Integer> allEpisodes(Media media) {
         return IntStream.rangeClosed(1, media.getEpisodes()).boxed().collect(Collectors.toSet());
+    }
+
+    private static void requireValidRating(Double rating) {
+        if (rating != null && (rating < 0.5 || rating > 10 || rating * 2 != Math.floor(rating * 2))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il voto deve andare da 0.5 a 10, a passi di 0.5");
+        }
     }
 
     private static void requireReleased(Media media) {

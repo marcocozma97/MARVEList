@@ -31,7 +31,28 @@ export interface TmdbDetails {
   videos?: { results?: TmdbVideo[] };
 }
 
+export interface TmdbEpisode {
+  name?: string;
+  overview?: string;
+  still_path: string | null;
+  air_date?: string;
+  runtime?: number | null;
+  vote_average?: number;
+}
+
 export const tmdbService = {
+  getEpisode: async (tmdbId: number, season: number, episode: number): Promise<TmdbEpisode | null> => {
+    const url = `${TMDB_BASE_URL}/tv/${tmdbId}/season/${season}/episode/${episode}`;
+    try {
+      const it = (await axios.get(url, { params: { api_key: TMDB_API_KEY, language: 'it-IT' } })).data as TmdbEpisode;
+      if (it.overview?.trim()) return it;
+      const en = (await axios.get(url, { params: { api_key: TMDB_API_KEY, language: 'en-US' } })).data as TmdbEpisode;
+      return { ...it, overview: en.overview, name: it.name && !/^Episodio \d+$/i.test(it.name) ? it.name : en.name };
+    } catch {
+      return null;
+    }
+  },
+
   getDetails: async (tmdbId: number, type: MediaType): Promise<TmdbDetails> => {
     const endpoint = type === 'FILM' ? 'movie' : 'tv';
     const response = await axios.get(`${TMDB_BASE_URL}/${endpoint}/${tmdbId}`, {

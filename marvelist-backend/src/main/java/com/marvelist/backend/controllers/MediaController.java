@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/media")
@@ -101,6 +102,17 @@ public class MediaController {
     @PutMapping("/{mediaId}/rating")
     public ResponseEntity<ProgressResponse> updateRating(@PathVariable Long mediaId, @RequestBody RatingRequest request, Authentication authentication) {
         return ResponseEntity.ok(mediaService.updateRating(authentication.getName(), mediaId, request.getRating()));
+    }
+
+    @GetMapping("/{mediaId}/episode-ratings")
+    public ResponseEntity<Map<Integer, Double>> getEpisodeRatings(@PathVariable Long mediaId, Authentication authentication) {
+        return ResponseEntity.ok(mediaService.getEpisodeRatings(authentication.getName(), mediaId));
+    }
+
+    @PutMapping("/{mediaId}/episodes/{episode}/rating")
+    public ResponseEntity<Map<Integer, Double>> rateEpisode(@PathVariable Long mediaId, @PathVariable Integer episode,
+                                                            @RequestBody RatingRequest request, Authentication authentication) {
+        return ResponseEntity.ok(mediaService.rateEpisode(authentication.getName(), mediaId, episode, request.getRating()));
     }
 
     @PutMapping("/{id}/sync")

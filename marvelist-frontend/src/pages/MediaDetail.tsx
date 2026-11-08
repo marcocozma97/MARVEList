@@ -8,6 +8,7 @@ import { POSTER_PLACEHOLDER } from '../utils/poster';
 import { shortenOverview } from '../utils/progress';
 import ShieldRating from '../components/ShieldRating';
 import MediaPoster from '../components/MediaPoster';
+import Community from '../components/Community';
 import { isUpcoming, releaseLabel } from '../utils/upcoming';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
@@ -28,6 +29,7 @@ const MediaDetail = () => {
   const progressRequest = useRef(0); // Click veloci: applichiamo solo la risposta dell'ultima richiesta
   const [isSavingMinutes, setIsSavingMinutes] = useState(false);
   const [saveNote, setSaveNote] = useState<string | null>(null);
+  const [episodeRatings, setEpisodeRatings] = useState<Record<number, number>>({});
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -41,6 +43,9 @@ const MediaDetail = () => {
           mediaService.getProgress(media.id)
             .then(p => { setProgress(p); setMinutes(p.minutesWatched); })
             .catch(() => setProgress(EMPTY_PROGRESS(media.id)));
+          if (media.type === 'SERIE_TV') {
+            mediaService.getEpisodeRatings(media.id).then(setEpisodeRatings).catch(() => setEpisodeRatings({}));
+          }
         }
 
         let tmdbDetails: TmdbDetails | null = null;
@@ -83,7 +88,11 @@ const MediaDetail = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const typing = !!target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
+      if (e.key === 'Escape' && !typing) close();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [close]);
@@ -185,10 +194,6 @@ const MediaDetail = () => {
     } catch {
       if (request === progressRequest.current) setProgress(previous);
     }
-  };
-
-  const toggleEpisode = (ep: number) => {
-    saveEpisodes(watchedEpisodes.includes(ep) ? watchedEpisodes.filter(e => e !== ep) : [...watchedEpisodes, ep].sort((a, b) => a - b));
   };
 
   const toggleAllEpisodes = () => {
@@ -349,18 +354,24 @@ const MediaDetail = () => {
                         )}
                       </div>
                       {totalEpisodes > 0 ? (
-                        <div className="episodes-grid">
-                          {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map(ep => (
-                            <button
-                              key={ep}
-                              type="button"
-                              className={`ep-box ${watchedEpisodes.includes(ep) ? 'watched' : ''}`}
-                              onClick={() => toggleEpisode(ep)}
-                              aria-pressed={watchedEpisodes.includes(ep)}
-                              aria-label={`Episodio ${ep}`}
-                            >{ep}</button>
-                          ))}
-                        </div>
+                        <>
+                          <div className="episodes-grid">
+                            {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map(ep => {
+                              const isWatched = watchedEpisodes.includes(ep);
+                              const epRating = episodeRatings[ep];
+                              return (
+                                <Link
+                                  key={ep}
+                                  to={`/media/${dbMedia.id}/episodes/${ep}`}
+                                  className={`ep-box ${isWatched ? 'watched' : ''} ${epRating ? 'rated' : ''}`}
+                                  aria-label={`Episodio ${ep}${isWatched ? ', visto' : ''}${epRating ? `, voto ${epRating}` : ''}: apri la scheda`}
+                                  title={epRating ? `Il tuo voto: ${String(epRating).replace('.', ',')}` : `Apri l'episodio ${ep}`}
+                                >{ep}</Link>
+                              );
+                            })}
+                          </div>
+                          <p className="detail-hint episodes-hint">Apri un episodio per leggerne la sinossi, votarlo e commentarlo.</p>
+                        </>
                       ) : (
                         <p className="detail-hint">Numero di episodi non disponibile.</p>
                       )}
@@ -409,6 +420,8 @@ const MediaDetail = () => {
             )}
           </div>
         </div>
+
+        <Community key={dbMedia.id} mediaId={dbMedia.id} kind={isFilm ? 'film' : 'season'} seen={!!progress?.seen} />
       </div>
     </div>
   );

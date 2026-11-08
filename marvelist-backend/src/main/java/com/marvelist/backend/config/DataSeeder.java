@@ -82,7 +82,6 @@ public class DataSeeder implements CommandLineRunner {
                     media.setDoomsday(Boolean.TRUE.equals(item.getDoomsday()));
                     media.setTags(item.getTags() == null ? "" : String.join(",", item.getTags()));
                     if (tmdbId != null && !tmdbId.equals(media.getTmdbId())) {
-                        // ID corretto nel JSON: locandina, durata e data del vecchio abbinamento vanno riscaricate
                         if (media.getTmdbId() != null) {
                             media.setPosterPath(null);
                             media.setRuntime(null);
