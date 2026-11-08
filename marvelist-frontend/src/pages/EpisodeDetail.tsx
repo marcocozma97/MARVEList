@@ -202,10 +202,10 @@ const EpisodeDetail = () => {
                 <button type="button" className="btn-ghost episode-nav-btn" onClick={() => goTo(episode - 1)} disabled={episode <= 1}>
                   <span aria-hidden="true">←</span> Precedente
                 </button>
-                <Link to={`/media/${media.id}`} className="btn-ghost episode-nav-btn episode-nav-all">Tutti gli episodi</Link>
                 <button type="button" className="btn-ghost episode-nav-btn" onClick={() => goTo(episode + 1)} disabled={total > 0 && episode >= total}>
                   Successivo <span aria-hidden="true">→</span>
                 </button>
+                <Link to={`/media/${media.id}`} className="btn-ghost episode-nav-btn episode-nav-all">Tutti gli episodi</Link>
               </nav>
             </div>
           </div>

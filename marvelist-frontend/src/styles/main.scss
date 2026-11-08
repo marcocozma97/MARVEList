@@ -5098,7 +5098,7 @@ $jv-blue: #38bdf8;
   &:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 }
 .episode-nav .btn-marvel.episode-nav-btn { font-family: 'Roboto', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
-.episode-nav-all { margin-right: auto; }
+.episode-nav-all { margin-left: auto; }
 
 .community {
   margin-top: 44px;
@@ -5439,8 +5439,8 @@ $jv-blue: #38bdf8;
 
 @media (max-width: 767.98px) {
   .episode-still-wrap { width: 100%; }
-  .episode-nav-all { margin-right: 0; }
-  .episode-nav-btn { flex: 1 1 auto; justify-content: center; }
+  .episode-nav-btn { flex: 1 1 calc(50% - 5px); justify-content: center; }
+  .episode-nav-all { flex-basis: 100%; margin-left: 0; }
 }
 
 @media (max-width: 575.98px) {
