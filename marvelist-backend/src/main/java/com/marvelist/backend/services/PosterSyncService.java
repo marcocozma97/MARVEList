@@ -46,12 +46,14 @@ public class PosterSyncService {
     @Value("${marvelist.upcoming-refresh-minutes:60}")
     private long upcomingRefreshMinutes;
     private final AtomicBoolean upcomingRefreshRunning = new AtomicBoolean(false);
+    private final AtomicBoolean episodeRefreshRunning = new AtomicBoolean(false);
     private volatile Instant lastUpcomingRefresh = Instant.EPOCH;
 
     @EventListener(ApplicationReadyEvent.class)
     public void syncOnStartup() {
         CompletableFuture.runAsync(() -> {
             syncMissingData(); // comprende anche le date dei titoli in arrivo
+            refreshEpisodeDates();
             lastUpcomingRefresh = Instant.now();
         });
     }
@@ -60,13 +62,17 @@ public class PosterSyncService {
     @Scheduled(cron = "0 0 5 * * *")
     public void dailyUpcomingRefresh() {
         refreshUpcomingDates();
+        refreshEpisodeDates();
     }
 
     // Chiamato quando l'app carica il catalogo: se è passata più di un'ora dall'ultimo controllo
     // lo rifà in background, così una data appena annunciata compare al primo refresh dell'app
     public void refreshUpcomingIfStale() {
         if (Duration.between(lastUpcomingRefresh, Instant.now()).toMinutes() >= upcomingRefreshMinutes) {
-            CompletableFuture.runAsync(this::refreshUpcomingDates);
+            CompletableFuture.runAsync(() -> {
+                refreshUpcomingDates();
+                refreshEpisodeDates();
+            });
         }
     }
 
@@ -100,6 +106,55 @@ public class PosterSyncService {
         } finally {
             upcomingRefreshRunning.set(false);
         }
+    }
+
+    private void refreshEpisodeDates() {
+        if (!episodeRefreshRunning.compareAndSet(false, true)) return;
+        try {
+            LocalDate today = EpisodeSchedule.today();
+            List<Media> series = mediaRepository.findAll().stream()
+                    .filter(m -> m.getSortOrder() != null && "SERIE_TV".equals(m.getType()) && m.getTmdbId() != null)
+                    .filter(m -> EpisodeSchedule.needsRefresh(m, today))
+                    .toList();
+            int changed = 0;
+            for (Media media : series) {
+                try {
+                    String before = media.getEpisodeAirDates();
+                    fetchEpisodeDates(media);
+                    media.setEpisodesCheckedAt(Instant.now());
+                    mediaRepository.save(media);
+                    if (!java.util.Objects.equals(before, media.getEpisodeAirDates())) changed++;
+                    Thread.sleep(120);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                } catch (Exception e) {
+                    System.err.println("Date degli episodi non trovate per '" + media.getTitle() + "': " + e.getMessage());
+                }
+            }
+            if (changed > 0) System.out.println("--- DATE DEGLI EPISODI AGGIORNATE DA TMDB: " + changed + " STAGIONI ---");
+        } finally {
+            episodeRefreshRunning.set(false);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void fetchEpisodeDates(Media media) {
+        Matcher season = SEASON.matcher(media.getTitle());
+        String number = season.find() ? season.group(2) : "1";
+        String url = UriComponentsBuilder.fromUriString(baseUrl + "/tv/" + media.getTmdbId() + "/season/" + number)
+                .queryParam("api_key", apiKey).queryParam("language", "it-IT").toUriString();
+        Map<String, Object> details = restTemplate.getForObject(url, Map.class);
+        if (details == null || !(details.get("episodes") instanceof List<?> episodes)) return;
+        int size = Math.max(media.getEpisodes() == null ? 0 : media.getEpisodes(), episodes.size());
+        List<LocalDate> dates = new java.util.ArrayList<>(java.util.Collections.nCopies(size, (LocalDate) null));
+        for (Object item : episodes) {
+            if (!(item instanceof Map<?, ?> ep) || !(ep.get("episode_number") instanceof Number n)) continue;
+            int index = n.intValue() - 1;
+            if (index < 0 || index >= size) continue;
+            if (ep.get("air_date") instanceof String d && d.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) dates.set(index, LocalDate.parse(d));
+        }
+        media.setEpisodeAirDates(EpisodeSchedule.encode(dates));
     }
 
     private void syncMissingData() {

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import type { MediaItem } from '../services/mediaService';
 import MediaPoster from './MediaPoster';
-import { isUpcoming, releaseLabel } from '../utils/upcoming';
+import { isFullyOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 
 interface MediaCardProps {
   media: MediaItem;
@@ -52,7 +52,7 @@ const MediaCard = ({ media, seen = false, favorite = false, watchLater = false, 
         >♥</button>
       )}
 
-      {onToggleSeen && !upcoming && (
+      {onToggleSeen && !upcoming && isFullyOut(media) && (
         <button
           type="button"
           className={`seen-circle ${seen ? 'active' : ''}`}

@@ -67,7 +67,7 @@ const News = () => {
   );
 
   const upcoming = useMemo(() => catalog
-    .filter(isUpcoming)
+    .filter(m => isUpcoming(m))
     .sort((a, b) => availableFrom(a)!.localeCompare(availableFrom(b)!))
     .slice(0, UPCOMING_LIMIT), [catalog]);
 

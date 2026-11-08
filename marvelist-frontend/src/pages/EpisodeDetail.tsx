@@ -6,7 +6,7 @@ import { mediaService, type MediaItem, type MediaProgress } from '../services/me
 import { tmdbService, type TmdbDetails, type TmdbEpisode } from '../services/tmdbService';
 import ShieldRating from '../components/ShieldRating';
 import Community from '../components/Community';
-import { isUpcoming, releaseLabel } from '../utils/upcoming';
+import { episodeAirDate, formatDay, isEpisodeOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { seasonNumber, seriesTitle } from '../utils/community';
 
 const isEditable = (target: EventTarget | null) =>
@@ -81,6 +81,8 @@ const EpisodeDetail = () => {
   }
 
   const upcoming = isUpcoming(media);
+  const episodeOut = isEpisodeOut({ ...media, episodes: total || media.episodes }, episode);
+  const plannedDate = episodeAirDate(media, episode);
   const season = seasonNumber(media.title);
   const show = series.name || seriesTitle(media.title);
   const watched = progress?.watchedEpisodes.includes(episode) ?? false;
@@ -134,7 +136,7 @@ const EpisodeDetail = () => {
       <div className="container detail-container">
         <section className="detail-panel" aria-labelledby="episode-title">
           <div className="detail-top-actions">
-            {progress && !upcoming && (
+            {progress && episodeOut && (
               <button
                 type="button"
                 className={`seen-circle seen-circle-lg ${watched ? 'active' : ''}`}
@@ -168,6 +170,7 @@ const EpisodeDetail = () => {
               <div className="detail-chips">
                 {airDate && <span className="chip chip-accent">{airDate}</span>}
                 {upcoming && <span className="chip chip-upcoming">In arrivo · {releaseLabel(media)}</span>}
+                {!upcoming && !episodeOut && <span className="chip chip-upcoming">In arrivo{plannedDate ? ` · ${formatDay(plannedDate)}` : ''}</span>}
                 {details?.runtime ? <span className="chip">{details.runtime} min</span> : null}
                 {tmdbVote && <span className="chip chip-gold">★ {tmdbVote} TMDB</span>}
                 {watched && <span className="chip chip-success">✔ Visto</span>}
@@ -191,7 +194,14 @@ const EpisodeDetail = () => {
                 </div>
               )}
 
-              {progress && !upcoming && (
+              {!upcoming && !episodeOut && (
+                <div className="upcoming-note">
+                  <strong>Episodio in arrivo</strong>
+                  <span>{plannedDate ? `Esce ${formatDay(plannedDate, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}` : 'Non è ancora uscito'}: da quel giorno potrai segnarlo come visto e votarlo. Ti arriverà una notifica.</span>
+                </div>
+              )}
+
+              {progress && episodeOut && (
                 <div className="detail-block">
                   <h2 className="section-label">Il tuo voto all'episodio</h2>
                   <ShieldRating value={rating} onChange={rate} />

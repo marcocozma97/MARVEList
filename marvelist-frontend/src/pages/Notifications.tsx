@@ -8,10 +8,10 @@ import { getPosterUrl } from '../utils/poster';
 import Avatar from '../components/Avatar';
 
 const ICONS: Record<NotificationType, string> = {
-  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', NICKNAME: '✎'
+  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎'
 };
 
-const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7', 'RELEASE_1', 'RELEASED'];
+const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7', 'RELEASE_1', 'RELEASED', 'EPISODE_OUT'];
 
 const isMediaNotice = (n: NotificationItem) => MEDIA_TYPES.includes(n.type);
 
@@ -40,6 +40,7 @@ const message = (n: NotificationItem) => {
     case 'RELEASE_7': return <>Manca una settimana all'uscita di {title}</>;
     case 'RELEASE_1': return <>Domani esce {title}!</>;
     case 'RELEASED': return <>{title} è uscito! Apri la scheda e segnalo come visto quando l'hai guardato.</>;
+    case 'EPISODE_OUT': return <>È uscito l'episodio {n.episode} di {title}! Ora puoi segnarlo come visto.</>;
     case 'NICKNAME': return <>Sono passati 30 giorni: se vuoi, ora puoi cambiare di nuovo il tuo nickname.</>;
   }
 };
@@ -106,7 +107,7 @@ const Notifications = () => {
                     ) : (
                       <Avatar avatarId={n.actorAvatar} name={n.actorName} size={44} />
                     )}
-                    <span className={`notif-type notif-type-${n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
+                    <span className={`notif-type notif-type-${n.type === 'EPISODE_OUT' ? 'released' : n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
                   </span>
                   <span className="notif-body">
                     <span className="notif-text">{message(n)}</span>

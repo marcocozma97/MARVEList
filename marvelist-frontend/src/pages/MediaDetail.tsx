@@ -9,7 +9,7 @@ import { shortenOverview } from '../utils/progress';
 import ShieldRating from '../components/ShieldRating';
 import MediaPoster from '../components/MediaPoster';
 import Community from '../components/Community';
-import { isUpcoming, releaseLabel } from '../utils/upcoming';
+import { episodeAirDate, formatDay, isEpisodeOut, isFullyOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
 import { readPageState, writePageState } from '../hooks/usePageMemory';
 
@@ -137,6 +137,10 @@ const MediaDetail = () => {
   const totalEpisodes: number = dbMedia.episodes ?? tmdbData.number_of_episodes ?? 0;
   const watchedEpisodes = progress?.watchedEpisodes ?? [];
   const allEpisodesSeen = totalEpisodes > 0 && watchedEpisodes.length >= totalEpisodes;
+  const episodeMedia = { ...dbMedia, episodes: totalEpisodes || dbMedia.episodes };
+  const airedEpisodes = Array.from({ length: totalEpisodes }, (_, i) => i + 1).filter(ep => isEpisodeOut(episodeMedia, ep));
+  const fullyOut = isFilm || isFullyOut(episodeMedia);
+  const allAiredSeen = airedEpisodes.length > 0 && airedEpisodes.every(ep => watchedEpisodes.includes(ep));
 
   const hasOverview = Boolean(tmdbData.overview?.trim());
   const overview = hasOverview ? tmdbData.overview! : 'Trama non trovata.';
@@ -223,7 +227,7 @@ const MediaDetail = () => {
   };
 
   const toggleAllEpisodes = () => {
-    saveEpisodes(allEpisodesSeen ? [] : Array.from({ length: totalEpisodes }, (_, i) => i + 1));
+    saveEpisodes(allAiredSeen ? [] : airedEpisodes);
   };
 
   const minutesPercent = runtime ? Math.round((minutes / runtime) * 100) : 0;
@@ -266,7 +270,7 @@ const MediaDetail = () => {
 
           {/* In alto a destra: cerchio "visto" e X per tornare indietro */}
           <div className="detail-top-actions">
-            {progress && !upcoming && (
+            {progress && !upcoming && fullyOut && (
               <button
                 type="button"
                 className={`seen-circle seen-circle-lg ${progress.seen ? 'active' : ''}`}
@@ -394,13 +398,13 @@ const MediaDetail = () => {
                     <div className="detail-block">
                       <div className="section-label-row">
                         <h2 className="section-label">Episodi <span className="text-muted-soft">{watchedEpisodes.length}/{totalEpisodes || '?'}</span></h2>
-                        {totalEpisodes > 0 && (
+                        {airedEpisodes.length > 0 && (
                           <button
                             type="button"
-                            className={`btn-all-episodes ${allEpisodesSeen ? 'active' : ''}`}
+                            className={`btn-all-episodes ${allAiredSeen ? 'active' : ''}`}
                             onClick={toggleAllEpisodes}
-                            aria-pressed={allEpisodesSeen}
-                            title={allEpisodesSeen ? 'Segna tutti come non visti' : 'Segna tutti come visti'}
+                            aria-pressed={allAiredSeen}
+                            title={allAiredSeen ? 'Segna tutti come non visti' : fullyOut ? 'Segna tutti come visti' : 'Segna come visti tutti gli episodi già usciti'}
                           >ALL</button>
                         )}
                       </div>
@@ -410,14 +414,20 @@ const MediaDetail = () => {
                             {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map(ep => {
                               const isWatched = watchedEpisodes.includes(ep);
                               const epRating = episodeRatings[ep];
+                              const out = isEpisodeOut(episodeMedia, ep);
+                              const date = episodeAirDate(episodeMedia, ep);
+                              const outLabel = date ? `esce il ${formatDay(date)}` : 'non ancora uscito';
                               return (
                                 <Link
                                   key={ep}
                                   to={`/media/${dbMedia.id}/episodes/${ep}`}
-                                  className={`ep-box ${isWatched ? 'watched' : ''} ${epRating ? 'rated' : ''}`}
-                                  aria-label={`Episodio ${ep}${isWatched ? ', visto' : ''}${epRating ? `, voto ${epRating}` : ''}: apri la scheda`}
-                                  title={epRating ? `Il tuo voto: ${String(epRating).replace('.', ',')}` : `Apri l'episodio ${ep}`}
-                                >{ep}</Link>
+                                  className={`ep-box ${isWatched ? 'watched' : ''} ${epRating ? 'rated' : ''} ${out ? '' : 'is-unaired'}`}
+                                  aria-label={`Episodio ${ep}${out ? '' : `, ${outLabel}`}${isWatched ? ', visto' : ''}${epRating ? `, voto ${epRating}` : ''}: apri la scheda`}
+                                  title={!out ? `Episodio ${ep}: ${outLabel}` : epRating ? `Il tuo voto: ${String(epRating).replace('.', ',')}` : `Apri l'episodio ${ep}`}
+                                >
+                                  {ep}
+                                  {!out && date && <span className="ep-box-date">{formatDay(date, { day: 'numeric', month: 'short' })}</span>}
+                                </Link>
                               );
                             })}
                           </div>

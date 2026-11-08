@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,7 @@ public class MediaService {
         UserProgress progress = findOrCreateProgress(user, media);
 
         boolean nowSeen = !user.getSeenMedia().remove(media);
+        if (nowSeen) requireFullyOut(media);
         if (nowSeen) {
             user.getSeenMedia().add(media);
             if (media.getRuntime() != null) progress.setMinutesWatched(media.getRuntime());
@@ -159,8 +161,10 @@ public class MediaService {
             completed = media.getRuntime() != null && minutes >= media.getRuntime();
         } else {
             Integer total = media.getEpisodes();
+            LocalDate today = EpisodeSchedule.today();
             Set<Integer> episodes = request.getWatchedEpisodes() == null ? Set.of() : request.getWatchedEpisodes().stream()
                     .filter(ep -> ep != null && ep >= 1 && (total == null || ep <= total))
+                    .filter(ep -> EpisodeSchedule.isEpisodeOut(media, ep, today))
                     .collect(Collectors.toSet());
             progress.getWatchedEpisodes().clear();
             progress.getWatchedEpisodes().addAll(episodes);
@@ -183,7 +187,7 @@ public class MediaService {
         User user = findUser(userEmail);
         // I titoli in arrivo restano fuori dalla presa visione della fase
         List<Media> mediaList = mediaRepository.findAllById(mediaIds == null ? List.of() : mediaIds).stream()
-                .filter(m -> !Boolean.TRUE.equals(m.getUpcoming()))
+                .filter(m -> EpisodeSchedule.isFullyOut(m, EpisodeSchedule.today()))
                 .toList();
         List<UserProgress> progresses = mediaList.stream().map(media -> {
             UserProgress progress = findOrCreateProgress(user, media);
@@ -210,6 +214,11 @@ public class MediaService {
         User user = findUser(userEmail);
         Media media = findMedia(mediaId);
         UserProgress progress = findOrCreateProgress(user, media);
+        if (watched) {
+            requireReleased(media);
+            if (episode == null) requireFullyOut(media);
+            requireEpisodeOut(media, episode);
+        }
 
         if (episode == null) {
             if (watched) {
@@ -260,6 +269,7 @@ public class MediaService {
                 || (media.getEpisodes() != null && episode > media.getEpisodes())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Episodio non valido");
         }
+        requireEpisodeOut(media, episode);
 
         var existing = episodeRatingRepository.findByUserAndMediaAndEpisodeNumber(user, media, episode);
         if (rating == null) {
@@ -314,8 +324,21 @@ public class MediaService {
     }
 
     private static void requireReleased(Media media) {
-        if (Boolean.TRUE.equals(media.getUpcoming())) {
+        if (!EpisodeSchedule.isOut(media, EpisodeSchedule.today())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "\"" + media.getTitle() + "\" non è ancora uscito");
+        }
+    }
+
+    private static void requireFullyOut(Media media) {
+        if ("SERIE_TV".equals(media.getType()) && !EpisodeSchedule.isFullyOut(media, EpisodeSchedule.today())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Non tutti gli episodi di \"" + media.getTitle() + "\" sono già usciti: segna quelli che hai visto uno per uno");
+        }
+    }
+
+    private static void requireEpisodeOut(Media media, Integer episode) {
+        if (episode != null && !EpisodeSchedule.isEpisodeOut(media, episode, EpisodeSchedule.today())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'episodio " + episode + " non è ancora uscito");
         }
     }
 

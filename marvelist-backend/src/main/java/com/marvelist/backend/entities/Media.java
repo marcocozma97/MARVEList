@@ -51,4 +51,9 @@ public class Media {
     private Instant addedAt;
 
     private LocalDate releasedOn;
+
+    @Column(columnDefinition = "TEXT")
+    private String episodeAirDates;
+
+    private Instant episodesCheckedAt;
 }

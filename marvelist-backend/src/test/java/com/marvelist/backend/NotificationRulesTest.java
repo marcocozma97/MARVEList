@@ -6,6 +6,7 @@ import com.marvelist.backend.entities.Role;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.FollowRepository;
 import com.marvelist.backend.repositories.UserRepository;
+import com.marvelist.backend.services.EpisodeSchedule;
 import com.marvelist.backend.services.NotificationService;
 import com.marvelist.backend.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,46 @@ class NotificationRulesTest {
         assertEquals(List.of(NEW_MEDIA), NotificationService.dueFor(media, TODAY, ADDED_SINCE));
         media.setAddedAt(ADDED_SINCE.minus(Duration.ofDays(1)));
         assertEquals(List.of(), NotificationService.dueFor(media, TODAY, ADDED_SINCE));
+    }
+
+    private static Media airing(String dates, int episodes) {
+        return Media.builder().id(4L).title("Daredevil: Born Again Season 2").type("SERIE_TV").upcoming(false)
+                .episodes(episodes).episodeAirDates(dates).build();
+    }
+
+    @Test
+    void gliEpisodiNonAncoraUscitiNonSonoDisponibili() {
+        Media media = airing("2026-10-25,2026-11-01,2026-11-08,2026-11-15", 4);
+        assertTrue(EpisodeSchedule.isEpisodeOut(media, 3, TODAY));
+        assertFalse(EpisodeSchedule.isEpisodeOut(media, 4, TODAY));
+        assertFalse(EpisodeSchedule.isFullyOut(media, TODAY));
+        assertTrue(EpisodeSchedule.isFullyOut(media, TODAY.plusDays(7)));
+    }
+
+    @Test
+    void unEpisodioSenzaDataRestaBloccatoSeNeEsconoAltriDopo() {
+        Media media = airing("2026-11-01,2026-11-15,", 3);
+        assertFalse(EpisodeSchedule.isEpisodeOut(media, 3, TODAY));
+        assertTrue(EpisodeSchedule.isEpisodeOut(airing("2026-11-01,", 2), 2, TODAY));
+        assertTrue(EpisodeSchedule.isEpisodeOut(airing(null, 8), 8, TODAY));
+    }
+
+    @Test
+    void unaStagioneInArrivoSiSbloccaAllaDataDiUscita() {
+        Media media = Media.builder().id(5L).type("SERIE_TV").upcoming(true).releaseDate(TODAY).episodes(2)
+                .episodeAirDates("2026-11-08,2026-11-15").build();
+        assertTrue(EpisodeSchedule.isOut(media, TODAY));
+        assertFalse(EpisodeSchedule.isOut(media, TODAY.minusDays(1)));
+        assertTrue(EpisodeSchedule.isEpisodeOut(media, 1, TODAY));
+        assertFalse(EpisodeSchedule.isEpisodeOut(media, 2, TODAY));
+    }
+
+    @Test
+    void laNotificaArrivaPerGliEpisodiUscitiDaPocoTranneIlPrimo() {
+        Media media = airing("2026-11-01,2026-11-06,2026-11-08,2026-11-15", 4);
+        assertEquals(List.of(2, 3), NotificationService.episodesOut(media, TODAY));
+        assertEquals(List.of(3), NotificationService.episodesOut(media, TODAY.plusDays(2)));
+        assertEquals(List.of(), NotificationService.episodesOut(airing("2026-11-08", 1), TODAY));
     }
 
     private UserService userService(User user) {

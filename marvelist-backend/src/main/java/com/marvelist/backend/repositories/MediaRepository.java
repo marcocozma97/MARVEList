@@ -17,6 +17,11 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
     // I titoli senza posizione non sono più nel JSON e restano fuori dalla Timeline.
     List<Media> findAllBySortOrderIsNotNullOrderBySortOrderAsc();
 
+    @Query("select m from Media m where m.sortOrder is not null and m.type = 'SERIE_TV' and ("
+            + "m.episodeAirDates like concat('%', :d0, '%') or m.episodeAirDates like concat('%', :d1, '%') "
+            + "or m.episodeAirDates like concat('%', :d2, '%') or m.episodeAirDates like concat('%', :d3, '%'))")
+    List<Media> findSeriesAiringOn(@Param("d0") String d0, @Param("d1") String d1, @Param("d2") String d2, @Param("d3") String d3);
+
     @Query("select m from Media m where m.sortOrder is not null and (m.addedAt >= :addedSince or m.releasedOn >= :from "
             + "or (m.releaseDate is not null and m.releaseDate between :from and :to))")
     List<Media> findNotificationCandidates(@Param("addedSince") Instant addedSince, @Param("from") LocalDate from, @Param("to") LocalDate to);

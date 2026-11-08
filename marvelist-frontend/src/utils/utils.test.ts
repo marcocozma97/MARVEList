@@ -5,7 +5,7 @@ import { isValidEmail, isValidPassword } from './validation';
 import { groupByPhase, matchesVisionOrder, phaseRank } from './ordering';
 import { computeRank } from './rank';
 import { getProgressPercent, shortenOverview } from './progress';
-import { availableFrom } from './upcoming';
+import { availableFrom, isEpisodeOut, isFullyOut, isUpcoming } from './upcoming';
 
 let nextId = 1;
 const media = (overrides: Partial<MediaItem> = {}): MediaItem => ({
@@ -133,5 +133,29 @@ describe('titoli in arrivo', () => {
   it('senza data TMDB si assume il 31 dicembre', () => {
     expect(availableFrom(media({ upcoming: true, releaseYear: 2028 }))).toBe('2028-12-31');
     expect(availableFrom(media({ upcoming: false }))).toBeNull();
+  });
+});
+
+describe('episodi in uscita', () => {
+  const today = '2026-11-08';
+  const season = (episodeAirDates: string | null, episodes = 4, extra: Partial<MediaItem> = {}) =>
+    media({ type: 'SERIE_TV', runtime: null, episodes, episodeAirDates, ...extra });
+
+  it('una stagione in arrivo si sblocca alla data di uscita', () => {
+    expect(isUpcoming(media({ upcoming: true, releaseDate: '2026-11-09' }), today)).toBe(true);
+    expect(isUpcoming(media({ upcoming: true, releaseDate: today }), today)).toBe(false);
+  });
+
+  it('gli episodi futuri non sono ancora disponibili', () => {
+    const s = season('2026-10-25,2026-11-01,2026-11-08,2026-11-15');
+    expect(isEpisodeOut(s, 3, today)).toBe(true);
+    expect(isEpisodeOut(s, 4, today)).toBe(false);
+    expect(isFullyOut(s, today)).toBe(false);
+    expect(isFullyOut(s, '2026-11-15')).toBe(true);
+  });
+
+  it('senza date note tutti gli episodi di una stagione uscita sono disponibili', () => {
+    expect(isEpisodeOut(season(null), 4, today)).toBe(true);
+    expect(isEpisodeOut(season('2026-11-01,2026-11-15,', 3), 3, today)).toBe(false);
   });
 });

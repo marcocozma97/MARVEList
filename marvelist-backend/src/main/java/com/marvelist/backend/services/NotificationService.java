@@ -19,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,8 +32,8 @@ public class NotificationService {
     private static final int PAGE_SIZE = 60;
     private static final int SNIPPET = 90;
     private static final int RECENT_DAYS = 14;
-    private static final ZoneId ZONE = ZoneId.of("Europe/Rome");
-    private static final List<NotificationType> MEDIA_TYPES = List.of(NEW_MEDIA, RELEASE_30, RELEASE_7, RELEASE_1, RELEASED);
+    private static final List<NotificationType> MEDIA_TYPES = List.of(NEW_MEDIA, RELEASE_30, RELEASE_7, RELEASE_1, RELEASED, EPISODE_OUT);
+    private static final int EPISODE_DAYS = 3;
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
@@ -79,7 +78,7 @@ public class NotificationService {
         if (!generating.add(user.getId())) return;
         try {
             nicknameReminder(user);
-            mediaNotifications(user, LocalDate.now(ZONE));
+            mediaNotifications(user, EpisodeSchedule.today());
         } finally {
             generating.remove(user.getId());
         }
@@ -89,7 +88,7 @@ public class NotificationService {
         Instant changedAt = user.getNicknameChangedAt();
         if (changedAt == null || Boolean.TRUE.equals(user.getNicknameReminderSent())) return;
         if (Instant.now().isBefore(changedAt.plus(UserService.NICKNAME_COOLDOWN))) return;
-        notificationRepository.save(system(user, NICKNAME, null));
+        notificationRepository.save(system(user, NICKNAME, null, null));
         user.setNicknameReminderSent(true);
         userRepository.save(user);
     }
@@ -97,20 +96,40 @@ public class NotificationService {
     private void mediaNotifications(User user, LocalDate today) {
         Instant addedSince = Instant.now().minus(Duration.ofDays(RECENT_DAYS));
         List<Media> candidates = mediaRepository.findNotificationCandidates(addedSince, today.minusDays(RECENT_DAYS), today.plusDays(30));
-        if (candidates.isEmpty()) return;
+        List<Media> airing = mediaRepository.findSeriesAiringOn(today.toString(), today.minusDays(1).toString(),
+                today.minusDays(2).toString(), today.minusDays(EPISODE_DAYS).toString());
+        if (candidates.isEmpty() && airing.isEmpty()) return;
 
-        Map<Long, Set<NotificationType>> sent = new HashMap<>();
-        notificationRepository.findMediaKeys(user, candidates.stream().map(Media::getId).toList(), MEDIA_TYPES)
-                .forEach(row -> sent.computeIfAbsent((Long) row[0], k -> EnumSet.noneOf(NotificationType.class)).add((NotificationType) row[1]));
+        Set<Long> ids = new HashSet<>();
+        candidates.forEach(m -> ids.add(m.getId()));
+        airing.forEach(m -> ids.add(m.getId()));
+        Set<String> sent = new HashSet<>();
+        notificationRepository.findMediaKeys(user, ids, MEDIA_TYPES)
+                .forEach(row -> sent.add(row[0] + ":" + row[1] + ":" + row[2]));
 
         List<Notification> created = new ArrayList<>();
         for (Media media : candidates) {
-            Set<NotificationType> already = sent.getOrDefault(media.getId(), Set.of());
             for (NotificationType type : dueFor(media, today, addedSince)) {
-                if (!already.contains(type)) created.add(system(user, type, media));
+                if (sent.add(media.getId() + ":" + type + ":null")) created.add(system(user, type, media, null));
+            }
+        }
+        for (Media media : airing) {
+            for (Integer episode : episodesOut(media, today)) {
+                if (sent.add(media.getId() + ":" + EPISODE_OUT + ":" + episode)) created.add(system(user, EPISODE_OUT, media, episode));
             }
         }
         if (!created.isEmpty()) notificationRepository.saveAll(created);
+    }
+
+    public static List<Integer> episodesOut(Media media, LocalDate today) {
+        List<Integer> out = new ArrayList<>();
+        if (!EpisodeSchedule.isOut(media, today)) return out;
+        List<LocalDate> dates = EpisodeSchedule.dates(media);
+        for (int i = 1; i < dates.size(); i++) {
+            LocalDate date = dates.get(i);
+            if (date != null && !date.isAfter(today) && !date.isBefore(today.minusDays(EPISODE_DAYS))) out.add(i + 1);
+        }
+        return out;
     }
 
     public static List<NotificationType> dueFor(Media media, LocalDate today, Instant addedSince) {
@@ -133,12 +152,13 @@ public class NotificationService {
         return due;
     }
 
-    private static Notification system(User user, NotificationType type, Media media) {
+    private static Notification system(User user, NotificationType type, Media media, Integer episode) {
         return Notification.builder()
                 .recipient(user)
                 .actor(user)
                 .type(type)
                 .media(media)
+                .episodeNumber(episode)
                 .createdAt(Instant.now())
                 .build();
     }

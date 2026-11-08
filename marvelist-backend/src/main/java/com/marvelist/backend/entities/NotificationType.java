@@ -9,5 +9,6 @@ public enum NotificationType {
     RELEASE_7,
     RELEASE_1,
     RELEASED,
+    EPISODE_OUT,
     NICKNAME
 }

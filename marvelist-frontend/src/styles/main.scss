@@ -5814,6 +5814,15 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 }
 .notif-poster-empty { display: grid; place-items: center; font-size: 1.2rem; }
 
+.ep-box.is-unaired {
+  flex-direction: column;
+  gap: 1px;
+  border-style: dashed;
+  opacity: 0.55;
+  line-height: 1;
+}
+.ep-box-date { font-size: 0.56rem; font-weight: 600; letter-spacing: 0.2px; color: var(--text-muted); white-space: nowrap; }
+
 .nickname-backdrop { z-index: 1070; }
 .nickname-modal {
   width: min(420px, 100%);

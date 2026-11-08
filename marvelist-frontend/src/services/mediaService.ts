@@ -16,6 +16,7 @@ export interface MediaItem {
   releaseDate: string | null; // data di uscita dei titoli in arrivo (da TMDB), yyyy-mm-dd
   doomsday: boolean | null; // fa parte della Road to Doomsday
   tags: string | null;      // tag del JSON separati da virgola
+  episodeAirDates?: string | null;
 }
 
 // Progresso personale su un titolo (minuti/episodi visti, voto, stato)
