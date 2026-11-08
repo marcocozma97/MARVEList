@@ -24,9 +24,9 @@ const PLACEHOLDER: Record<CommunityKind, string> = {
 };
 
 const GATE_TEXT: Record<CommunityKind, string> = {
-  film: 'Prima di continuare assicurati di aver visto il film: i commenti della community potrebbero rivelarne la trama e il finale.',
-  season: "Prima di continuare assicurati di aver visto l'intera stagione: i commenti della community potrebbero rivelare cosa succede negli episodi.",
-  episode: 'Prima di continuare assicurati di aver visto questo episodio: i commenti della community potrebbero rivelarne la trama.'
+  film: 'Leggi i commenti della community solo se hai già visto il film: potrebbero rivelarne la trama e il finale.',
+  season: "Leggi i commenti della community solo se hai già visto l'intera stagione: potrebbero rivelare cosa succede negli episodi.",
+  episode: 'Leggi i commenti della community solo se hai già visto questo episodio: potrebbero rivelarne la trama.'
 };
 
 const gateKey = (mediaId: number, episode?: number | null) => `marvelist_spoiler_ok_${mediaId}_${episode ?? 'all'}`;
@@ -157,6 +157,18 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
         )}
       </div>
 
+      <div className="spoiler-gate" role="region" aria-labelledby={`gate-${mediaId}-${episode ?? 'all'}`}>
+        <span className="spoiler-gate-icon" aria-hidden="true">!</span>
+        <h3 id={`gate-${mediaId}-${episode ?? 'all'}`} className="spoiler-gate-title">Spoiler alert!</h3>
+        <p className="spoiler-gate-text">{GATE_TEXT[kind]}</p>
+        {isAuthenticated && seen && <p className="spoiler-gate-seen">✔ Risulta che l'hai già visto</p>}
+        {showGate && (
+          <button type="button" className="btn-marvel btn-inline btn-lg-pill" onClick={reveal}>
+            Ho visto, mostra {count === 1 ? 'il commento' : `i ${count} commenti`}
+          </button>
+        )}
+      </div>
+
       {!isAuthenticated ? (
         <div className="community-login">
           <p><strong>Unisciti alla discussione.</strong> Accedi per leggere i commenti degli altri fan e lasciare il tuo.</p>
@@ -225,17 +237,7 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
             <div className="cm-loading" aria-busy="true"><span /><span /></div>
           ) : count === 0 ? (
             <div className="empty-box cm-empty">Nessun commento ancora: scrivi il primo!</div>
-          ) : showGate ? (
-            <div className="spoiler-gate" role="region" aria-labelledby={`gate-${mediaId}-${episode ?? 'all'}`}>
-              <span className="spoiler-gate-icon" aria-hidden="true">!</span>
-              <h3 id={`gate-${mediaId}-${episode ?? 'all'}`} className="spoiler-gate-title">Attenzione: spoiler!</h3>
-              <p className="spoiler-gate-text">{GATE_TEXT[kind]}</p>
-              {seen && <p className="spoiler-gate-seen">✔ Risulta che l'hai già visto</p>}
-              <button type="button" className="btn-marvel btn-inline btn-lg-pill" onClick={reveal}>
-                Ho visto, mostra {count === 1 ? 'il commento' : `i ${count} commenti`}
-              </button>
-            </div>
-          ) : listError ? (
+          ) : showGate ? null : listError ? (
             <div className="alert-marvel">{listError} <button type="button" className="btn-chip ms-2" onClick={retry}>Riprova</button></div>
           ) : comments === null ? (
             <div className="cm-loading" aria-busy="true"><span /><span /></div>

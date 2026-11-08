@@ -5281,7 +5281,7 @@ $jv-blue: #38bdf8;
 .spoiler-gate {
   position: relative;
   overflow: hidden;
-  margin-top: 22px;
+  margin: 0 0 22px;
   padding: 34px 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(var(--later-rgb), 0.4);
@@ -5309,7 +5309,7 @@ $jv-blue: #38bdf8;
   box-shadow: 0 0 0 8px rgba(var(--later-rgb), 0.12), 0 0 30px rgba(var(--later-rgb), 0.35);
   animation: gate-pulse 2.4s ease-in-out infinite;
 }
-.spoiler-gate-title { margin: 4px 0 0; font-size: clamp(1.4rem, 4vw, 1.9rem); color: var(--later); letter-spacing: 1.5px; }
+.spoiler-gate-title { margin: 4px 0 0; font-size: clamp(1.9rem, 6vw, 2.8rem); color: var(--later); letter-spacing: 2px; text-transform: uppercase; }
 .spoiler-gate-text { margin: 0; max-width: 520px; color: #d6d6d6; line-height: 1.6; }
 .spoiler-gate-seen { margin: 0; font-size: 0.85rem; color: #9ff0bf; }
 .spoiler-gate .btn-marvel { margin-top: 6px; }
