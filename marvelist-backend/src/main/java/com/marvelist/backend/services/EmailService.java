@@ -82,6 +82,7 @@ public class EmailService {
 
         } catch (RestClientException | IOException e) {
             // Relay irraggiungibile, chiave errata, limite di Gmail raggiunto, ecc.: la registrazione viene annullata
+            System.err.println("Invio della mail di conferma fallito per '" + user.getEmail() + "': " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Non siamo riusciti a inviare la mail di conferma. Riprova tra qualche minuto.", e);
         }
