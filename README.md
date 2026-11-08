@@ -13,7 +13,7 @@ Il diario personale dell'Universo Marvel: ordine di visione, progressi, voti, ma
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
-**[Prova MARVEList online](https://marvelist.vercel.app)**
+**[Prova MARVEList online](https://marvelist-eta.vercel.app)**
 
 ![Home di MARVEList](docs/screenshots/home.png)
 
@@ -468,7 +468,7 @@ MARVEList gira su tre servizi, tutti sul piano gratuito:
 
 | Pezzo | Servizio | Indirizzo |
 | --- | --- | --- |
-| Frontend | [Vercel](https://vercel.com) | [marvelist.vercel.app](https://marvelist.vercel.app) |
+| Frontend | [Vercel](https://vercel.com) | [marvelist-eta.vercel.app](https://marvelist-eta.vercel.app) |
 | Backend | [Render](https://render.com), Web Service in Docker | [marvelist-backend.onrender.com](https://marvelist-backend.onrender.com/api/v1/news) |
 | Database | [Neon](https://neon.com), PostgreSQL | regione di Francoforte |
 
