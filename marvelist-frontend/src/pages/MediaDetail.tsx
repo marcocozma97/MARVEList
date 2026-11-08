@@ -11,7 +11,7 @@ import MediaPoster from '../components/MediaPoster';
 import Community from '../components/Community';
 import { isUpcoming, releaseLabel } from '../utils/upcoming';
 import { matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
-import { readPageState } from '../hooks/usePageMemory';
+import { readPageState, writePageState } from '../hooks/usePageMemory';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -103,9 +103,12 @@ const MediaDetail = () => {
 
   const goToMedia = useCallback((target: MediaItem | null) => {
     if (!target) return;
+    writePageState('timeline_filter', order);
+    writePageState('timeline_phases', [target.phase || 'Sconosciuta']);
+    writePageState('timeline_focus', target.id);
     navigate(`/media/${target.id}`, { replace: true });
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [navigate]);
+  }, [navigate, order]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

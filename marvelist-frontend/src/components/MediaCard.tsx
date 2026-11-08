@@ -22,7 +22,7 @@ const MediaCard = ({ media, seen = false, favorite = false, watchLater = false, 
   const upcoming = isUpcoming(media);
 
   return (
-    <article className={`media-card ${seen ? 'is-seen' : ''} ${upcoming ? 'is-upcoming' : ''} ${watchLater ? 'is-watch-later' : ''}`}>
+    <article data-media-id={media.id} className={`media-card ${seen ? 'is-seen' : ''} ${upcoming ? 'is-upcoming' : ''} ${watchLater ? 'is-watch-later' : ''}`}>
       <button type="button" className="media-card-open" onClick={open} aria-label={`Apri ${media.title}`}>
         <MediaPoster media={media} className="media-card-poster" />
         <span className="media-card-overlay" />

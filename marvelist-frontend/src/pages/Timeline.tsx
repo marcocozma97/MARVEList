@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigationType } from 'react-router-dom';
 import { useWatchState } from '../hooks/useWatchState';
-import { usePageState, useScrollMemory } from '../hooks/usePageMemory';
+import { readPageState, usePageState, useScrollMemory, writePageState } from '../hooks/usePageMemory';
 import PhaseList from '../components/PhaseList';
 import HeroCharacters from '../components/HeroCharacters';
 
@@ -18,8 +19,20 @@ const Timeline = () => {
   const watch = useWatchState();
   const { mediaList, isLoading, error } = watch;
 
+  const navigationType = useNavigationType();
+  const [focusId] = useState(() => navigationType === 'POP' ? readPageState<number | null>('timeline_focus', null) : null);
+  useEffect(() => { writePageState('timeline_focus', null); }, []);
+
   // Tornando da un titolo si riparte dal punto in cui si era, appena le card sono caricate
-  useScrollMemory('timeline', !isLoading);
+  useScrollMemory('timeline', !isLoading, focusId !== null);
+
+  useEffect(() => {
+    if (isLoading || focusId === null) return;
+    const frame = requestAnimationFrame(() => {
+      document.querySelector(`[data-media-id="${focusId}"]`)?.scrollIntoView({ block: 'center', behavior: 'instant' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isLoading, focusId]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragPercent, setDragPercent] = useState<number | null>(null);

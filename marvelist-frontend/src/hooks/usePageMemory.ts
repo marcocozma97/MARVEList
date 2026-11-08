@@ -15,24 +15,24 @@ export const readPageState = <T,>(key: string, fallback: T): T => {
   }
 };
 
-const write = (key: string, value: unknown) => {
+export const writePageState = (key: string, value: unknown) => {
   try { window.sessionStorage.setItem(PREFIX + key, JSON.stringify(value)); } catch { /* ignorato */ }
 };
 
 // Come useState, ma il valore sopravvive all'uscita dalla pagina
 export const usePageState = <T,>(key: string | null, initial: T) => {
   const [value, setValue] = useState<T>(() => key ? readPageState(key, initial) : initial);
-  useEffect(() => { if (key) write(key, value); }, [key, value]);
+  useEffect(() => { if (key) writePageState(key, value); }, [key, value]);
   return [value, setValue] as const;
 };
 
 // Salva lo scroll della finestra e lo ripristina quando si torna indietro (freccia del browser o pulsante "indietro")
-export const useScrollMemory = (key: string, ready: boolean) => {
+export const useScrollMemory = (key: string, ready: boolean, skip = false) => {
   const navigationType = useNavigationType();
-  const restored = useRef(navigationType !== 'POP'); // arrivando da un link si parte dall'alto
+  const restored = useRef(navigationType !== 'POP' || skip); // arrivando da un link si parte dall'alto
 
   useEffect(() => {
-    const onScroll = () => { if (restored.current) write(key + '_scroll', window.scrollY); };
+    const onScroll = () => { if (restored.current) writePageState(key + '_scroll', window.scrollY); };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, [key]);
