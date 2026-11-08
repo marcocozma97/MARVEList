@@ -23,6 +23,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     long countByRecipientAndReadFalse(User recipient);
 
+    @Query("select n.media.id, n.type from Notification n where n.recipient = :recipient and n.media.id in :ids and n.type in :types")
+    List<Object[]> findMediaKeys(@Param("recipient") User recipient, @Param("ids") Collection<Long> ids,
+                                 @Param("types") Collection<NotificationType> types);
+
     @Modifying
     @Query("update Notification n set n.read = true where n.recipient = :recipient and n.read = false")
     int markAllRead(@Param("recipient") User recipient);

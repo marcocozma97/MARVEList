@@ -12,6 +12,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,7 @@ public class DataSeeder implements CommandLineRunner {
             for (Media m : mediaRepository.findAll()) {
                 existingByKey.put(m.getTitle() + "|" + m.getReleaseYear(), m);
             }
+            boolean firstSeed = existingByKey.isEmpty();
 
             try (InputStream inputStream = new ClassPathResource("marvel_data.json").getInputStream()) {
                 List<MediaJsonDTO> jsonMediaList = objectMapper.readValue(inputStream, new TypeReference<List<MediaJsonDTO>>() {});
@@ -71,14 +74,19 @@ public class DataSeeder implements CommandLineRunner {
                         media = Media.builder()
                                 .title(item.getTitle())
                                 .releaseYear(item.getYear())
+                                .addedAt(firstSeed ? null : Instant.now())
                                 .build();
+                    }
+                    boolean nowUpcoming = Boolean.TRUE.equals(item.getInArrivo());
+                    if (Boolean.TRUE.equals(media.getUpcoming()) && !nowUpcoming && media.getReleasedOn() == null) {
+                        media.setReleasedOn(LocalDate.now());
                     }
                     media.setType(type);
                     media.setPhase(phaseStr);
                     media.setVisionOrder(visionOrder);
                     media.setSortOrder(index);
                     media.setEpisodes(item.getEpisodes());
-                    media.setUpcoming(Boolean.TRUE.equals(item.getInArrivo()));
+                    media.setUpcoming(nowUpcoming);
                     media.setDoomsday(Boolean.TRUE.equals(item.getDoomsday()));
                     media.setTags(item.getTags() == null ? "" : String.join(",", item.getTags()));
                     if (tmdbId != null && !tmdbId.equals(media.getTmdbId())) {

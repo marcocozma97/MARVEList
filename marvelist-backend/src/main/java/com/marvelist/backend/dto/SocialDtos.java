@@ -1,6 +1,7 @@
 package com.marvelist.backend.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public final class SocialDtos {
@@ -17,7 +18,8 @@ public final class SocialDtos {
 
     public record NotificationResponse(Long id, String type, Long actorId, String actorName, String actorAvatar,
                                        Long mediaId, String mediaTitle, Integer episode, Long commentId,
-                                       String snippet, boolean read, Instant createdAt) {}
+                                       String snippet, String mediaPoster, LocalDate releaseDate,
+                                       boolean read, Instant createdAt) {}
 
     public record UnreadCount(long count) {}
 }

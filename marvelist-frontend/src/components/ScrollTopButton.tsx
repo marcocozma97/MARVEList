@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 // Compare dopo circa una schermata e mezza di scorrimento (qualche fila di card o di accordion)
 const SHOW_AFTER_SCREENS = 1.5;
 
-// Pulsante "torna in cima": sta sopra il pulsante AI quando c'è, altrimenti al suo posto
-const ScrollTopButton = ({ aboveFab }: { aboveFab: boolean }) => {
+const ScrollTopButton = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ const ScrollTopButton = ({ aboveFab }: { aboveFab: boolean }) => {
   return (
     <button
       type="button"
-      className={`scroll-top ${visible ? 'is-visible' : ''} ${aboveFab ? 'above-fab' : ''}`}
+      className={`scroll-top ${visible ? 'is-visible' : ''}`}
       onClick={scrollToTop}
       aria-label="Torna in cima alla pagina"
       title="Torna in cima"

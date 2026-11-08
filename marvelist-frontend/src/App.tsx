@@ -13,7 +13,6 @@ import News from './pages/News';
 import Timeline from './pages/Timeline';
 import RoadTo from './pages/RoadTo';
 import Profile from './pages/Profile';
-import JairvisChat from './components/JairvisChat';
 import ScrollTopButton from './components/ScrollTopButton';
 import Jairvis from './pages/Jairvis';
 import MediaDetail from './pages/MediaDetail';
@@ -24,17 +23,17 @@ import UserProfile from './pages/UserProfile';
 import Notifications from './pages/Notifications';
 import InfinityIntro from './components/InfinityIntro';
 import { markIntroSeen, shouldShowIntro } from './utils/intro';
+import NicknameOnboarding from './components/NicknameOnboarding';
 
 const Shell = () => {
   const location = useLocation();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const profile = useSelector((state: RootState) => state.auth.profile);
   const hasNavbar = !HIDDEN_NAVBAR_PATHS.includes(location.pathname);
 
   // Intro delle Gemme: decide sessionStorage, lo stato serve solo a ridisegnare quando finisce
   const [, setIntroFinished] = useState(0);
   const showIntro = !['/login', '/register', '/verify'].includes(location.pathname) && shouldShowIntro(location.pathname);
-  // Mai nelle pagine d'ingresso (landing, login, register, verify): anche con un token rimasto salvato
-  const showJairvisFab = isAuthenticated && hasNavbar && !showIntro && location.pathname !== '/jairvis';
   const finishIntro = useCallback(() => {
     markIntroSeen();
     setIntroFinished(n => n + 1);
@@ -66,10 +65,9 @@ const Shell = () => {
         </Routes>
       </main>
 
-      {/* Solo per chi ha fatto l'accesso, e mai sopra l'intro iniziale della Timeline */}
-      {showJairvisFab && <JairvisChat />}
-      {/* In tutte le pagine, sopra il pulsante AI quando c'è */}
-      {!showIntro && <ScrollTopButton aboveFab={showJairvisFab} />}
+      {!showIntro && <ScrollTopButton />}
+
+      {isAuthenticated && hasNavbar && !showIntro && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
 
       {/* Intro iniziale: copre tutto, la Timeline intanto si carica sotto */}
       {showIntro && <InfinityIntro onDone={finishIntro} />}

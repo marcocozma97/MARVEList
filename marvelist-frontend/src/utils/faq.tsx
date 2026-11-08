@@ -69,7 +69,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('I titoli non ancora usciti contano?',
         <>No: i titoli "in arrivo" non contano come mancanti. Quando escono entrano nel conteggio e il grado si aggiorna da solo.</>),
       item('Posso cambiare nickname e immagine profilo?',
-        <>Sì, nel profilo: la matita accanto al nome cambia il nickname, toccando l'avatar scegli uno degli emblemi Marvel.</>),
+        <>Sì, nel profilo. Il nickname lo scegli al primo accesso e poi puoi cambiarlo con la matita accanto al nome <strong>una volta ogni 30 giorni</strong>: quando è di nuovo possibile ti arriva una notifica. L'immagine invece la cambi quando vuoi toccando l'avatar.</>),
     ],
   },
   {
@@ -91,7 +91,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('Posso mettere mi piace e rispondere ai commenti?',
         <>Sì: sotto ogni commento trovi il cuore e <strong>Rispondi</strong>. Le risposte compaiono sotto il commento e possono essere segnate come spoiler.</>),
       item('Dove vedo le notifiche?',
-        <>Nella campanella in alto, accanto al profilo: ti avvisa quando qualcuno inizia a seguirti, mette mi piace a un tuo commento o ti risponde.</>),
+        <>Nella campanella in alto, accanto al profilo: ti avvisa quando qualcuno inizia a seguirti, mette mi piace a un tuo commento o ti risponde, quando arriva un nuovo titolo nel catalogo e quando ne esce uno. Per i titoli con una data di uscita ti ricorda anche un mese, una settimana e un giorno prima.</>),
       item('Le mie maratone sono visibili agli altri?',
         <>Solo se lo scegli tu: quando crei o modifichi una maratona puoi impostarla come <strong>Privata</strong> (la vedi solo tu) o <strong>Pubblica</strong> (gli altri vedono nome e titoli, non i tuoi progressi).</>),
     ],
@@ -103,7 +103,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('Cosa sono le Road To?',
         <>Percorsi pronti per prepararsi ai grandi eventi: <strong>Road to Doomsday</strong> (Doctor Doom), <strong>Road to Endgame</strong> (Thanos) e <strong>Road to Spiderverse</strong> (Spider-Man). Scegli un personaggio e sotto compaiono i titoli divisi per fase.</>),
       item('Chi è J.A.I.R.V.I.S.?',
-        <>È la tua Intelligenza Artificiale personale. Puoi chiedergli curiosità sui fumetti, spiegazioni sulle scene post-credit o consigli su cosa guardare stasera! Lo trovi nel menu o con il pulsante <strong>AI</strong> dopo l'accesso.</>),
+        <>È la tua Intelligenza Artificiale personale. Puoi chiedergli curiosità sui fumetti, spiegazioni sulle scene post-credit o consigli su cosa guardare stasera! Lo trovi nel menu in alto dopo l'accesso, oppure in fondo a questa pagina.</>),
     ],
   },
 ];

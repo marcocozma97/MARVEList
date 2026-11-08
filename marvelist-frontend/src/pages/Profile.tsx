@@ -32,6 +32,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isEditingName, setIsEditingName] = useState(false);
+  const [confirmNickname, setConfirmNickname] = useState(false);
   const [nicknameDraft, setNicknameDraft] = useState('');
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -94,10 +95,21 @@ const Profile = () => {
     }
   };
 
+  const nicknameLockedUntil = profile?.nicknameChangeableFrom
+    ? new Date(profile.nicknameChangeableFrom).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })
+    : null;
+
   const startEditName = () => {
+    if (nicknameLockedUntil) return;
     setNicknameDraft(profile?.nickname ?? '');
     setProfileError(null);
+    setConfirmNickname(false);
     setIsEditingName(true);
+  };
+
+  const cancelEditName = () => {
+    setIsEditingName(false);
+    setConfirmNickname(false);
   };
 
   const submitNickname = async (e: React.FormEvent) => {
@@ -107,7 +119,17 @@ const Profile = () => {
       setProfileError('Il nickname deve avere tra 2 e 30 caratteri.');
       return;
     }
-    if (await saveProfile({ nickname })) setIsEditingName(false);
+    if (nickname === profile?.nickname) {
+      cancelEditName();
+      return;
+    }
+    if (!confirmNickname) {
+      setProfileError(null);
+      setConfirmNickname(true);
+      return;
+    }
+    if (await saveProfile({ nickname })) cancelEditName();
+    else setConfirmNickname(false);
   };
 
   const chooseAvatar = async (avatar: string) => {
@@ -181,18 +203,31 @@ const Profile = () => {
                 <input
                   className="field-input"
                   value={nicknameDraft}
-                  onChange={(e) => setNicknameDraft(e.target.value)}
+                  onChange={(e) => { setNicknameDraft(e.target.value); setConfirmNickname(false); }}
                   maxLength={30}
                   autoFocus
                   aria-label="Nuovo nickname"
                 />
-                <button type="submit" className="btn-marvel btn-inline" disabled={isSaving}>Salva</button>
-                <button type="button" className="btn-ghost" onClick={() => setIsEditingName(false)}>Annulla</button>
+                <button type="submit" className="btn-marvel btn-inline" disabled={isSaving}>{confirmNickname ? 'Sì, cambia' : 'Salva'}</button>
+                <button type="button" className="btn-ghost" onClick={cancelEditName}>Annulla</button>
+                {confirmNickname && (
+                  <p className="nickname-warning nickname-warning-inline" role="alert">
+                    <span aria-hidden="true">⚠</span>
+                    <span>Dopo il cambio potrai modificare di nuovo il nickname <strong>solo tra 30 giorni</strong>.</span>
+                  </p>
+                )}
               </form>
             ) : (
               <div className="profile-name-row">
                 <h1 className="profile-name">{nickname}</h1>
-                <button type="button" className="icon-btn" onClick={startEditName} aria-label="Modifica nickname" title="Modifica nickname">✎</button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={startEditName}
+                  disabled={!!nicknameLockedUntil}
+                  aria-label={nicknameLockedUntil ? `Potrai cambiare il nickname dal ${nicknameLockedUntil}` : 'Modifica nickname'}
+                  title={nicknameLockedUntil ? `Potrai cambiare il nickname dal ${nicknameLockedUntil}` : 'Modifica nickname (una volta ogni 30 giorni)'}
+                >✎</button>
                 {/* Il grado sta a destra del nickname */}
                 <RankBadge rank={rank} />
               </div>

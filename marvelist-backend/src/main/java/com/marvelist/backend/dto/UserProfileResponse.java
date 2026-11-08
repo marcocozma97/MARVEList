@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,4 +20,6 @@ public class UserProfileResponse {
     private String avatar;
     private long followers;
     private long following;
+    private boolean nicknameChosen;
+    private Instant nicknameChangeableFrom;
 }

@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.HashSet;
@@ -39,6 +40,10 @@ public class User implements UserDetails {
     private String avatarUrl; // ID dell'avatar scelto tra quelli predefiniti del frontend
 
     private String nickname; // Nome mostrato nell'app (se vuoto si usa il nome)
+
+    private Instant nicknameChangedAt;
+
+    private Boolean nicknameReminderSent;
 
     @Enumerated(EnumType.STRING)
     private Role role; // Permette di distinguere Admin da Utenti

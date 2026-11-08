@@ -10,6 +10,8 @@ export interface UserProfile {
   avatar: string | null;
   followers: number;
   following: number;
+  nicknameChosen: boolean;
+  nicknameChangeableFrom: string | null;
 }
 
 export interface UserCard {

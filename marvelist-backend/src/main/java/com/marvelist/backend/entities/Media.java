@@ -1,6 +1,7 @@
 package com.marvelist.backend.entities;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,4 +47,8 @@ public class Media {
     private Boolean doomsday; // Fa parte della "Road to Doomsday"
 
     private String tags; // Tag del JSON separati da virgola (es. "mcu,spiderverse")
+
+    private Instant addedAt;
+
+    private LocalDate releasedOn;
 }

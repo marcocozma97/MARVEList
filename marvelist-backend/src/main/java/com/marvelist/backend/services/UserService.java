@@ -11,9 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    public static final Duration NICKNAME_COOLDOWN = Duration.ofDays(30);
+    private static final DateTimeFormatter IT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Rome"));
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
@@ -31,7 +39,17 @@ public class UserService {
             if (nickname.length() < 2 || nickname.length() > 30) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il nickname deve avere tra 2 e 30 caratteri");
             }
-            user.setNickname(nickname);
+            Instant now = Instant.now();
+            Instant changedAt = user.getNicknameChangedAt();
+            if (changedAt == null || !nickname.equals(user.displayName())) {
+                if (changedAt != null && now.isBefore(changedAt.plus(NICKNAME_COOLDOWN))) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                            "Potrai cambiare di nuovo il nickname dal " + IT_DATE.format(changedAt.plus(NICKNAME_COOLDOWN)));
+                }
+                user.setNickname(nickname);
+                user.setNicknameChangedAt(now);
+                user.setNicknameReminderSent(false);
+            }
         }
 
         if (request.getAvatar() != null) {
@@ -55,7 +73,15 @@ public class UserService {
                 .avatar(user.getAvatarUrl())
                 .followers(followRepository.countByFollowed(user))
                 .following(followRepository.countByFollower(user))
+                .nicknameChosen(user.getNicknameChangedAt() != null)
+                .nicknameChangeableFrom(nextNicknameChange(user))
                 .build();
+    }
+
+    private static Instant nextNicknameChange(User user) {
+        if (user.getNicknameChangedAt() == null) return null;
+        Instant next = user.getNicknameChangedAt().plus(NICKNAME_COOLDOWN);
+        return Instant.now().isBefore(next) ? next : null;
     }
 
     private User findUser(String email) {
