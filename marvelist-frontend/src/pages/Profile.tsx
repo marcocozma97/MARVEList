@@ -62,7 +62,10 @@ const Profile = () => {
         setAllMedia(allData);
         setProgressById(Object.fromEntries(progressData.map(p => [p.mediaId, p])));
         setMarathons(marathonData);
-        if (me) dispatch(setProfile(me));
+        if (me) {
+          dispatch(setProfile(me));
+          setSocial({ followers: me.followers, following: me.following });
+        }
       } catch (error) {
         console.error("Errore nel caricamento del profilo", error);
       } finally {
@@ -73,12 +76,6 @@ const Profile = () => {
   }, [isAuthenticated, dispatch]);
 
   const profileId = profile?.id;
-  useEffect(() => {
-    if (!isAuthenticated || !profileId) return;
-    userService.getPublic(profileId)
-      .then(p => setSocial({ followers: p.followers, following: p.following }))
-      .catch(() => setSocial({ followers: 0, following: 0 }));
-  }, [isAuthenticated, profileId]);
 
   const saveProfile = async (data: { nickname?: string; avatar?: string }) => {
     setIsSaving(true);
@@ -208,19 +205,17 @@ const Profile = () => {
               </div>
             )}
             {profile?.email && <span className="profile-email">{profile.email}</span>}
-            {profileId && (
-              <div className="social-counts">
-                <button type="button" className="social-count" onClick={() => setPeopleTab('followers')}>
-                  <strong>{social?.followers ?? '–'}</strong> follower
-                </button>
-                <button type="button" className="social-count" onClick={() => setPeopleTab('following')}>
-                  <strong>{social?.following ?? '–'}</strong> seguiti
-                </button>
-                <button type="button" className="social-find" onClick={() => setPeopleTab('search')}>
-                  <span aria-hidden="true">⌕</span> Trova utenti
-                </button>
-              </div>
-            )}
+            <div className="social-counts">
+              <button type="button" className="social-count" onClick={() => setPeopleTab('followers')} disabled={!profileId}>
+                <strong>{social?.followers ?? 0}</strong><span>Follower</span>
+              </button>
+              <button type="button" className="social-count" onClick={() => setPeopleTab('following')} disabled={!profileId}>
+                <strong>{social?.following ?? 0}</strong><span>Seguiti</span>
+              </button>
+              <button type="button" className="social-find" onClick={() => setPeopleTab('search')} disabled={!profileId}>
+                <span aria-hidden="true">⌕</span> Trova utenti
+              </button>
+            </div>
           </div>
         </div>
 

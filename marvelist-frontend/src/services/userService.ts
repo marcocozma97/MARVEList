@@ -8,6 +8,8 @@ export interface UserProfile {
   email: string;
   nickname: string;
   avatar: string | null;
+  followers: number;
+  following: number;
 }
 
 export interface UserCard {

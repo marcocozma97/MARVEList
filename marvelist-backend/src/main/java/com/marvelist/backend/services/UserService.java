@@ -3,6 +3,7 @@ package com.marvelist.backend.services;
 import com.marvelist.backend.dto.UserProfileRequest;
 import com.marvelist.backend.dto.UserProfileResponse;
 import com.marvelist.backend.entities.User;
+import com.marvelist.backend.repositories.FollowRepository;
 import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
     public UserProfileResponse getProfile(String email) {
         return toResponse(findUser(email));
@@ -51,6 +53,8 @@ public class UserService {
                 .email(user.getEmail())
                 .nickname(user.getNickname() != null && !user.getNickname().isBlank() ? user.getNickname() : user.getName())
                 .avatar(user.getAvatarUrl())
+                .followers(followRepository.countByFollowed(user))
+                .following(followRepository.countByFollower(user))
                 .build();
     }
 

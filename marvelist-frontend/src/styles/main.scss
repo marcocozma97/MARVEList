@@ -5402,6 +5402,11 @@ $jv-blue: #38bdf8;
   white-space: nowrap;
   transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
 }
+.spoiler-gate.is-locked.is-open {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.025);
+  .spoiler-gate-cta { background: rgba(255, 255, 255, 0.08); color: #fff; }
+}
 .spoiler-gate.is-locked {
   cursor: pointer;
   border-color: rgba(var(--later-rgb), 0.45);
@@ -5585,23 +5590,39 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 }
 .cm-reply-input { min-height: 56px; }
 
-.social-counts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
-.social-count, .social-find {
+.social-counts { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin-top: 14px; }
+.social-count {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 96px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease-spring);
+  strong { font-family: 'Anton', sans-serif; font-size: 1.45rem; line-height: 1.1; color: #fff; letter-spacing: 0.5px; }
+  span { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+  &:hover:not(:disabled) { border-color: rgba(var(--accent-rgb), 0.55); background: rgba(var(--accent-rgb), 0.1); transform: translateY(-1px); span { color: #fff; } }
+  &:disabled { cursor: default; }
+}
+.social-find {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
   background: rgba(255, 255, 255, 0.04);
   color: #cfcfcf;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
-  strong { color: #fff; }
-  &:hover { color: #fff; border-color: rgba(var(--accent-rgb), 0.5); background: rgba(var(--accent-rgb), 0.1); }
+  &:hover:not(:disabled) { color: #fff; border-color: rgba(var(--accent-rgb), 0.5); background: rgba(var(--accent-rgb), 0.1); }
 }
-.social-find { border-style: dashed; }
 
 .follow-btn {
   position: relative;

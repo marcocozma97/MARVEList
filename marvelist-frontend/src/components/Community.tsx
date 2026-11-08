@@ -29,8 +29,6 @@ const GATE_TEXT: Record<CommunityKind, string> = {
   episode: 'Leggi i commenti solo se hai già visto questo episodio.'
 };
 
-const gateKey = (mediaId: number, episode?: number | null) => `marvelist_spoiler_ok_${mediaId}_${episode ?? 'all'}`;
-
 const errorMessage = (e: unknown, fallback: string) =>
   (e as { response?: { data?: { message?: string } } })?.response?.data?.message ?? (e instanceof Error ? e.message : fallback);
 
@@ -57,6 +55,12 @@ const ReplyIcon = () => (
 const LockIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </svg>
+);
+
+const ChevronIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 15l6-6 6 6" />
   </svg>
 );
 
@@ -129,9 +133,7 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   const [count, setCount] = useState<number | null>(null);
-  const [revealed, setRevealed] = useState(() => {
-    try { return sessionStorage.getItem(gateKey(mediaId, episode)) === '1'; } catch { return false; }
-  });
+  const [open, setOpen] = useState(false);
   const [comments, setComments] = useState<CommentItem[] | null>(null);
   const [listError, setListError] = useState<string | null>(null);
   const [openSpoilers, setOpenSpoilers] = useState<number[]>([]);
@@ -169,16 +171,8 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && revealed && comments === null) fetchComments();
-  }, [isAuthenticated, revealed, comments, fetchComments]);
-
-  const reveal = () => {
-    try {
-      sessionStorage.setItem(gateKey(mediaId, episode), '1');
-    } finally {
-      setRevealed(true);
-    }
-  };
+    if (isAuthenticated && open && comments === null) fetchComments();
+  }, [isAuthenticated, open, comments, fetchComments]);
 
   const autoGrow = () => {
     const el = textarea.current;
@@ -209,9 +203,8 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
       requestAnimationFrame(autoGrow);
       setCount(c => (c ?? 0) + 1);
       if (comments) setComments([created, ...comments]);
-      setSentNote(revealed || !count ? 'Commento pubblicato!' : 'Commento pubblicato! Sblocca i commenti qui sotto per vederlo insieme agli altri.');
+      setSentNote(open ? 'Commento pubblicato!' : 'Commento pubblicato! Apri i commenti qui sotto per vederlo insieme agli altri.');
       window.setTimeout(() => setSentNote(null), 4000);
-      if (!count) reveal();
     } catch (err) {
       setFormError(errorMessage(err, 'Impossibile pubblicare il commento. Riprova.'));
     } finally {
@@ -272,7 +265,6 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
     setOpenSpoilers(list => list.includes(id) ? list.filter(x => x !== id) : [...list, id]);
 
   const remaining = MAX_COMMENT_LENGTH - text.length;
-  const showGate = isAuthenticated && !revealed && (count ?? 0) > 0;
 
   const gateCopy = (
     <>
@@ -424,27 +416,28 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
             </div>
           </form>
 
-          {showGate ? (
-            <button type="button" className="spoiler-gate is-locked" onClick={reveal}>
-              {gateCopy}
-              <span className="spoiler-gate-cta">
-                <LockIcon /> Sblocca {count === 1 ? 'il commento' : `${count} commenti`}
-              </span>
-            </button>
-          ) : (
-            <div className="spoiler-gate">{gateCopy}</div>
-          )}
+          <button
+            type="button"
+            className={`spoiler-gate is-locked ${open ? 'is-open' : ''}`}
+            onClick={() => setOpen(v => !v)}
+            aria-expanded={open}
+            aria-controls={`cm-list-${mediaId}-${episode ?? 'all'}`}
+          >
+            {gateCopy}
+            <span className="spoiler-gate-cta">
+              {open ? <ChevronIcon /> : <LockIcon />}
+              {open ? 'Nascondi i commenti' : count ? `Mostra ${count === 1 ? 'il commento' : `${count} commenti`}` : 'Mostra i commenti'}
+            </span>
+          </button>
 
-          {count === null ? (
-            <div className="cm-loading" aria-busy="true"><span /><span /></div>
-          ) : count === 0 ? (
+          {!open ? null : count === 0 ? (
             <div className="empty-box cm-empty">Nessun commento ancora: scrivi il primo!</div>
-          ) : showGate ? null : listError ? (
+          ) : listError ? (
             <div className="alert-marvel">{listError} <button type="button" className="btn-chip ms-2" onClick={retry}>Riprova</button></div>
           ) : comments === null ? (
             <div className="cm-loading" aria-busy="true"><span /><span /></div>
           ) : (
-            <ul className="cm-list">
+            <ul className="cm-list" id={`cm-list-${mediaId}-${episode ?? 'all'}`}>
               {comments.map(c => (
                 <li key={c.id} className="cm-thread">
                   {renderComment(c, c.id)}

@@ -66,10 +66,10 @@ const UserProfile = () => {
             </div>
             <div className="social-counts">
               <button type="button" className="social-count" onClick={() => setPeopleTab('followers')}>
-                <strong>{followerCount}</strong> follower
+                <strong>{followerCount}</strong><span>Follower</span>
               </button>
               <button type="button" className="social-count" onClick={() => setPeopleTab('following')}>
-                <strong>{profile.following}</strong> seguiti
+                <strong>{profile.following}</strong><span>Seguiti</span>
               </button>
             </div>
           </div>

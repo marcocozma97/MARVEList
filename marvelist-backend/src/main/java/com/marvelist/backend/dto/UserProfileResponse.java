@@ -16,4 +16,6 @@ public class UserProfileResponse {
     private String email;
     private String nickname;
     private String avatar;
+    private long followers;
+    private long following;
 }
