@@ -13,7 +13,7 @@ Il diario personale dell'Universo Marvel: ordine di visione, progressi, voti, ma
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
-**[Prova MARVEList online](https://marvelist-frontend.onrender.com)**
+**[Prova MARVEList online](https://marvelist.vercel.app)**
 
 ![Home di MARVEList](docs/screenshots/home.png)
 
@@ -33,7 +33,7 @@ Il diario personale dell'Universo Marvel: ordine di visione, progressi, voti, ma
 - [Sicurezza](#sicurezza)
 - [Struttura del progetto](#struttura-del-progetto)
 - [Avviare il progetto in locale](#avviare-il-progetto-in-locale)
-- [Deploy su Render](#deploy-su-render)
+- [Deploy online](#deploy-online)
 - [Test](#test)
 - [Cosa ho imparato e sviluppi futuri](#cosa-ho-imparato-e-sviluppi-futuri)
 
@@ -242,7 +242,7 @@ flowchart LR
     S -- "locandine, durate, date di uscita" --> TMDB
     S -- "chat" --> OR[OpenRouter · Claude]
     S -- "RSS" --> GN[Google News]
-    S -- "HTTPS" --> MAIL[Google Apps Script · Gmail]
+    S -- "HTTPS" --> MAIL[Google Apps Script · Gmail di MARVEList]
 ```
 
 - Il **catalogo** (285 titoli) vive nel file `marvel_data.json` del backend, nell'ordine di visione. A ogni avvio il `DataSeeder` lo sincronizza con il database, usando titolo + anno come chiave: aggiorna i titoli esistenti **mantenendo gli ID**, e quindi i "visti" degli utenti, e inserisce i nuovi.
@@ -290,7 +290,9 @@ Non ho usato librerie di animazione né di grafica: le intro, i personaggi a 8 b
 | **OpenRouter** (Claude Haiku 4.5) | Il "cervello" di J.A.I.R.V.I.S. |
 | **Google News RSS** | Le notizie del Daily Bugle, lette dal backend perché il browser le bloccherebbe per CORS |
 | **Google Apps Script + Gmail** | Invio delle email di conferma tramite una piccola web app chiamata in HTTPS, con template HTML in stile Marvel e logo incorporato |
-| **Render** | Hosting di frontend, backend e database |
+| **Vercel** | Hosting del frontend |
+| **Render** | Hosting del backend in Docker |
+| **Neon** | Database PostgreSQL gratuito e senza scadenza |
 
 ---
 
@@ -337,7 +339,7 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 - **CORS** limitato a `localhost` e alla rete di casa; online, solo al dominio del frontend.
 - Ogni maratona e ogni progresso è legato all'utente del token: non si possono leggere o modificare i dati di altri.
 - Il parser del feed RSS ha **DTD ed entità esterne disattivate** (protezione da XXE).
-- Le **chiavi segrete** (database, JWT, TMDB, OpenRouter, email) non sono nel codice: in locale arrivano da un file `.env` escluso da git, online dalle variabili d'ambiente di Render.
+- Le **chiavi segrete** (database, JWT, TMDB, OpenRouter, email) non sono nel codice: in locale arrivano da un file `.env` escluso da git, online dalle variabili d'ambiente di Render e Vercel.
 
 ---
 
@@ -345,7 +347,7 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 
 ```text
 CAPSTONE/
-├── render.yaml                    # Blueprint di Render: frontend, backend e database
+├── render.yaml                    # Blueprint di Render: il backend
 ├── docs/mail-relay.gs             # web app di Apps Script per l'invio delle email
 ├── marvelist-frontend/            # React + TypeScript + Vite
 │   ├── docs/screenshots/          # gli screenshot di questo README
@@ -460,37 +462,45 @@ L'app è su `http://localhost:5173`. Di default il frontend chiama il backend su
 
 ---
 
-## Deploy su Render
+## Deploy online
 
-MARVEList è online su [Render](https://render.com), con tutti e tre i pezzi sul piano gratuito:
+MARVEList gira su tre servizi, tutti sul piano gratuito:
 
-| Servizio | Tipo su Render | Indirizzo |
+| Pezzo | Servizio | Indirizzo |
 | --- | --- | --- |
-| Frontend | Static Site | [marvelist-frontend.onrender.com](https://marvelist-frontend.onrender.com) |
-| Backend | Web Service (Docker) | [marvelist-backend.onrender.com](https://marvelist-backend.onrender.com/api/v1/news) |
-| Database | PostgreSQL | rete privata di Render |
+| Frontend | [Vercel](https://vercel.com) | [marvelist.vercel.app](https://marvelist.vercel.app) |
+| Backend | [Render](https://render.com), Web Service in Docker | [marvelist-backend.onrender.com](https://marvelist-backend.onrender.com/api/v1/news) |
+| Database | [Neon](https://neon.com), PostgreSQL | regione di Francoforte |
 
-L'intera infrastruttura è descritta nel file [`render.yaml`](render.yaml) (*Blueprint*): Render crea i tre servizi, li collega tra loro e rifà il deploy a ogni push su `main`. Ogni servizio guarda solo la propria cartella, quindi una modifica al README non riavvia nulla.
+Il backend è descritto nel file [`render.yaml`](render.yaml) (*Blueprint*). Render e Vercel rifanno il deploy a ogni push su `main`, ognuno guardando solo la propria cartella, quindi una modifica al README non riavvia nulla.
 
 ### Le scelte per la produzione
 
-- **Backend in Docker**: Render non ha un runtime Java nativo, quindi il `Dockerfile` compila il progetto con Maven e lo avvia su una JRE 21. All'avvio converte l'indirizzo del database fornito da Render nel formato JDBC.
-- **Email via HTTPS**: il piano gratuito di Render blocca le porte SMTP, quindi il backend non parla più direttamente con Gmail. Invia la mail (HTML e logo in base64) a una web app di Google Apps Script ([`docs/mail-relay.gs`](docs/mail-relay.gs)), che controlla una chiave segreta condivisa e la spedisce dal mio account Gmail. Lo script risponde con un redirect alla pagina dell'esito, che il backend legge per sapere se l'invio è andato a buon fine.
-- **Routing lato client**: una regola di *rewrite* manda ogni percorso a `index.html`, così ricaricare `/timeline` o `/media/42` non dà 404.
+- **Frontend su Vercel**: un sito statico sempre acceso, senza la pausa del piano gratuito di Render, con un indirizzo `.vercel.app` scelto da me.
+- **Backend in Docker**: Render non ha un runtime Java nativo, quindi il `Dockerfile` compila il progetto con Maven e lo avvia su una JRE 21.
+- **Database su Neon**: il PostgreSQL gratuito di Render scade dopo 30 giorni, quello di Neon no. Il database va in pausa quando non riceve query e si riaccende da solo alla prima richiesta. Il backend lo raggiunge in SSL con l'indirizzo JDBC in `DB_URL`.
+- **Email via HTTPS da un account dedicato**: il piano gratuito di Render blocca le porte SMTP, quindi il backend non parla direttamente con Gmail. Invia la mail (HTML e logo in base64) a una web app di Google Apps Script ([`docs/mail-relay.gs`](docs/mail-relay.gs)), che controlla una chiave segreta condivisa e la spedisce da un account Gmail creato solo per MARVEList. Lo script risponde con un redirect alla pagina dell'esito, che il backend legge per sapere se l'invio è andato a buon fine.
+- **Routing lato client**: il file `vercel.json` manda ogni percorso a `index.html`, così ricaricare `/timeline` o `/media/42` non dà 404.
 - **Configurazione dall'ambiente**: database, porta, CORS, indirizzo del frontend e log SQL si impostano con variabili d'ambiente; in locale valgono i default di sempre.
 
 ### Rifare il deploy da zero
 
-1. **Apps Script**: su [script.google.com](https://script.google.com) creo un nuovo progetto e incollo il contenuto di `docs/mail-relay.gs`. In *Impostazioni progetto → Proprietà script* aggiungo `SECRET` con una chiave casuale, poi in *Esegui il deployment → Nuovo deployment* scelgo *App web*, eseguita come me e accessibile a *Chiunque*. Autorizzo l'invio di email e copio l'URL che termina con `/exec`.
-2. **Render**: dalla dashboard scelgo *New → Blueprint*, collego il repository GitHub e Render legge `render.yaml`.
-3. Inserisco i valori richiesti: `TMDB_API_KEY`, `OPENROUTER_API_KEY`, `MAIL_RELAY_URL` (l'URL della web app), `MAIL_RELAY_SECRET` (la stessa chiave della proprietà `SECRET`) e `VITE_TMDB_API_KEY`. La chiave JWT e le credenziali del database vengono generate da Render.
-4. Avvio il deploy: prima il database, poi il backend (al primo avvio crea le tabelle e carica il catalogo), infine il frontend.
+1. **Gmail e Apps Script**: creo un account Gmail dedicato a MARVEList e, da quell'account, apro [script.google.com](https://script.google.com), creo un nuovo progetto e incollo il contenuto di `docs/mail-relay.gs`. In *Impostazioni progetto → Proprietà script* aggiungo `SECRET` con una chiave casuale, poi in *Esegui il deployment → Nuovo deployment* scelgo *App web*, eseguita come me e accessibile a *Chiunque*. Autorizzo l'invio di email e copio l'URL che termina con `/exec`.
+2. **Neon**: creo un progetto nella regione di Francoforte (AWS `eu-central-1`) e copio host, utente e password dalla stringa di connessione.
+3. **Render**: dalla dashboard scelgo *New → Blueprint*, collego il repository GitHub e Render legge `render.yaml`. Inserisco i valori richiesti:
+   - `DB_URL`: `jdbc:postgresql://<host di Neon>/neondb?sslmode=require`
+   - `DB_USERNAME` e `DB_PASSWORD`: le credenziali di Neon
+   - `TMDB_API_KEY` e `OPENROUTER_API_KEY`
+   - `MAIL_RELAY_URL` (l'URL della web app) e `MAIL_RELAY_SECRET` (la stessa chiave della proprietà `SECRET`)
+
+   La chiave JWT viene generata da Render. Al primo avvio il backend crea le tabelle e carica il catalogo.
+4. **Vercel**: importo il repository, imposto *Root Directory* su `marvelist-frontend` (Vercel riconosce Vite da solo) e chiamo il progetto `marvelist`. Aggiungo le variabili `VITE_API_URL` (`https://marvelist-backend.onrender.com/api/v1`) e `VITE_TMDB_API_KEY`, poi avvio il deploy.
 
 ### Limiti del piano gratuito
 
 - Il backend va in pausa dopo circa 15 minuti senza visite: la prima richiesta dopo la pausa può richiedere un minuto, poi l'app torna veloce.
-- Il database gratuito scade dopo 30 giorni; basta ricrearne uno dal Blueprint.
-- Con un account Gmail personale Apps Script invia fino a circa 100 email al giorno.
+- Neon dà 100 ore di calcolo al mese per progetto; il database si spegne dopo 5 minuti senza query, quindi consuma solo mentre il backend è acceso.
+- Apps Script invia fino a circa 100 email al giorno da un account Gmail gratuito.
 
 ---
 
