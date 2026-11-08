@@ -29,6 +29,10 @@ public class Comment {
     @Column(name = "episode_number")
     private Integer episodeNumber;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
     @Column(length = 1500)
     private String text;
 

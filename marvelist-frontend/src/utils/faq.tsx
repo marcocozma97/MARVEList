@@ -85,6 +85,18 @@ export const FAQ_SECTIONS: FaqSection[] = [
     ],
   },
   {
+    id: 'social', title: 'Community e amici', items: [
+      item('Come seguo un altro utente?',
+        <>Tocca il nome o l'avatar di chi ha scritto un commento, oppure usa <strong>Trova utenti</strong> nel tuo profilo, e premi <strong>Segui</strong>. Nel suo profilo vedi i preferiti e le maratone pubbliche: "Continua a guardare", visti e progressi restano privati.</>),
+      item('Posso mettere mi piace e rispondere ai commenti?',
+        <>Sì: sotto ogni commento trovi il cuore e <strong>Rispondi</strong>. Le risposte compaiono sotto il commento e possono essere segnate come spoiler.</>),
+      item('Dove vedo le notifiche?',
+        <>Nella campanella in alto, accanto al profilo: ti avvisa quando qualcuno inizia a seguirti, mette mi piace a un tuo commento o ti risponde.</>),
+      item('Le mie maratone sono visibili agli altri?',
+        <>Solo se lo scegli tu: quando crei o modifichi una maratona puoi impostarla come <strong>Privata</strong> (la vedi solo tu) o <strong>Pubblica</strong> (gli altri vedono nome e titoli, non i tuoi progressi).</>),
+    ],
+  },
+  {
     id: 'extra', title: 'Road To, News e J.A.I.R.V.I.S.', items: [
       item('Da dove arrivano le notizie del Daily Bugle?',
         <>Le <Link to="/news">News</Link> raccolgono gli articoli italiani sul mondo Marvel degli ultimi 14 giorni, tramite Google News. Ogni titolo apre l'articolo sul sito della testata; se la notizia parla di un film o di una serie del catalogo trovi anche il link alla sua scheda.</>),

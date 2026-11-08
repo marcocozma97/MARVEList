@@ -2,7 +2,9 @@ import { api } from './api';
 
 export interface CommentItem {
   id: number;
+  parentId: number | null;
   episode: number | null;
+  authorId: number;
   authorName: string;
   authorAvatar: string | null;
   text: string | null;
@@ -10,6 +12,9 @@ export interface CommentItem {
   spoiler: boolean;
   createdAt: string;
   mine: boolean;
+  likes: number;
+  liked: boolean;
+  replies: CommentItem[];
 }
 
 export interface NewComment {
@@ -17,6 +22,7 @@ export interface NewComment {
   episode?: number | null;
   spoiler: boolean;
   gifUrl?: string | null;
+  parentId?: number | null;
 }
 
 export const commentService = {
@@ -32,6 +38,11 @@ export const commentService = {
 
   create: async (mediaId: number, comment: NewComment): Promise<CommentItem> => {
     const response = await api.post(`/media/${mediaId}/comments`, comment);
+    return response.data;
+  },
+
+  like: async (commentId: number): Promise<{ likes: number; liked: boolean }> => {
+    const response = await api.post(`/comments/${commentId}/like`);
     return response.data;
   },
 

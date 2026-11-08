@@ -45,6 +45,7 @@ public class UserService {
 
     private UserProfileResponse toResponse(User user) {
         return UserProfileResponse.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .surname(user.getSurname())
                 .email(user.getEmail())

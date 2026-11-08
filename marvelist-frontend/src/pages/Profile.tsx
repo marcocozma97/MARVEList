@@ -15,6 +15,7 @@ import RankBadge from '../components/RankBadge';
 import { computeRank } from '../utils/rank';
 import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
 import { AVATARS } from '../utils/avatars';
+import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -35,6 +36,8 @@ const Profile = () => {
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [social, setSocial] = useState<{ followers: number; following: number } | null>(null);
+  const [peopleTab, setPeopleTab] = useState<PeopleTab | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -68,6 +71,14 @@ const Profile = () => {
     };
     if (isAuthenticated) fetchProfileData();
   }, [isAuthenticated, dispatch]);
+
+  const profileId = profile?.id;
+  useEffect(() => {
+    if (!isAuthenticated || !profileId) return;
+    userService.getPublic(profileId)
+      .then(p => setSocial({ followers: p.followers, following: p.following }))
+      .catch(() => setSocial({ followers: 0, following: 0 }));
+  }, [isAuthenticated, profileId]);
 
   const saveProfile = async (data: { nickname?: string; avatar?: string }) => {
     setIsSaving(true);
@@ -197,6 +208,19 @@ const Profile = () => {
               </div>
             )}
             {profile?.email && <span className="profile-email">{profile.email}</span>}
+            {profileId && (
+              <div className="social-counts">
+                <button type="button" className="social-count" onClick={() => setPeopleTab('followers')}>
+                  <strong>{social?.followers ?? '–'}</strong> follower
+                </button>
+                <button type="button" className="social-count" onClick={() => setPeopleTab('following')}>
+                  <strong>{social?.following ?? '–'}</strong> seguiti
+                </button>
+                <button type="button" className="social-find" onClick={() => setPeopleTab('search')}>
+                  <span aria-hidden="true">⌕</span> Trova utenti
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -255,6 +279,7 @@ const Profile = () => {
                 <div className="marathon-card-media" style={bg ? { backgroundImage: `url("${bg}")` } : undefined} />
                 <div className="marathon-card-content">
                   <div>
+                    <span className={`marathon-card-visibility ${m.publicList ? 'is-public' : ''}`}>{m.publicList ? '🌐 Pubblica' : '🔒 Privata'}</span>
                     <h3>{m.name}</h3>
                     <span className="marathon-card-dates">{formatDay(m.startDate)} → {formatDay(m.endDate)}</span>
                   </div>
@@ -317,6 +342,16 @@ const Profile = () => {
         )}
       </section>
 
+      {peopleTab && profileId && (
+        <PeopleModal
+          key={peopleTab}
+          userId={profileId}
+          initialTab={peopleTab}
+          allowSearch
+          onClose={() => setPeopleTab(null)}
+          onFollowChange={s => setSocial(prev => prev && { ...prev, following: Math.max(0, prev.following + (s.following ? 1 : -1)) })}
+        />
+      )}
     </div>
   );
 };

@@ -84,6 +84,10 @@ public class User implements UserDetails {
 
     // La watchlist si ricava dai progressi (vedi MediaService)
 
+    public String displayName() {
+        return nickname != null && !nickname.isBlank() ? nickname : name;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

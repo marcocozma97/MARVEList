@@ -20,6 +20,8 @@ import MediaDetail from './pages/MediaDetail';
 import EpisodeDetail from './pages/EpisodeDetail';
 import MarathonForm from './pages/MarathonForm';
 import MarathonDetail from './pages/MarathonDetail';
+import UserProfile from './pages/UserProfile';
+import Notifications from './pages/Notifications';
 import InfinityIntro from './components/InfinityIntro';
 import { markIntroSeen, shouldShowIntro } from './utils/intro';
 
@@ -53,6 +55,8 @@ const Shell = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/news" element={<News />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/users/:id" element={<UserProfile />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/media/:id" element={<MediaDetail />} />
           <Route path="/media/:id/episodes/:episode" element={<EpisodeDetail />} />
           <Route path="/jairvis" element={<Jairvis />} />

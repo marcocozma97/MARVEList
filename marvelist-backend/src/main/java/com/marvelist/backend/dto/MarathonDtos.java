@@ -19,7 +19,8 @@ public final class MarathonDtos {
             boolean mixedDays,
             int maxFilmsPerWeek,
             int maxEpisodesPerDay,
-            List<Long> mediaIds
+            List<Long> mediaIds,
+            boolean publicList
     ) {}
 
     // Esito della pianificazione: se non c'è tempo, requiredEndDate dice fino a quando servirebbe
@@ -44,7 +45,8 @@ public final class MarathonDtos {
             int totalUnits,
             int doneUnits,
             boolean feasible,
-            LocalDate nextDate
+            LocalDate nextDate,
+            boolean publicList
     ) {}
 
     public record ItemResponse(
@@ -78,7 +80,18 @@ public final class MarathonDtos {
             int doneUnits,
             List<ItemResponse> items,
             List<DayResponse> days,
-            PlanResponse plan
+            PlanResponse plan,
+            boolean publicList
+    ) {}
+
+    public record PublicMarathon(
+            Long id,
+            String name,
+            String background,
+            String visionOrder,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<Long> mediaIds
     ) {}
 
     // Spunta (o annulla) un film o un episodio della maratona

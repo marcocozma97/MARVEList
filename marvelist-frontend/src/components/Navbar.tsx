@@ -5,6 +5,7 @@ import type { RootState } from '../store/store';
 import { logoutSuccess, setProfile } from '../store/authSlice';
 import { authService } from '../services/authService';
 import { userService } from '../services/userService';
+import { NOTIFICATIONS_READ_EVENT, notificationService } from '../services/notificationService';
 import { HIDDEN_NAVBAR_PATHS } from '../utils/navigation';
 import Avatar from './Avatar';
 import Brand from './Brand';
@@ -16,12 +17,26 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
     if (isAuthenticated && !profile) {
       userService.getMe().then(me => dispatch(setProfile(me))).catch(console.error);
     }
   }, [isAuthenticated, profile, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const refresh = () => notificationService.unreadCount().then(setUnread).catch(() => {});
+    refresh();
+    const timer = window.setInterval(refresh, 60000);
+    const onRead = () => setUnread(0);
+    window.addEventListener(NOTIFICATIONS_READ_EVENT, onRead);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener(NOTIFICATIONS_READ_EVENT, onRead);
+    };
+  }, [isAuthenticated, location.pathname]);
 
   const handleLogout = () => {
     dispatch(logoutSuccess());
@@ -45,7 +60,7 @@ const Navbar = () => {
         </Link>
 
         <button
-          className="site-nav-toggle"
+          className={`site-nav-toggle ${unread ? 'has-unread' : ''}`}
           type="button"
           onClick={() => setMenuOpen(v => !v)}
           aria-expanded={menuOpen}
@@ -65,6 +80,16 @@ const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="site-nav-user">
+              <NavLink
+                to="/notifications"
+                className={({ isActive }) => `site-nav-bell ${isActive ? 'active' : ''}`}
+                aria-label={unread ? `Notifiche, ${unread} da leggere` : 'Notifiche'}
+                title="Notifiche"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>
+                <span className="site-nav-bell-label">Notifiche</span>
+                {unread > 0 && <span className="site-nav-badge">{unread > 99 ? '99+' : unread}</span>}
+              </NavLink>
               {/* Avatar e scritta "Profilo" sono un unico link: qualsiasi punto si tocchi porta al profilo */}
               <Link
                 to="/profile"

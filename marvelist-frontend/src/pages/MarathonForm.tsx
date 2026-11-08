@@ -34,6 +34,7 @@ const MarathonForm = () => {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(addDays(today, 60));
   const [mixedDays, setMixedDays] = useState(true);
+  const [publicList, setPublicList] = useState(false);
   const [maxFilmsPerWeek, setMaxFilmsPerWeek] = useState(3);
   const [maxEpisodesPerDay, setMaxEpisodesPerDay] = useState(3);
   const [openPhases, setOpenPhases] = useState<Set<string>>(new Set());
@@ -68,6 +69,7 @@ const MarathonForm = () => {
           setStartDate(marathon.startDate);
           setEndDate(marathon.endDate < today ? today : marathon.endDate);
           setMixedDays(marathon.mixedDays);
+          setPublicList(marathon.publicList);
           setMaxFilmsPerWeek(marathon.maxFilmsPerWeek);
           setMaxEpisodesPerDay(marathon.maxEpisodesPerDay);
           // In modifica: tutto ciò che è nel livello ma non nella maratona risulta "tolto"
@@ -126,6 +128,7 @@ const MarathonForm = () => {
     maxFilmsPerWeek,
     maxEpisodesPerDay,
     mediaIds,
+    publicList,
   });
 
   // L'anteprima del piano si ricalcola poco dopo ogni modifica, prima di salvare
@@ -137,7 +140,7 @@ const MarathonForm = () => {
       try {
         const result = await marathonService.preview({
           name: 'Anteprima', background: null, visionOrder, startDate, endDate, hideSeen,
-          mixedDays, maxFilmsPerWeek, maxEpisodesPerDay, mediaIds: mediaKey.split(',').map(Number),
+          mixedDays, maxFilmsPerWeek, maxEpisodesPerDay, mediaIds: mediaKey.split(',').map(Number), publicList: false,
         });
         if (request === planRequest.current) { setPlan(result); setPlanError(null); }
       } catch (e) {
@@ -209,6 +212,20 @@ const MarathonForm = () => {
             <span className="field-label">Nome della maratona</span>
             <input className="field-input" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} placeholder="Es. Road to Secret Wars" required />
           </label>
+          <div className="field">
+            <span className="field-label">Visibilità</span>
+            <div className="segmented visibility-toggle" role="radiogroup" aria-label="Visibilità della maratona">
+              <button type="button" role="radio" aria-checked={!publicList} className={`segmented-option ${!publicList ? 'active' : ''}`} onClick={() => setPublicList(false)}>
+                <span aria-hidden="true">🔒</span> Privata
+              </button>
+              <button type="button" role="radio" aria-checked={publicList} className={`segmented-option ${publicList ? 'active' : ''}`} onClick={() => setPublicList(true)}>
+                <span aria-hidden="true">🌐</span> Pubblica
+              </button>
+            </div>
+            <p className="form-hint">{publicList
+              ? 'Chi ti segue o apre il tuo profilo vede il nome della maratona e i titoli che contiene, non i tuoi progressi.'
+              : 'La vedi solo tu.'}</p>
+          </div>
         </section>
 
         <section className="form-card">
