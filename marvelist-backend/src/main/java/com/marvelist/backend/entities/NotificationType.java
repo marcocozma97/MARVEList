@@ -10,5 +10,6 @@ public enum NotificationType {
     RELEASE_1,
     RELEASED,
     EPISODE_OUT,
-    NICKNAME
+    NICKNAME,
+    JAIRVIS_OFFLINE
 }

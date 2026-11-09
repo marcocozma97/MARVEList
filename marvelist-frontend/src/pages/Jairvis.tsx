@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 import { jairvisService } from '../services/jairvisService';
 import NeuralGlobe from '../components/NeuralGlobe';
 import JairvisMessage from '../components/JairvisMessage';
@@ -17,24 +20,51 @@ const BOOT_STEPS = [
   'Caricamento protocolli Marvel',
 ];
 
-const SUGGESTIONS = [
-  "In che ordine guardo l'MCU?",
-  'Consigliami una serie da vedere',
-  'Chi sono i Thunderbolts?',
-  'Spiegami il Multiverso',
-];
+const INTRO = "Sistemi online. Salve signore, sono **J.A.I.R.V.I.S.**, la nuova intelligenza sperimentale delle **Stark Industries**.\n\n"
+  + "Per ora sono attivo in versione demo, con un utilizzo limitato: una domanda al giorno, più i suggerimenti rapidi qui sotto. "
+  + "In futuro diventerò lo strumento definitivo degli utenti MARVEList.\n\nCome posso assisterla oggi?";
+
+const MAINTENANCE = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. Tornerò in funzione molto presto.";
+
+const nextAskLabel = (iso: string) => {
+  const next = new Date(iso);
+  const time = next.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const today = new Date();
+  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  if (next.toDateString() === today.toDateString()) return `oggi alle ${time}`;
+  if (next.toDateString() === tomorrow.toDateString()) return `domani alle ${time}`;
+  return next.toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+};
 
 const Jairvis = () => {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [isBooting, setIsBooting] = useState(true);
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Sistemi online. Salve signore, sono J.A.I.R.V.I.S. Come posso assisterla con il catalogo Marvel oggi?", sender: 'jairvis' }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([{ id: 1, text: INTRO, sender: 'jairvis' }]);
   const [input, setInput] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [asked, setAsked] = useState<string[]>([]);
+  const [nextAskAt, setNextAskAt] = useState<string | null>(null);
+  const [maintenance, setMaintenance] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [globeSize, setGlobeSize] = useState(() => Math.min(360, window.innerWidth - 64));
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Mentre gira l'animazione di avvio si scopre se la domanda di oggi è ancora disponibile
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    jairvisService.status()
+      .then(status => {
+        setSuggestions(status.suggestions);
+        setNextAskAt(status.nextAskAt);
+        if (status.maintenance) {
+          setMaintenance(true);
+          setMessages(prev => [...prev, { id: 2, text: MAINTENANCE, sender: 'jairvis' }]);
+        }
+      })
+      .catch(console.error);
+  }, [isAuthenticated]);
 
   // Sequenza di avvio: 3 secondi di animazione, poi parte la chat
   useEffect(() => {
@@ -53,23 +83,40 @@ const Jairvis = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, isTyping, isBooting]);
 
-  useEffect(() => {
-    if (!isBooting) inputRef.current?.focus({ preventScroll: true });
-  }, [isBooting]);
+  const canAsk = !nextAskAt && !maintenance;
 
-  const send = async (text: string) => {
+  useEffect(() => {
+    if (!isBooting && canAsk) inputRef.current?.focus({ preventScroll: true });
+  }, [isBooting, canAsk]);
+
+  // Allo scadere delle 24 ore la domanda torna disponibile senza ricaricare la pagina
+  useEffect(() => {
+    if (!nextAskAt) return;
+    const wait = new Date(nextAskAt).getTime() - Date.now();
+    if (wait > 2147483647) return;
+    const timer = window.setTimeout(() => setNextAskAt(null), Math.max(0, wait));
+    return () => window.clearTimeout(timer);
+  }, [nextAskAt]);
+
+  if (!isAuthenticated) return <Navigate to="/login" />;
+
+  const send = async (text: string, suggestion = false) => {
     const userMessage = text.trim();
-    if (!userMessage || isTyping) return;
-    setInput('');
+    if (!userMessage || isTyping || maintenance || (!suggestion && !canAsk)) return;
+    if (!suggestion) setInput('');
+    else setAsked(prev => [...prev, userMessage]);
 
     setMessages(prev => [...prev, { id: Date.now(), text: userMessage, sender: 'user' }]);
 
     setIsTyping(true);
 
-    const reply = await jairvisService.sendMessage(userMessage);
+    const result = await jairvisService.sendMessage(userMessage);
 
     setIsTyping(false);
-    setMessages(prev => [...prev, { id: Date.now(), text: reply, sender: 'jairvis' }]);
+    setMessages(prev => [...prev, { id: Date.now(), text: result.reply, sender: 'jairvis' }]);
+    if (result.status === 'MAINTENANCE') setMaintenance(true);
+    if (result.status !== 'ERROR' || result.nextAskAt) setNextAskAt(result.nextAskAt ?? null);
+    if (result.status === 'ERROR' && suggestion) setAsked(prev => prev.filter(s => s !== userMessage));
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -95,7 +142,13 @@ const Jairvis = () => {
     );
   }
 
-  const showSuggestions = messages.length === 1 && !isTyping;
+  const openSuggestions = suggestions.filter(s => !asked.includes(s));
+  const showSuggestions = openSuggestions.length > 0 && !isTyping && !maintenance;
+  const quota = maintenance
+    ? 'J.A.I.R.V.I.S. è in manutenzione: tornerà presto disponibile'
+    : nextAskAt
+      ? `Domanda di oggi già usata · la prossima ${nextAskLabel(nextAskAt)}. I suggerimenti rapidi restano disponibili.`
+      : 'Demo: 1 domanda libera al giorno · i suggerimenti rapidi non contano';
 
   return (
     <div className="jv-page">
@@ -109,9 +162,9 @@ const Jairvis = () => {
             </div>
             <div className="jv-header-text">
               <h1>J.A.I.R.V.I.S.</h1>
-              <span className={`jv-status ${isTyping ? 'is-thinking' : ''}`}>
+              <span className={`jv-status ${isTyping ? 'is-thinking' : ''} ${maintenance && !isTyping ? 'is-down' : ''}`}>
                 <span className="jv-status-dot" aria-hidden="true" />
-                {isTyping ? 'Elaborazione in corso…' : 'Online · rete neurale attiva'}
+                {isTyping ? 'Elaborazione in corso…' : maintenance ? 'In manutenzione · DUM-E e U al lavoro' : 'Online · rete neurale attiva'}
               </span>
             </div>
           </header>
@@ -138,27 +191,28 @@ const Jairvis = () => {
 
             {showSuggestions && (
               <div className="jv-suggestions">
-                {SUGGESTIONS.map(s => (
-                  <button key={s} type="button" className="jv-chip" onClick={() => send(s)}>{s}</button>
+                {openSuggestions.map(s => (
+                  <button key={s} type="button" className="jv-chip" onClick={() => send(s, true)}>{s}</button>
                 ))}
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
+          <p className={`jv-quota ${canAsk ? '' : 'is-locked'}`} role="status">{quota}</p>
           <form onSubmit={handleSend} className="jv-form">
             <input
               ref={inputRef}
               type="text"
               className="jv-input"
-              placeholder="Scrivi a J.A.I.R.V.I.S."
+              placeholder={maintenance ? 'J.A.I.R.V.I.S. è in manutenzione' : canAsk ? 'Scrivi a J.A.I.R.V.I.S.' : 'Domanda di oggi già usata'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              disabled={isTyping}
+              disabled={isTyping || !canAsk}
               autoComplete="off"
               aria-label="Messaggio per J.A.I.R.V.I.S."
             />
-            <button type="submit" className="jv-send" disabled={isTyping || !input.trim()} aria-label="Invia">
+            <button type="submit" className="jv-send" disabled={isTyping || !canAsk || !input.trim()} aria-label="Invia">
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2.2-7.3L3 11.5Z" fill="currentColor" /></svg>
             </button>
           </form>

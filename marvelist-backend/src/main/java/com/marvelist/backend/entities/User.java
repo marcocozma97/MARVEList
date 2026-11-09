@@ -45,6 +45,8 @@ public class User implements UserDetails {
 
     private Boolean nicknameReminderSent;
 
+    private Instant jairvisLastAskAt;
+
     @Enumerated(EnumType.STRING)
     private Role role; // Permette di distinguere Admin da Utenti
 

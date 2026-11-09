@@ -4422,6 +4422,17 @@ $jv-blue: #38bdf8;
   &:hover { background: rgba($jv-cyan, 0.14); border-color: $jv-cyan; box-shadow: 0 0 14px rgba($jv-cyan, 0.3); }
 }
 
+.jv-quota {
+  margin: 0;
+  padding: 10px 16px 0;
+  font-size: 0.8rem;
+  color: rgba(#cdeffd, 0.7);
+  text-align: center;
+  &.is-locked { color: #ffc27a; }
+}
+
+.jv-status.is-down .jv-status-dot { background: #ff8a1f; animation: none; }
+
 .jv-form {
   display: flex;
   gap: 10px;
@@ -5801,6 +5812,12 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 .notif-type-release { background: #8b5cf6; }
 .notif-type-released { background: var(--accent); }
 .notif-type-nickname { background: #64748b; }
+.notif-type-jairvis { background: #ff8a1f; color: #1a0d00; }
+.notif-jairvis {
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #e9fdff 0 12%, #4de3ff 22%, rgba(0, 120, 200, 0.55) 48%, #04121f 72%);
+  box-shadow: inset 0 0 0 2px rgba(77, 227, 255, 0.35);
+}
 .notif-poster {
   display: block;
   width: 44px;

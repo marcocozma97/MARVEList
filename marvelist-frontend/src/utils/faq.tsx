@@ -104,6 +104,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
         <>Percorsi pronti per prepararsi ai grandi eventi: <strong>Road to Doomsday</strong> (Doctor Doom), <strong>Road to Endgame</strong> (Thanos) e <strong>Road to Spiderverse</strong> (Spider-Man). Scegli un personaggio e sotto compaiono i titoli divisi per fase.</>),
       item('Chi è J.A.I.R.V.I.S.?',
         <>È la tua Intelligenza Artificiale personale. Puoi chiedergli curiosità sui fumetti, spiegazioni sulle scene post-credit o consigli su cosa guardare stasera! Lo trovi nel menu in alto dopo l'accesso, oppure in fondo a questa pagina.</>),
+      item('Quante domande posso fare a J.A.I.R.V.I.S.?',
+        <>J.A.I.R.V.I.S. è la nuova intelligenza sperimentale delle Stark Industries ed è in versione demo: puoi fargli <strong>una domanda libera al giorno</strong>. Dopo 24 ore dalla domanda il limite si azzera. I suggerimenti rapidi che trovi nella chat non contano nel limite. Se è in manutenzione, DUM-E e U ci stanno lavorando e tornerà presto.</>),
     ],
   },
 ];

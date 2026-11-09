@@ -2,24 +2,57 @@ package com.marvelist.backend.services;
 
 import com.marvelist.backend.dto.JairvisRequest;
 import com.marvelist.backend.dto.JairvisResponse;
+import com.marvelist.backend.dto.JairvisStatus;
+import com.marvelist.backend.entities.User;
+import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class JairvisService {
 
+    // Una domanda libera ogni 24 ore per utente; i suggerimenti rapidi non contano
+    public static final Duration QUESTION_COOLDOWN = Duration.ofHours(24);
+    // Dopo un esaurimento dei fondi, per un po' non si riprova a chiamare il modello
+    static final Duration MAINTENANCE_WINDOW = Duration.ofMinutes(15);
+
+    public static final List<String> SUGGESTIONS = List.of(
+            "In che ordine guardo l'MCU?",
+            "Consigliami una serie da vedere",
+            "Chi sono i Thunderbolts?",
+            "Spiegami il Multiverso"
+    );
+
+    static final String MAINTENANCE_REPLY = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. "
+            + "Tornerò in funzione molto presto.";
+    static final String LIMIT_REPLY = "Signore, per oggi ha già utilizzato la sua domanda: in questa fase dimostrativa posso risponderLe una volta ogni 24 ore. "
+            + "Nel frattempo i suggerimenti rapidi restano a Sua disposizione.";
+
     private final RestTemplate restTemplate;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
+
+    @Value("${jairvis.alert-emails:marvelist.app@gmail.com,marcocozma97@gmail.com}")
+    private List<String> alertEmails;
+
+    private volatile Instant fundsOutAt;
 
     @Value("${openrouter.api.url}")
     private String apiUrl;
@@ -27,7 +60,84 @@ public class JairvisService {
     @Value("${openrouter.api.key}")
     private String apiKey;
 
-    public JairvisResponse askJairvis(JairvisRequest request) {
+    public JairvisStatus status(String email) {
+        User user = findUser(email);
+        Instant next = nextAskAt(user.getJairvisLastAskAt(), Instant.now());
+        return new JairvisStatus(next == null, next, inMaintenance(), SUGGESTIONS);
+    }
+
+    public JairvisResponse askJairvis(String email, JairvisRequest request) {
+        String prompt = request.getPrompt() == null ? "" : request.getPrompt().strip();
+        if (prompt.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Domanda vuota");
+        User user = findUser(email);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+        Instant previous = user.getJairvisLastAskAt();
+        if (inMaintenance()) return reply(MAINTENANCE_REPLY, "MAINTENANCE", nextAskAt(previous, now));
+
+        boolean free = SUGGESTIONS.contains(prompt);
+        if (!free && userRepository.claimJairvisQuestion(user.getId(), now, now.minus(QUESTION_COOLDOWN)) == 0) {
+            return reply(LIMIT_REPLY, "LIMIT", nextAskAt(findUser(email).getJairvisLastAskAt(), now));
+        }
+        Instant next = free ? nextAskAt(previous, now) : now.plus(QUESTION_COOLDOWN);
+
+        try {
+            String answer = callModel(prompt, request.getFaq());
+            if (answer != null) {
+                fundsOutAt = null;
+                return reply(answer, "OK", next);
+            }
+            return failed(user, free, now, previous, "Mi scusi, signore. I miei sistemi di comunicazione sono temporaneamente offline.", "ERROR");
+
+        } catch (HttpStatusCodeException httpException) {
+            System.err.println("Errore OpenRouter " + httpException.getStatusCode() + ": " + httpException.getResponseBodyAsString());
+            if (isOutOfFunds(httpException.getStatusCode().value(), httpException.getResponseBodyAsString())) {
+                fundsOutAt = Instant.now();
+                notificationService.notifyJairvisOffline(alertEmails);
+                return failed(user, free, now, previous, MAINTENANCE_REPLY, "MAINTENANCE");
+            }
+            return failed(user, free, now, previous, "Si è verificato un errore di comunicazione con i server Stark. Riprovi più tardi, signore.", "ERROR");
+
+        } catch (Exception e) {
+            System.err.println("Errore generico: " + e.getMessage());
+            return failed(user, free, now, previous, "Si è verificato un errore nei miei circuiti principali. Riprovi più tardi, signore.", "ERROR");
+        }
+    }
+
+    // Se J.A.I.R.V.I.S. non ha potuto rispondere, la domanda del giorno non viene consumata
+    private JairvisResponse failed(User user, boolean free, Instant now, Instant previous, String text, String status) {
+        if (!free) userRepository.releaseJairvisQuestion(user.getId(), now, previous);
+        return reply(text, status, nextAskAt(previous, now));
+    }
+
+    // 402 = crediti OpenRouter finiti; 401/403 con "credit" o "limit" = limite di spesa della chiave raggiunto
+    static boolean isOutOfFunds(int status, String body) {
+        if (status == 402) return true;
+        String text = body == null ? "" : body.toLowerCase(Locale.ROOT);
+        return (status == 401 || status == 403) && (text.contains("credit") || text.contains("limit"));
+    }
+
+    static Instant nextAskAt(Instant lastAsk, Instant now) {
+        if (lastAsk == null) return null;
+        Instant next = lastAsk.plus(QUESTION_COOLDOWN);
+        return next.isAfter(now) ? next : null;
+    }
+
+    private boolean inMaintenance() {
+        Instant out = fundsOutAt;
+        return out != null && Instant.now().isBefore(out.plus(MAINTENANCE_WINDOW));
+    }
+
+    private static JairvisResponse reply(String text, String status, Instant nextAskAt) {
+        return JairvisResponse.builder().reply(text).status(status).nextAskAt(nextAskAt).build();
+    }
+
+    private User findUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente non trovato"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private String callModel(String prompt, String faq) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
         headers.set("Content-Type", "application/json");
@@ -48,44 +158,26 @@ public class JairvisService {
                 "e gli elenchi puntati (- voce) o numerati (1. voce) solo quando elenchi più elementi, ad esempio un ordine di visione. " +
                 "Non usare titoli con #, tabelle, linee orizzontali, blocchi di codice né emoji.";
 
-        if (request.getFaq() != null && !request.getFaq().isBlank()) {
+        if (faq != null && !faq.isBlank()) {
             systemPrompt += "\n\nCONOSCENZA DI MARVELIST: queste sono le FAQ ufficiali dell'app. " +
                     "Quando l'utente chiede come funziona MARVEList (Timeline, schede, progressi, voti, gradi, maratone, Road To, News, account) " +
                     "rispondi basandoti su queste informazioni, con parole tue e il tuo solito tono, senza inventare funzioni che non esistono. " +
-                    "Se la domanda riguarda l'app ma non è coperta, dillo con garbo e suggerisci la pagina FAQ.\n\n" + request.getFaq();
+                    "Se la domanda riguarda l'app ma non è coperta, dillo con garbo e suggerisci la pagina FAQ.\n\n" + faq;
         }
 
         Map<String, Object> body = Map.of(
                 "model", "anthropic/claude-haiku-4.5",
                 "messages", List.of(
                         Map.of("role", "system", "content", systemPrompt),
-                        Map.of("role", "user", "content", request.getPrompt())
+                        Map.of("role", "user", "content", prompt)
                 )
         );
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        try {
-            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, entity, Map.class);
-
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("choices")) {
-                List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
-                Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-                String replyText = (String) message.get("content");
-
-                return JairvisResponse.builder().reply(replyText).build();
-            }
-
-            return JairvisResponse.builder().reply("Mi scusi, signore. I miei sistemi di comunicazione sono temporaneamente offline.").build();
-
-        } catch (HttpStatusCodeException httpException) {
-            System.err.println("Errore OpenRouter " + httpException.getStatusCode() + ": " + httpException.getResponseBodyAsString());
-            return JairvisResponse.builder().reply("Si è verificato un errore di comunicazione. Le suggerisco di controllare la console di IntelliJ, signore.").build();
-
-        } catch (Exception e) {
-            System.err.println("Errore generico: " + e.getMessage());
-            return JairvisResponse.builder().reply("Si è verificato un errore nei miei circuiti principali. Riprovi più tardi, signore.").build();
-        }
+        ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, new HttpEntity<>(body, headers), Map.class);
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody == null || !responseBody.containsKey("choices")) return null;
+        List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+        return (String) message.get("content");
     }
 }

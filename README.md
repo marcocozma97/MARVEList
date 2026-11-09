@@ -203,6 +203,8 @@ L'Osservatore dalla Luna blu risponde alle domande frequenti, divise per sezione
 - **Personalità coerente**: dà **sempre del Lei** all'utente, mai del tu, anche quando l'utente scrive in modo informale. Lo chiama "signore" con naturalezza e mantiene il tono del maggiordomo digitale: deferente, discreto, con una punta di ironia britannica.
 - **Risposte leggibili**: il modello risponde in markdown leggero (grassetto per i titoli, elenchi per gli ordini di visione). Il frontend lo trasforma in testo formattato con un piccolo parser scritto da me, senza mai iniettare HTML: React fa l'escape di tutto.
 - **Domande rapide**: suggerimenti pronti come "In che ordine guardo l'MCU?" o "Spiegami il Multiverso".
+- **Demo a utilizzo limitato**: ogni utente ha **una domanda libera ogni 24 ore**, controllata dal backend con un aggiornamento atomico sul database. I suggerimenti rapidi non contano. Se la risposta fallisce, la domanda non viene consumata.
+- **Manutenzione**: se i crediti dell'IA finiscono, J.A.I.R.V.I.S. avvisa che DUM-E e U stanno lavorando alla manutenzione e gli account amministratori ricevono una notifica.
 - **Interfaccia da laboratorio Stark**: una sequenza di avvio ("Inizializzazione rete neurale…") e un **globo di neuroni** animato su `<canvas>`, con nodi disposti su una spirale di Fibonacci e impulsi luminosi che viaggiano lungo le sinapsi.
 - **Errori gestiti con stile**: se il servizio non risponde, J.A.I.R.V.I.S. si scusa ("I miei sistemi di comunicazione sono temporaneamente offline, signore") invece di mostrare un errore tecnico.
 
@@ -399,6 +401,7 @@ CAPSTONE/
 | `POST` | `/api/v1/marathons/{id}/check` | Spunta di un film o di un episodio |
 | `GET/PUT` | `/api/v1/users/me` | Profilo (nickname e avatar) |
 | `GET` | `/api/v1/news` | Notizie del Daily Bugle (pubblico) |
+| `GET` | `/api/v1/jairvis/status` | Domanda del giorno disponibile, manutenzione e suggerimenti |
 | `POST` | `/api/v1/jairvis/ask` | Domanda a J.A.I.R.V.I.S. |
 
 ---

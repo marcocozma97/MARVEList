@@ -55,6 +55,18 @@ public class NotificationService {
     }
 
     @Transactional
+    public void notifyJairvisOffline(Collection<String> emails) {
+        Instant since = Instant.now().minus(Duration.ofHours(24));
+        List<Notification> created = new ArrayList<>();
+        for (User user : userRepository.findByEmailIgnoreCaseIn(emails)) {
+            if (!notificationRepository.existsByRecipientAndTypeAndCreatedAtAfter(user, JAIRVIS_OFFLINE, since)) {
+                created.add(system(user, JAIRVIS_OFFLINE, null, null));
+            }
+        }
+        if (!created.isEmpty()) notificationRepository.saveAll(created);
+    }
+
+    @Transactional
     public List<NotificationResponse> list(String email) {
         User user = findUser(email);
         generatePending(user);

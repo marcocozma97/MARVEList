@@ -8,7 +8,7 @@ import { getPosterUrl } from '../utils/poster';
 import Avatar from '../components/Avatar';
 
 const ICONS: Record<NotificationType, string> = {
-  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎'
+  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎', JAIRVIS_OFFLINE: '⚡'
 };
 
 const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7', 'RELEASE_1', 'RELEASED', 'EPISODE_OUT'];
@@ -17,6 +17,7 @@ const isMediaNotice = (n: NotificationItem) => MEDIA_TYPES.includes(n.type);
 
 const target = (n: NotificationItem) => {
   if (n.type === 'NICKNAME') return '/profile';
+  if (n.type === 'JAIRVIS_OFFLINE') return '/jairvis';
   if (n.type === 'FOLLOW' || n.mediaId === null) return `/users/${n.actorId}`;
   return n.episode ? `/media/${n.mediaId}/episodes/${n.episode}` : `/media/${n.mediaId}`;
 };
@@ -42,11 +43,13 @@ const message = (n: NotificationItem) => {
     case 'RELEASED': return <>{title} è uscito! Apri la scheda e segnalo come visto quando l'hai guardato.</>;
     case 'EPISODE_OUT': return <>È uscito l'episodio {n.episode} di {title}! Ora puoi segnarlo come visto.</>;
     case 'NICKNAME': return <>Sono passati 30 giorni: se vuoi, ora puoi cambiare di nuovo il tuo nickname.</>;
+    case 'JAIRVIS_OFFLINE': return <>Allarme dal laboratorio Stark: il reattore di <strong>J.A.I.R.V.I.S.</strong> ha esaurito l'energia. I fondi per l'IA sono finiti e DUM-E e U lo hanno messo in manutenzione.</>;
   }
 };
 
 const detail = (n: NotificationItem) => {
   if (n.snippet) return `“${n.snippet}”`;
+  if (n.type === 'JAIRVIS_OFFLINE') return 'Ricarica i crediti OpenRouter per riportarlo online.';
   if (['RELEASE_30', 'RELEASE_7', 'RELEASE_1'].includes(n.type)) {
     const day = releaseDay(n);
     return day ? `Esce ${day}` : null;
@@ -102,12 +105,14 @@ const Notifications = () => {
                       poster
                         ? <img className="notif-poster" src={poster} alt="" loading="lazy" />
                         : <span className="notif-poster notif-poster-empty" aria-hidden="true">🎬</span>
+                    ) : n.type === 'JAIRVIS_OFFLINE' ? (
+                      <span className="notif-poster notif-jairvis" aria-hidden="true" />
                     ) : n.type === 'NICKNAME' ? (
                       <Avatar avatarId={profile?.avatar} name={profile?.nickname ?? ''} size={44} />
                     ) : (
                       <Avatar avatarId={n.actorAvatar} name={n.actorName} size={44} />
                     )}
-                    <span className={`notif-type notif-type-${n.type === 'EPISODE_OUT' ? 'released' : n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
+                    <span className={`notif-type notif-type-${n.type === 'EPISODE_OUT' ? 'released' : n.type === 'JAIRVIS_OFFLINE' ? 'jairvis' : n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
                   </span>
                   <span className="notif-body">
                     <span className="notif-text">{message(n)}</span>
