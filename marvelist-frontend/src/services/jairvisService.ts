@@ -6,12 +6,15 @@ export type JairvisReplyStatus = 'OK' | 'LIMIT' | 'MAINTENANCE' | 'ERROR';
 export interface JairvisReply {
   reply: string;
   status: JairvisReplyStatus;
-  nextAskAt: string | null;
+  nextAskAt?: string | null;
+  nextSuggestionAt?: string | null;
 }
 
 export interface JairvisStatus {
   available: boolean;
   nextAskAt: string | null;
+  suggestionAvailable: boolean;
+  nextSuggestionAt: string | null;
   maintenance: boolean;
   suggestions: string[];
 }
@@ -26,7 +29,7 @@ export const jairvisService = {
       return response.data;
     } catch (error) {
       console.error("Errore di comunicazione con J.A.I.R.V.I.S.", error);
-      return { reply: "Errore di sistema. Impossibile connettersi ai server Stark al momento.", status: 'ERROR', nextAskAt: null };
+      return { reply: "Errore di sistema. Impossibile connettersi ai server Stark al momento.", status: 'ERROR' };
     }
   }
 };

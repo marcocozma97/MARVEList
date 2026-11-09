@@ -28,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JairvisService {
 
-    // Una domanda libera ogni 24 ore per utente; i suggerimenti rapidi non contano
+    // Ogni 24 ore: un suggerimento rapido e una domanda scritta per utente
     public static final Duration QUESTION_COOLDOWN = Duration.ofHours(24);
     // Dopo un esaurimento dei fondi, per un po' non si riprova a chiamare il modello
     static final Duration MAINTENANCE_WINDOW = Duration.ofMinutes(15);
@@ -42,8 +42,8 @@ public class JairvisService {
 
     static final String MAINTENANCE_REPLY = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. "
             + "Tornerò in funzione molto presto.";
-    static final String LIMIT_REPLY = "Signore, per oggi ha già utilizzato la sua domanda: in questa fase dimostrativa posso risponderLe una volta ogni 24 ore. "
-            + "Nel frattempo i suggerimenti rapidi restano a Sua disposizione.";
+    static final String LIMIT_REPLY = "Signore, per oggi ha già utilizzato la sua domanda scritta: in questa fase dimostrativa posso risponderLe una volta ogni 24 ore.";
+    static final String SUGGESTION_LIMIT_REPLY = "Signore, per oggi ha già utilizzato il suo suggerimento rapido: il prossimo sarà disponibile tra 24 ore.";
 
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
@@ -62,51 +62,55 @@ public class JairvisService {
 
     public JairvisStatus status(String email) {
         User user = findUser(email);
-        Instant next = nextAskAt(user.getJairvisLastAskAt(), Instant.now());
-        return new JairvisStatus(next == null, next, inMaintenance(), SUGGESTIONS);
+        Instant now = Instant.now();
+        Instant nextAsk = nextAskAt(user.getJairvisLastAskAt(), now);
+        Instant nextSuggestion = nextAskAt(user.getJairvisLastSuggestionAt(), now);
+        return new JairvisStatus(nextAsk == null, nextAsk, nextSuggestion == null, nextSuggestion, inMaintenance(), SUGGESTIONS);
     }
 
     public JairvisResponse askJairvis(String email, JairvisRequest request) {
         String prompt = request.getPrompt() == null ? "" : request.getPrompt().strip();
         if (prompt.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Domanda vuota");
         User user = findUser(email);
-        Instant now = Instant.now().truncatedTo(ChronoUnit.MICROS);
-        Instant previous = user.getJairvisLastAskAt();
-        if (inMaintenance()) return reply(MAINTENANCE_REPLY, "MAINTENANCE", nextAskAt(previous, now));
+        if (inMaintenance()) return reply(MAINTENANCE_REPLY, "MAINTENANCE", user);
 
-        boolean free = SUGGESTIONS.contains(prompt);
-        if (!free && userRepository.claimJairvisQuestion(user.getId(), now, now.minus(QUESTION_COOLDOWN)) == 0) {
-            return reply(LIMIT_REPLY, "LIMIT", nextAskAt(findUser(email).getJairvisLastAskAt(), now));
-        }
-        Instant next = free ? nextAskAt(previous, now) : now.plus(QUESTION_COOLDOWN);
+        boolean suggestion = SUGGESTIONS.contains(prompt);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+        Instant previous = suggestion ? user.getJairvisLastSuggestionAt() : user.getJairvisLastAskAt();
+        int claimed = suggestion
+                ? userRepository.claimJairvisSuggestion(user.getId(), now, now.minus(QUESTION_COOLDOWN))
+                : userRepository.claimJairvisQuestion(user.getId(), now, now.minus(QUESTION_COOLDOWN));
+        if (claimed == 0) return reply(suggestion ? SUGGESTION_LIMIT_REPLY : LIMIT_REPLY, "LIMIT", findUser(email));
 
         try {
             String answer = callModel(prompt, request.getFaq());
             if (answer != null) {
                 fundsOutAt = null;
-                return reply(answer, "OK", next);
+                return reply(answer, "OK", suggestion ? user.getJairvisLastAskAt() : now, suggestion ? now : user.getJairvisLastSuggestionAt());
             }
-            return failed(user, free, now, previous, "Mi scusi, signore. I miei sistemi di comunicazione sono temporaneamente offline.", "ERROR");
+            return failed(email, suggestion, now, previous, "Mi scusi, signore. I miei sistemi di comunicazione sono temporaneamente offline.", "ERROR");
 
         } catch (HttpStatusCodeException httpException) {
             System.err.println("Errore OpenRouter " + httpException.getStatusCode() + ": " + httpException.getResponseBodyAsString());
             if (isOutOfFunds(httpException.getStatusCode().value(), httpException.getResponseBodyAsString())) {
                 fundsOutAt = Instant.now();
                 notificationService.notifyJairvisOffline(alertEmails);
-                return failed(user, free, now, previous, MAINTENANCE_REPLY, "MAINTENANCE");
+                return failed(email, suggestion, now, previous, MAINTENANCE_REPLY, "MAINTENANCE");
             }
-            return failed(user, free, now, previous, "Si è verificato un errore di comunicazione con i server Stark. Riprovi più tardi, signore.", "ERROR");
+            return failed(email, suggestion, now, previous, "Si è verificato un errore di comunicazione con i server Stark. Riprovi più tardi, signore.", "ERROR");
 
         } catch (Exception e) {
             System.err.println("Errore generico: " + e.getMessage());
-            return failed(user, free, now, previous, "Si è verificato un errore nei miei circuiti principali. Riprovi più tardi, signore.", "ERROR");
+            return failed(email, suggestion, now, previous, "Si è verificato un errore nei miei circuiti principali. Riprovi più tardi, signore.", "ERROR");
         }
     }
 
-    // Se J.A.I.R.V.I.S. non ha potuto rispondere, la domanda del giorno non viene consumata
-    private JairvisResponse failed(User user, boolean free, Instant now, Instant previous, String text, String status) {
-        if (!free) userRepository.releaseJairvisQuestion(user.getId(), now, previous);
-        return reply(text, status, nextAskAt(previous, now));
+    // Se J.A.I.R.V.I.S. non ha potuto rispondere, la domanda (o il suggerimento) non viene consumata
+    private JairvisResponse failed(String email, boolean suggestion, Instant now, Instant previous, String text, String status) {
+        User user = findUser(email);
+        if (suggestion) userRepository.releaseJairvisSuggestion(user.getId(), now, previous);
+        else userRepository.releaseJairvisQuestion(user.getId(), now, previous);
+        return reply(text, status, user);
     }
 
     // 402 = crediti OpenRouter finiti; 401/403 con "credit" o "limit" = limite di spesa della chiave raggiunto
@@ -127,8 +131,16 @@ public class JairvisService {
         return out != null && Instant.now().isBefore(out.plus(MAINTENANCE_WINDOW));
     }
 
-    private static JairvisResponse reply(String text, String status, Instant nextAskAt) {
-        return JairvisResponse.builder().reply(text).status(status).nextAskAt(nextAskAt).build();
+    private static JairvisResponse reply(String text, String status, User user) {
+        return reply(text, status, user.getJairvisLastAskAt(), user.getJairvisLastSuggestionAt());
+    }
+
+    private static JairvisResponse reply(String text, String status, Instant lastAsk, Instant lastSuggestion) {
+        Instant now = Instant.now();
+        return JairvisResponse.builder().reply(text).status(status)
+                .nextAskAt(nextAskAt(lastAsk, now))
+                .nextSuggestionAt(nextAskAt(lastSuggestion, now))
+                .build();
     }
 
     private User findUser(String email) {

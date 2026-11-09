@@ -21,7 +21,7 @@ const BOOT_STEPS = [
 ];
 
 const INTRO = "Sistemi online. Salve signore, sono **J.A.I.R.V.I.S.**, la nuova intelligenza sperimentale delle **Stark Industries**.\n\n"
-  + "Per ora sono attivo in versione demo, con un utilizzo limitato: una domanda al giorno, più i suggerimenti rapidi qui sotto. "
+  + "Per ora sono attivo in versione demo, con un utilizzo limitato: ogni 24 ore posso rispondere a uno dei suggerimenti rapidi qui sotto e a una domanda scritta da Lei. "
   + "In futuro diventerò lo strumento definitivo degli utenti MARVEList.\n\nCome posso assisterla oggi?";
 
 const MAINTENANCE = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. Tornerò in funzione molto presto.";
@@ -42,8 +42,8 @@ const Jairvis = () => {
   const [messages, setMessages] = useState<Message[]>([{ id: 1, text: INTRO, sender: 'jairvis' }]);
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [asked, setAsked] = useState<string[]>([]);
   const [nextAskAt, setNextAskAt] = useState<string | null>(null);
+  const [nextSuggestionAt, setNextSuggestionAt] = useState<string | null>(null);
   const [maintenance, setMaintenance] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [globeSize, setGlobeSize] = useState(() => Math.min(360, window.innerWidth - 64));
@@ -58,6 +58,7 @@ const Jairvis = () => {
       .then(status => {
         setSuggestions(status.suggestions);
         setNextAskAt(status.nextAskAt);
+        setNextSuggestionAt(status.nextSuggestionAt);
         if (status.maintenance) {
           setMaintenance(true);
           setMessages(prev => [...prev, { id: 2, text: MAINTENANCE, sender: 'jairvis' }]);
@@ -89,22 +90,20 @@ const Jairvis = () => {
     if (!isBooting && canAsk) inputRef.current?.focus({ preventScroll: true });
   }, [isBooting, canAsk]);
 
-  // Allo scadere delle 24 ore la domanda torna disponibile senza ricaricare la pagina
+  // Allo scadere delle 24 ore domanda e suggerimento tornano disponibili senza ricaricare la pagina
   useEffect(() => {
-    if (!nextAskAt) return;
-    const wait = new Date(nextAskAt).getTime() - Date.now();
-    if (wait > 2147483647) return;
-    const timer = window.setTimeout(() => setNextAskAt(null), Math.max(0, wait));
-    return () => window.clearTimeout(timer);
-  }, [nextAskAt]);
+    const timers = ([[nextAskAt, setNextAskAt], [nextSuggestionAt, setNextSuggestionAt]] as const)
+      .filter(([at]) => at)
+      .map(([at, reset]) => window.setTimeout(() => reset(null), Math.min(2147483647, Math.max(0, new Date(at as string).getTime() - Date.now()))));
+    return () => timers.forEach(t => window.clearTimeout(t));
+  }, [nextAskAt, nextSuggestionAt]);
 
   if (!isAuthenticated) return <Navigate to="/login" />;
 
   const send = async (text: string, suggestion = false) => {
     const userMessage = text.trim();
-    if (!userMessage || isTyping || maintenance || (!suggestion && !canAsk)) return;
+    if (!userMessage || isTyping || maintenance || (suggestion ? nextSuggestionAt : !canAsk)) return;
     if (!suggestion) setInput('');
-    else setAsked(prev => [...prev, userMessage]);
 
     setMessages(prev => [...prev, { id: Date.now(), text: userMessage, sender: 'user' }]);
 
@@ -115,8 +114,8 @@ const Jairvis = () => {
     setIsTyping(false);
     setMessages(prev => [...prev, { id: Date.now(), text: result.reply, sender: 'jairvis' }]);
     if (result.status === 'MAINTENANCE') setMaintenance(true);
-    if (result.status !== 'ERROR' || result.nextAskAt) setNextAskAt(result.nextAskAt ?? null);
-    if (result.status === 'ERROR' && suggestion) setAsked(prev => prev.filter(s => s !== userMessage));
+    if (result.nextAskAt !== undefined) setNextAskAt(result.nextAskAt);
+    if (result.nextSuggestionAt !== undefined) setNextSuggestionAt(result.nextSuggestionAt);
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -142,13 +141,11 @@ const Jairvis = () => {
     );
   }
 
-  const openSuggestions = suggestions.filter(s => !asked.includes(s));
-  const showSuggestions = openSuggestions.length > 0 && !isTyping && !maintenance;
+  const showSuggestions = suggestions.length > 0 && !nextSuggestionAt && !isTyping && !maintenance;
   const quota = maintenance
     ? 'J.A.I.R.V.I.S. è in manutenzione: tornerà presto disponibile'
-    : nextAskAt
-      ? `Domanda di oggi già usata · la prossima ${nextAskLabel(nextAskAt)}. I suggerimenti rapidi restano disponibili.`
-      : 'Demo: 1 domanda libera al giorno · i suggerimenti rapidi non contano';
+    : `Demo · ${nextSuggestionAt ? `suggerimento rapido di nuovo ${nextAskLabel(nextSuggestionAt)}` : '1 suggerimento rapido disponibile'}`
+      + ` · ${nextAskAt ? `domanda scritta di nuovo ${nextAskLabel(nextAskAt)}` : '1 domanda scritta disponibile'}`;
 
   return (
     <div className="jv-page">
@@ -191,7 +188,7 @@ const Jairvis = () => {
 
             {showSuggestions && (
               <div className="jv-suggestions">
-                {openSuggestions.map(s => (
+                {suggestions.map(s => (
                   <button key={s} type="button" className="jv-chip" onClick={() => send(s, true)}>{s}</button>
                 ))}
               </div>

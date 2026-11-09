@@ -43,7 +43,7 @@ class JairvisRulesTest {
     }
 
     @Test
-    void iSuggerimentiNonConsumanoLaDomanda() {
+    void iSuggerimentiSonoQuattro() {
         assertTrue(JairvisService.SUGGESTIONS.contains("Spiegami il Multiverso"));
         assertEquals(4, JairvisService.SUGGESTIONS.size());
     }

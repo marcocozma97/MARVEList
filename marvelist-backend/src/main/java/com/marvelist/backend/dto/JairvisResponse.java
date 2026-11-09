@@ -14,5 +14,6 @@ import java.time.Instant;
 public class JairvisResponse {
     private String reply; // La risposta generata dall'IA
     private String status; // OK, LIMIT (domanda del giorno già usata), MAINTENANCE (fondi IA esauriti), ERROR
-    private Instant nextAskAt; // Da quando si può fare la prossima domanda libera (null se è già disponibile)
+    private Instant nextAskAt; // Da quando si può fare la prossima domanda scritta (null se è già disponibile)
+    private Instant nextSuggestionAt; // Da quando si può usare il prossimo suggerimento rapido (null se è già disponibile)
 }
