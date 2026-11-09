@@ -2,6 +2,7 @@ package com.marvelist.backend.controllers;
 
 import com.marvelist.backend.dto.MarathonDtos.*;
 import com.marvelist.backend.services.MarathonService;
+import com.marvelist.backend.services.PosterSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MarathonController {
 
     private final MarathonService marathonService;
+    private final PosterSyncService posterSyncService;
 
     @GetMapping
     public ResponseEntity<List<MarathonSummary>> list(Authentication auth) {
@@ -23,6 +25,7 @@ public class MarathonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MarathonDetail> get(@PathVariable Long id, Authentication auth) {
+        posterSyncService.refreshUpcomingIfStale();
         return ResponseEntity.ok(marathonService.get(auth.getName(), id));
     }
 

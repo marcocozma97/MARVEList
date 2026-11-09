@@ -139,4 +139,41 @@ class MarathonSchedulerTest {
         assertTrue(result.feasible());
         assertEquals(1, result.days().size());
     }
+
+    @Test
+    void unEpisodioConDataNotaVaEsattamenteNelGiornoDiUscita() {
+        List<Unit> units = new ArrayList<>(episodes(7L, 7));
+        units.add(new Unit(7L, 8, false, MONDAY.plusDays(1), false, true));
+        units.add(new Unit(9L, null, true));
+
+        var result = MarathonScheduler.plan(units, MONDAY, MONDAY.plusDays(30), new Rules(7, 3, true));
+
+        var tuesday = result.days().get(1);
+        assertEquals(MONDAY.plusDays(1), tuesday.date());
+        assertTrue(tuesday.units().stream().anyMatch(u -> u.episode() != null && u.episode() == 8));
+        assertEquals(3, tuesday.units().stream().filter(u -> !u.film()).count());
+        assertTrue(result.days().get(0).units().stream().noneMatch(u -> u.episode() != null && u.episode() == 8));
+        assertTrue(result.feasible());
+    }
+
+    @Test
+    void unEpisodioFissatoNonBloccaIlRestoDellaMaratona() {
+        List<Unit> units = new ArrayList<>();
+        units.add(new Unit(7L, 8, false, MONDAY.plusDays(10), false, true));
+        units.add(new Unit(9L, null, true));
+
+        var result = MarathonScheduler.plan(units, MONDAY, MONDAY.plusDays(30), new Rules(7, 3, true));
+
+        assertEquals(MONDAY, result.days().get(0).date());
+        assertTrue(result.days().get(0).units().get(0).film());
+        assertEquals(MONDAY.plusDays(10), result.days().get(1).date());
+        assertEquals(MONDAY.plusDays(10), result.requiredEndDate());
+    }
+
+    @Test
+    void unEpisodioCheEsceDopoLaFineRendeIlPianoImpossibile() {
+        var result = MarathonScheduler.plan(List.of(new Unit(7L, 8, false, MONDAY.plusDays(40), false, true)),
+                MONDAY, MONDAY.plusDays(30), new Rules(7, 3, true));
+        assertFalse(result.feasible());
+    }
 }

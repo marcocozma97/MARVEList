@@ -253,11 +253,14 @@ public class MarathonService {
             return today.equals(item.getDoneDate()) ? List.of(new Unit(media.getId(), null, true, availableFrom, true)) : List.of();
         }
         List<Unit> units = new ArrayList<>();
+        List<LocalDate> airDates = EpisodeSchedule.dates(media);
         for (int ep = 1; ep <= episodeCount(media); ep++) {
             LocalDate episodeFrom = episodeAvailableFrom(media, ep, availableFrom);
+            LocalDate airDate = ep <= airDates.size() ? airDates.get(ep - 1) : null;
+            boolean pinned = airDate != null && airDate.isAfter(today) && airDate.equals(episodeFrom);
             boolean checked = item != null && item.getDoneEpisodes().contains(ep);
             if (!checked && seenEpisodes.contains(ep)) continue;
-            if (!checked) units.add(new Unit(media.getId(), ep, false, episodeFrom));
+            if (!checked) units.add(new Unit(media.getId(), ep, false, episodeFrom, false, pinned));
             else if (today.equals(item.getEpisodeDoneDates().get(ep))) units.add(new Unit(media.getId(), ep, false, episodeFrom, true));
         }
         return units;

@@ -4,15 +4,18 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 // Calcola il calendario di una maratona: distribuisce, nell'ordine di visione, i film e gli episodi
 // ancora da vedere sui giorni disponibili rispettando i limiti scelti dall'utente.
 // Si parte sempre da oggi: ciò che non è stato visto nei giorni passati scivola da solo sui giorni successivi.
 // Le unità spuntate oggi (done) restano nel giorno di oggi, barrate, senza occupare i giorni successivi.
+// Gli episodi non ancora usciti con una data nota (pinned) vanno esattamente nel giorno della loro uscita.
 public final class MarathonScheduler {
 
     // availableFrom: per i titoli "in arrivo" il giorno di uscita, prima del quale non si può vedere
-    public record Unit(Long mediaId, Integer episode, boolean film, LocalDate availableFrom, boolean done) {
+    public record Unit(Long mediaId, Integer episode, boolean film, LocalDate availableFrom, boolean done, boolean pinned) {
+        public Unit(Long mediaId, Integer episode, boolean film, LocalDate availableFrom, boolean done) { this(mediaId, episode, film, availableFrom, done, false); }
         public Unit(Long mediaId, Integer episode, boolean film, LocalDate availableFrom) { this(mediaId, episode, film, availableFrom, false); }
         public Unit(Long mediaId, Integer episode, boolean film) { this(mediaId, episode, film, null); }
     }
@@ -39,11 +42,21 @@ public final class MarathonScheduler {
         List<Day> days = new ArrayList<>();
         if (allUnits.isEmpty()) return new Result(days, 0, from);
         List<Unit> doneToday = allUnits.stream().filter(Unit::done).toList();
-        List<Unit> units = allUnits.stream().filter(u -> !u.done()).toList();
-        if (units.isEmpty()) {
+        TreeMap<LocalDate, List<Unit>> pinned = new TreeMap<>();
+        List<Unit> units = new ArrayList<>();
+        for (Unit unit : allUnits) {
+            if (unit.done()) continue;
+            if (unit.pinned() && unit.availableFrom() != null && unit.availableFrom().isAfter(from)) {
+                pinned.computeIfAbsent(unit.availableFrom(), d -> new ArrayList<>()).add(unit);
+            } else {
+                units.add(unit);
+            }
+        }
+        if (units.isEmpty() && pinned.isEmpty()) {
             days.add(new Day(from, doneToday));
             return new Result(days, 0, from);
         }
+        LocalDate lastPinned = pinned.isEmpty() ? null : pinned.lastKey();
 
         int dailyFilmLimit = Math.max(1, (int) Math.ceil(rules.maxFilmsPerWeek() / 7.0));
         int index = 0;
@@ -51,18 +64,17 @@ public final class MarathonScheduler {
         LocalDate lastUsed = null;
         LocalDate currentWeek = null;
         int weekFilms = 0;
+        boolean blocked = false;
 
-        for (int offset = 0; offset < MAX_DAYS && index < units.size(); offset++) {
+        for (int offset = 0; offset < MAX_DAYS; offset++) {
             LocalDate date = from.plusDays(offset);
+            boolean flowLeft = index < units.size() && !blocked;
+            if (!flowLeft && (lastPinned == null || date.isAfter(lastPinned))) break;
             LocalDate week = date.with(DayOfWeek.MONDAY);
             if (!week.equals(currentWeek)) {
                 currentWeek = week;
                 weekFilms = 0;
             }
-
-            // Un'unità che non potrà mai essere piazzata (limite a 0) blocca tutto: piano impossibile
-            Unit next = units.get(index);
-            if ((next.film() && rules.maxFilmsPerWeek() <= 0) || (!next.film() && rules.maxEpisodesPerDay() <= 0)) break;
 
             List<Unit> today = new ArrayList<>();
             int filmsToday = 0, episodesToday = 0;
@@ -72,19 +84,32 @@ public final class MarathonScheduler {
                 episodesToday = doneToday.size() - filmsToday;
                 weekFilms += filmsToday;
             }
-            while (index < units.size()) {
-                Unit unit = units.get(index);
-                boolean fits = unit.film()
-                        ? filmsToday < dailyFilmLimit && weekFilms < rules.maxFilmsPerWeek() && (rules.mixedDays() || episodesToday == 0)
-                        : episodesToday < rules.maxEpisodesPerDay() && (rules.mixedDays() || filmsToday == 0);
-                // Un titolo non ancora uscito si aspetta (e con lui tutto quello che viene dopo)
-                if (unit.availableFrom() != null && date.isBefore(unit.availableFrom())) fits = false;
-                if (!fits) break; // l'ordine di visione non si salta: il resto va al giorno dopo
-                today.add(unit);
-                if (unit.film()) { filmsToday++; weekFilms++; } else { episodesToday++; }
-                index++;
+            List<Unit> pinnedToday = pinned.getOrDefault(date, List.of());
+            today.addAll(pinnedToday);
+            episodesToday += pinnedToday.size();
+
+            if (flowLeft) {
+                // Un'unità che non potrà mai essere piazzata (limite a 0) blocca tutto: piano impossibile
+                Unit next = units.get(index);
+                if ((next.film() && rules.maxFilmsPerWeek() <= 0) || (!next.film() && rules.maxEpisodesPerDay() <= 0)) {
+                    blocked = true;
+                } else {
+                    while (index < units.size()) {
+                        Unit unit = units.get(index);
+                        boolean fits = unit.film()
+                                ? filmsToday < dailyFilmLimit && weekFilms < rules.maxFilmsPerWeek() && (rules.mixedDays() || episodesToday == 0)
+                                : episodesToday < rules.maxEpisodesPerDay() && (rules.mixedDays() || filmsToday == 0);
+                        // Un titolo non ancora uscito senza data precisa si aspetta (e con lui tutto quello che viene dopo)
+                        if (unit.availableFrom() != null && date.isBefore(unit.availableFrom())) fits = false;
+                        if (!fits) break; // l'ordine di visione non si salta: il resto va al giorno dopo
+                        today.add(unit);
+                        if (unit.film()) { filmsToday++; weekFilms++; } else { episodesToday++; }
+                        index++;
+                    }
+                }
             }
 
+            today.sort(java.util.Comparator.comparingInt(allUnits::indexOf));
             if (today.stream().anyMatch(u -> !u.done())) {
                 lastUsed = date;
                 if (!date.isAfter(to)) days.add(new Day(date, today));
