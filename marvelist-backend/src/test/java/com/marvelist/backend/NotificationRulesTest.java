@@ -10,6 +10,8 @@ import com.marvelist.backend.repositories.NicknameClaimRepository;
 import com.marvelist.backend.services.RankCalculator;
 import com.marvelist.backend.repositories.UserRepository;
 import com.marvelist.backend.services.EpisodeSchedule;
+import com.marvelist.backend.services.MarathonScheduler;
+import com.marvelist.backend.services.MarathonService;
 import com.marvelist.backend.services.NotificationService;
 import com.marvelist.backend.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -104,6 +106,19 @@ class NotificationRulesTest {
         assertEquals(List.of(2, 3), NotificationService.episodesOut(media, TODAY));
         assertEquals(List.of(3), NotificationService.episodesOut(media, TODAY.plusDays(2)));
         assertEquals(List.of(), NotificationService.episodesOut(airing("2026-11-08", 1), TODAY));
+    }
+
+    @Test
+    void nelleMaratoneOgniEpisodioAspettaLaSuaDataDiUscita() {
+        Media media = airing("2026-10-13,2026-10-20,2026-11-03,2026-11-10", 4);
+        assertEquals(LocalDate.of(2026, 11, 10), MarathonService.episodeAvailableFrom(media, 4, null));
+        assertEquals(LocalDate.of(2026, 11, 3), MarathonService.episodeAvailableFrom(media, 3, null));
+        assertEquals(LocalDate.of(2026, 12, 1), MarathonService.episodeAvailableFrom(media, 4, LocalDate.of(2026, 12, 1)));
+        assertNull(MarathonService.episodeAvailableFrom(airing(null, 4), 2, null));
+
+        var units = List.of(new MarathonScheduler.Unit(4L, 4, false, LocalDate.of(2026, 11, 10)));
+        var plan = MarathonScheduler.plan(units, TODAY, LocalDate.of(2026, 12, 31), new MarathonScheduler.Rules(3, 3, true));
+        assertEquals(LocalDate.of(2026, 11, 10), plan.days().get(0).date());
     }
 
     private UserService userService(User user) {

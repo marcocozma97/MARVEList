@@ -229,7 +229,7 @@ const MarathonForm = () => {
           <label className="check-row">
             <input type="checkbox" checked={hideSeen} onChange={(e) => setHideSeen(e.target.checked)} />
             <span className="check-box" aria-hidden="true" />
-            <span>Non mostrare i contenuti già visti <small>(film visti per intero o stagioni complete)</small></span>
+            <span>Non mostrare i contenuti già visti <small>(film visti per intero, stagioni complete e singoli episodi già visti)</small></span>
           </label>
 
           <p className="form-hint">

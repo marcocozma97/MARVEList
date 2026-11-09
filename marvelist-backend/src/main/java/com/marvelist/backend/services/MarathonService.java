@@ -7,6 +7,7 @@ import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.MarathonRepository;
 import com.marvelist.backend.repositories.MediaRepository;
+import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.UserRepository;
 import com.marvelist.backend.services.MarathonScheduler.Rules;
 import com.marvelist.backend.services.MarathonScheduler.Unit;
@@ -34,6 +35,7 @@ public class MarathonService {
     private final MediaRepository mediaRepository;
     private final UserRepository userRepository;
     private final MediaService mediaService;
+    private final UserProgressRepository progressRepository;
 
     // --- LETTURA ---
 
@@ -61,12 +63,14 @@ public class MarathonService {
     @Transactional(readOnly = true)
     public PlanResponse preview(String email, MarathonRequest request) {
         validate(request);
-        Set<Long> skipped = watchLaterIds(findUser(email));
+        User user = findUser(email);
+        Set<Long> skipped = watchLaterIds(user);
+        Map<Long, Set<Integer>> seenEpisodes = seenEpisodes(user, request.hideSeen());
         List<Media> media = loadMedia(request.mediaIds()).stream().filter(m -> !skipped.contains(m.getId())).toList();
         requireReleasedWithin(media, request.endDate());
         List<Unit> units = new ArrayList<>();
-        media.forEach(m -> units.addAll(unitsOf(m, null, LocalDate.now())));
-        return toPlan(media, units, plan(units, request));
+        media.forEach(m -> units.addAll(unitsOf(m, null, LocalDate.now(), seenEpisodes.getOrDefault(m.getId(), Set.of()))));
+        return toPlan(media, units, plan(units, request), seenEpisodes, Map.of());
     }
 
     // --- SCRITTURA ---
@@ -137,8 +141,9 @@ public class MarathonService {
         LocalDate today = LocalDate.now();
         // I titoli in "Guarda dopo" restano nella maratona ma non vanno in calendario
         Set<Long> skipped = watchLaterIds(marathon.getUser());
+        Map<Long, Set<Integer>> seenEpisodes = seenEpisodes(marathon.getUser(), request.hideSeen());
         media.stream().filter(m -> !skipped.contains(m.getId()))
-                .forEach(m -> units.addAll(unitsOf(m, existing.get(m.getId()), today)));
+                .forEach(m -> units.addAll(unitsOf(m, existing.get(m.getId()), today, seenEpisodes.getOrDefault(m.getId(), Set.of()))));
 
         // Prima di salvare: se non c'è il tempo materiale, si chiede di cambiare le date o i limiti
         MarathonScheduler.Result result = plan(units, request);
@@ -191,11 +196,37 @@ public class MarathonService {
     private List<Unit> scheduledUnits(Marathon marathon) {
         LocalDate today = LocalDate.now();
         Set<Long> skipped = watchLaterIds(marathon.getUser());
+        Map<Long, Set<Integer>> seenEpisodes = seenEpisodes(marathon.getUser(), marathon.isHideSeen());
         List<Unit> units = new ArrayList<>();
         marathon.getItems().stream()
                 .filter(i -> !skipped.contains(i.getMedia().getId()))
-                .forEach(i -> units.addAll(unitsOf(i.getMedia(), i, today)));
+                .forEach(i -> units.addAll(unitsOf(i.getMedia(), i, today, seenEpisodes.getOrDefault(i.getMedia().getId(), Set.of()))));
         return units;
+    }
+
+    private Map<Long, Set<Integer>> seenEpisodes(User user, boolean hideSeen) {
+        if (!hideSeen) return Map.of();
+        Map<Long, Set<Integer>> seen = new HashMap<>();
+        progressRepository.findAllByUser(user).forEach(p -> seen.put(p.getMedia().getId(), Set.copyOf(p.getWatchedEpisodes())));
+        return seen;
+    }
+
+    private static int excludedEpisodes(Media media, MarathonItem item, Set<Integer> seen) {
+        if ("FILM".equals(media.getType()) || seen.isEmpty()) return 0;
+        int count = 0;
+        for (int ep = 1; ep <= episodeCount(media); ep++) {
+            if (seen.contains(ep) && (item == null || !item.getDoneEpisodes().contains(ep))) count++;
+        }
+        return count;
+    }
+
+    private int totalUnits(Marathon marathon, List<Media> media) {
+        Map<Long, Set<Integer>> seen = seenEpisodes(marathon.getUser(), marathon.isHideSeen());
+        Map<Long, MarathonItem> items = marathon.getItems().stream()
+                .collect(Collectors.toMap(i -> i.getMedia().getId(), Function.identity(), (a, b) -> a));
+        return totalUnits(media) - media.stream()
+                .mapToInt(m -> excludedEpisodes(m, items.get(m.getId()), seen.getOrDefault(m.getId(), Set.of())))
+                .sum();
     }
 
     // Titoli che l'utente ha messo in "Guarda dopo": la maratona li salta e non li conta
@@ -215,7 +246,7 @@ public class MarathonService {
     // Un film è una sola unità; una serie è un'unità per ogni episodio non ancora spuntato.
     // Ciò che è stato spuntato oggi resta come unità "done", così tiene il suo posto nel calendario di oggi.
     // I titoli in arrivo portano con sé il giorno di uscita: prima di quello il calendario non li mette.
-    private static List<Unit> unitsOf(Media media, MarathonItem item, LocalDate today) {
+    private static List<Unit> unitsOf(Media media, MarathonItem item, LocalDate today, Set<Integer> seenEpisodes) {
         LocalDate availableFrom = availableFrom(media);
         if ("FILM".equals(media.getType())) {
             if (item == null || !item.isDone()) return List.of(new Unit(media.getId(), null, true, availableFrom));
@@ -223,10 +254,23 @@ public class MarathonService {
         }
         List<Unit> units = new ArrayList<>();
         for (int ep = 1; ep <= episodeCount(media); ep++) {
-            if (item == null || !item.getDoneEpisodes().contains(ep)) units.add(new Unit(media.getId(), ep, false, availableFrom));
-            else if (today.equals(item.getEpisodeDoneDates().get(ep))) units.add(new Unit(media.getId(), ep, false, availableFrom, true));
+            LocalDate episodeFrom = episodeAvailableFrom(media, ep, availableFrom);
+            boolean checked = item != null && item.getDoneEpisodes().contains(ep);
+            if (!checked && seenEpisodes.contains(ep)) continue;
+            if (!checked) units.add(new Unit(media.getId(), ep, false, episodeFrom));
+            else if (today.equals(item.getEpisodeDoneDates().get(ep))) units.add(new Unit(media.getId(), ep, false, episodeFrom, true));
         }
         return units;
+    }
+
+    public static LocalDate episodeAvailableFrom(Media media, int episode, LocalDate seasonFrom) {
+        List<LocalDate> dates = EpisodeSchedule.dates(media);
+        LocalDate date = episode <= dates.size() ? dates.get(episode - 1) : null;
+        if (date == null && !dates.isEmpty() && !EpisodeSchedule.isEpisodeOut(media, episode, EpisodeSchedule.today())) {
+            date = dates.stream().filter(Objects::nonNull).max(Comparator.naturalOrder()).orElse(null);
+        }
+        if (date == null) return seasonFrom;
+        return seasonFrom != null && seasonFrom.isAfter(date) ? seasonFrom : date;
     }
 
     // Giorno da cui un titolo in arrivo si può vedere: la data TMDB se c'è, altrimenti il 31/12 dell'anno
@@ -261,9 +305,12 @@ public class MarathonService {
                 + result.requiredEndDate().format(IT_DATE) + " oppure aumenta i film a settimana o gli episodi al giorno.";
     }
 
-    private PlanResponse toPlan(List<Media> media, List<Unit> units, MarathonScheduler.Result result) {
+    private PlanResponse toPlan(List<Media> media, List<Unit> units, MarathonScheduler.Result result,
+                                Map<Long, Set<Integer>> seenEpisodes, Map<Long, MarathonItem> items) {
         int films = (int) media.stream().filter(m -> "FILM".equals(m.getType())).count();
-        int episodes = media.stream().filter(m -> !"FILM".equals(m.getType())).mapToInt(MarathonService::episodeCount).sum();
+        int episodes = media.stream().filter(m -> !"FILM".equals(m.getType()))
+                .mapToInt(m -> episodeCount(m) - excludedEpisodes(m, items.get(m.getId()), seenEpisodes.getOrDefault(m.getId(), Set.of())))
+                .sum();
         return new PlanResponse(result.feasible(), result.requiredEndDate(), films, episodes, pendingCount(units),
                 result.unscheduled(), result.days().size(), result.feasible() ? null : infeasibleMessage(result));
     }
@@ -272,7 +319,7 @@ public class MarathonService {
         List<Media> media = countedMedia(marathon, watchLaterIds(marathon.getUser()));
         List<Unit> units = scheduledUnits(marathon);
         MarathonScheduler.Result result = plan(marathon, units);
-        int total = totalUnits(media);
+        int total = totalUnits(marathon, media);
         return new MarathonSummary(marathon.getId(), marathon.getName(), marathon.getBackground(), marathon.getVisionOrder(),
                 marathon.getStartDate(), marathon.getEndDate(), total, total - pendingCount(units), result.feasible(),
                 result.days().isEmpty() ? null : result.days().get(0).date());
@@ -284,7 +331,7 @@ public class MarathonService {
         Map<Long, Media> byId = media.stream().collect(Collectors.toMap(Media::getId, Function.identity(), (a, b) -> a));
         List<Unit> units = scheduledUnits(marathon);
         MarathonScheduler.Result result = plan(marathon, units);
-        int total = totalUnits(media);
+        int total = totalUnits(marathon, media);
 
         List<ItemResponse> items = marathon.getItems().stream().map(i -> new ItemResponse(
                 i.getMedia().getId(), i.getMedia().getTitle(), i.getMedia().getType(), i.getMedia().getPosterPath(),
@@ -299,7 +346,8 @@ public class MarathonService {
         return new MarathonDetail(marathon.getId(), marathon.getName(), marathon.getBackground(), marathon.getVisionOrder(),
                 marathon.getStartDate(), marathon.getEndDate(), marathon.isHideSeen(), marathon.isMixedDays(),
                 marathon.getMaxFilmsPerWeek(), marathon.getMaxEpisodesPerDay(), total, total - pendingCount(units),
-                items, days, toPlan(media, units, result));
+                items, days, toPlan(media, units, result, seenEpisodes(marathon.getUser(), marathon.isHideSeen()),
+                        marathon.getItems().stream().collect(Collectors.toMap(i -> i.getMedia().getId(), Function.identity(), (x, y) -> x))));
     }
 
     private void validate(MarathonRequest r) {
