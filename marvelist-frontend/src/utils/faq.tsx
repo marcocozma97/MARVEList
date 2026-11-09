@@ -69,7 +69,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('I titoli non ancora usciti contano?',
         <>No: i titoli "in arrivo" non contano come mancanti. Quando escono entrano nel conteggio e il grado si aggiorna da solo.</>),
       item('Posso cambiare nickname e immagine profilo?',
-        <>Sì, nel profilo. Il nickname lo scegli al primo accesso e poi puoi cambiarlo con la matita accanto al nome <strong>una volta ogni 30 giorni</strong>: quando è di nuovo possibile ti arriva una notifica. L'immagine invece la cambi quando vuoi toccando l'avatar.</>),
+        <>Sì, nel profilo. Il nickname lo scegli al primo accesso ed è unico: nessun altro può usarlo, e resta tuo anche se poi lo cambi. Poi puoi cambiarlo con la matita accanto al nome <strong>una volta ogni 30 giorni</strong>: quando è di nuovo possibile ti arriva una notifica. L'immagine invece la cambi quando vuoi toccando l'avatar.</>),
     ],
   },
   {
@@ -87,13 +87,13 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     id: 'social', title: 'Community e amici', items: [
       item('Come seguo un altro utente?',
-        <>Tocca il nome o l'avatar di chi ha scritto un commento, oppure usa <strong>Trova utenti</strong> nel tuo profilo, e premi <strong>Segui</strong>. Nel suo profilo vedi i preferiti e le maratone pubbliche: "Continua a guardare", visti e progressi restano privati.</>),
+        <>Tocca il nome o l'avatar di chi ha scritto un commento, oppure usa <strong>Trova utenti</strong> nel tuo profilo, e premi <strong>Segui</strong>. Da quel momento nel suo profilo vedi il grado, tutte le sue maratone, i titoli che sta guardando (senza sapere a che punto è) e i preferiti. Chi segui e chi ti segue lo vede solo il proprietario del profilo.</>),
       item('Posso mettere mi piace e rispondere ai commenti?',
         <>Sì: sotto ogni commento trovi il cuore e <strong>Rispondi</strong>. Le risposte compaiono sotto il commento e possono essere segnate come spoiler.</>),
       item('Dove vedo le notifiche?',
         <>Nella campanella in alto, accanto al profilo: ti avvisa quando qualcuno inizia a seguirti, mette mi piace a un tuo commento o ti risponde, quando arriva un nuovo titolo nel catalogo e quando ne esce uno. Per i titoli con una data di uscita ti ricorda anche un mese, una settimana e un giorno prima.</>),
       item('Le mie maratone sono visibili agli altri?',
-        <>Solo se lo scegli tu: quando crei o modifichi una maratona puoi impostarla come <strong>Privata</strong> (la vedi solo tu) o <strong>Pubblica</strong> (gli altri vedono nome e titoli, non i tuoi progressi).</>),
+        <>Sì, a chi ti segue: vede il nome della maratona e i titoli che contiene, non i tuoi progressi. Chi non ti segue non vede nulla del tuo profilo oltre a nome, immagine e numero di follower.</>),
     ],
   },
   {
