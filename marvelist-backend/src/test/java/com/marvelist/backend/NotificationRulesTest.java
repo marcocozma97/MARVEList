@@ -4,7 +4,10 @@ import com.marvelist.backend.dto.UserProfileRequest;
 import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.Role;
 import com.marvelist.backend.entities.User;
+import com.marvelist.backend.entities.NicknameClaim;
 import com.marvelist.backend.repositories.FollowRepository;
+import com.marvelist.backend.repositories.NicknameClaimRepository;
+import com.marvelist.backend.services.RankCalculator;
 import com.marvelist.backend.repositories.UserRepository;
 import com.marvelist.backend.services.EpisodeSchedule;
 import com.marvelist.backend.services.NotificationService;
@@ -22,6 +25,7 @@ import java.util.Optional;
 import static com.marvelist.backend.entities.NotificationType.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 class NotificationRulesTest {
@@ -106,7 +110,54 @@ class NotificationRulesTest {
         UserRepository users = mock(UserRepository.class);
         when(users.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(users.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        return new UserService(users, mock(FollowRepository.class));
+        claims = mock(NicknameClaimRepository.class);
+        when(claims.findByNicknameKey(any())).thenReturn(Optional.empty());
+        return new UserService(users, mock(FollowRepository.class), claims);
+    }
+
+    private NicknameClaimRepository claims;
+
+    @Test
+    void unNicknameGiaPresoDaUnAltroUtenteVieneRifiutato() {
+        User user = User.builder().id(1L).name("Tony").email("tony@stark.it").role(Role.USER).build();
+        User other = User.builder().id(2L).name("Peter").email("peter@parker.it").role(Role.USER).build();
+        UserService service = userService(user);
+        when(claims.findByNicknameKey("iron man")).thenReturn(Optional.of(NicknameClaim.builder().nicknameKey("iron man").user(other).build()));
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> service.updateProfile("tony@stark.it", new UserProfileRequest("  Iron   MAN ", null)));
+        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+        assertNull(user.getNicknameChangedAt());
+
+        service.updateProfile("tony@stark.it", new UserProfileRequest("Tony  Stark", null));
+        assertEquals("Tony Stark", user.getNickname());
+        verify(claims).save(argThat(c -> c.getNicknameKey().equals("tony stark") && c.getUser() == user));
+    }
+
+    @Test
+    void unNicknameGiaUsatoDaMeTornaDisponibile() {
+        User user = User.builder().id(1L).name("Tony").email("tony@stark.it").role(Role.USER)
+                .nicknameChangedAt(Instant.now().minus(Duration.ofDays(40))).nickname("Stark").build();
+        UserService service = userService(user);
+        when(claims.findByNicknameKey("ironman")).thenReturn(Optional.of(NicknameClaim.builder().nicknameKey("ironman").user(user).build()));
+
+        assertTrue(service.isNicknameAvailable("tony@stark.it", "IronMan"));
+        service.updateProfile("tony@stark.it", new UserProfileRequest("IronMan", null));
+        assertEquals("IronMan", user.getNickname());
+        verify(claims, never()).save(any());
+    }
+
+    @Test
+    void ilGradoSiCalcolaSulServerSenzaMostrareIVisti() {
+        List<Media> all = List.of(
+                Media.builder().id(1L).visionOrder("MCU").upcoming(false).build(),
+                Media.builder().id(2L).visionOrder("MCU").upcoming(false).build(),
+                Media.builder().id(3L).visionOrder("MCU").upcoming(true).build(),
+                Media.builder().id(4L).visionOrder("FAN").upcoming(false).build());
+        assertEquals("Recluta S.H.I.E.L.D.", RankCalculator.compute(all, java.util.Set.of()).title());
+        assertEquals("Generale S.H.I.E.L.D.", RankCalculator.compute(all, java.util.Set.of(1L)).title());
+        assertEquals(new RankCalculator.RankInfo("Eroe", "red-bright"), RankCalculator.compute(all, java.util.Set.of(1L, 2L)));
+        assertEquals("Planet Avenger", RankCalculator.compute(all, java.util.Set.of(1L, 2L, 4L)).title());
     }
 
     @Test

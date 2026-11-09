@@ -103,4 +103,5 @@ const RankBadge = ({ rank }: { rank: Rank }) => {
   );
 };
 
+export { BadgePill as RankPill };
 export default RankBadge;

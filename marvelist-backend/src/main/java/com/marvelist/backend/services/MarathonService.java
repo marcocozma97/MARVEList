@@ -45,9 +45,8 @@ public class MarathonService {
     }
 
     @Transactional(readOnly = true)
-    public List<PublicMarathon> publicLists(User owner) {
+    public List<PublicMarathon> lists(User owner) {
         return marathonRepository.findAllByUserOrderByStartDateAscIdAsc(owner).stream()
-                .filter(m -> Boolean.TRUE.equals(m.getPublicList()))
                 .map(m -> new PublicMarathon(m.getId(), m.getName(), m.getBackground(), m.getVisionOrder(),
                         m.getStartDate(), m.getEndDate(), m.getItems().stream().map(i -> i.getMedia().getId()).toList()))
                 .toList();
@@ -156,7 +155,6 @@ public class MarathonService {
         marathon.setMixedDays(request.mixedDays());
         marathon.setMaxFilmsPerWeek(request.maxFilmsPerWeek());
         marathon.setMaxEpisodesPerDay(request.maxEpisodesPerDay());
-        marathon.setPublicList(request.publicList());
 
         // Titoli tolti dal form -> eliminati; titoli rimasti -> nuova posizione
         Set<Long> keep = media.stream().map(Media::getId).collect(Collectors.toSet());
@@ -277,7 +275,7 @@ public class MarathonService {
         int total = totalUnits(media);
         return new MarathonSummary(marathon.getId(), marathon.getName(), marathon.getBackground(), marathon.getVisionOrder(),
                 marathon.getStartDate(), marathon.getEndDate(), total, total - pendingCount(units), result.feasible(),
-                result.days().isEmpty() ? null : result.days().get(0).date(), Boolean.TRUE.equals(marathon.getPublicList()));
+                result.days().isEmpty() ? null : result.days().get(0).date());
     }
 
     private MarathonDetail toDetail(Marathon marathon) {
@@ -301,7 +299,7 @@ public class MarathonService {
         return new MarathonDetail(marathon.getId(), marathon.getName(), marathon.getBackground(), marathon.getVisionOrder(),
                 marathon.getStartDate(), marathon.getEndDate(), marathon.isHideSeen(), marathon.isMixedDays(),
                 marathon.getMaxFilmsPerWeek(), marathon.getMaxEpisodesPerDay(), total, total - pendingCount(units),
-                items, days, toPlan(media, units, result), Boolean.TRUE.equals(marathon.getPublicList()));
+                items, days, toPlan(media, units, result));
     }
 
     private void validate(MarathonRequest r) {

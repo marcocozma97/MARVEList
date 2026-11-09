@@ -21,6 +21,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getProfile(authentication.getName()));
     }
 
+    @GetMapping("/nickname-available")
+    public ResponseEntity<java.util.Map<String, Boolean>> nicknameAvailable(@RequestParam String name, Authentication authentication) {
+        return ResponseEntity.ok(java.util.Map.of("available", userService.isNicknameAvailable(authentication.getName(), name)));
+    }
+
     @PutMapping("/me")
     public ResponseEntity<UserProfileResponse> updateMe(@RequestBody UserProfileRequest request, Authentication authentication) {
         return ResponseEntity.ok(userService.updateProfile(authentication.getName(), request));

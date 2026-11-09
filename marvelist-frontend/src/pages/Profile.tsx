@@ -16,6 +16,7 @@ import { computeRank } from '../utils/rank';
 import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
 import { AVATARS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
+import { useNicknameCheck } from '../hooks/useNicknameCheck';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -34,6 +35,7 @@ const Profile = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [confirmNickname, setConfirmNickname] = useState(false);
   const [nicknameDraft, setNicknameDraft] = useState('');
+  const nicknameStatus = useNicknameCheck(isEditingName ? nicknameDraft : '', profile?.nickname);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -117,6 +119,10 @@ const Profile = () => {
     const nickname = nicknameDraft.trim();
     if (nickname.length < 2 || nickname.length > 30) {
       setProfileError('Il nickname deve avere tra 2 e 30 caratteri.');
+      return;
+    }
+    if (nicknameStatus === 'taken') {
+      setProfileError('Questo nickname è già usato da un altro utente.');
       return;
     }
     if (nickname === profile?.nickname) {
@@ -208,8 +214,10 @@ const Profile = () => {
                   autoFocus
                   aria-label="Nuovo nickname"
                 />
-                <button type="submit" className="btn-marvel btn-inline" disabled={isSaving}>{confirmNickname ? 'Sì, cambia' : 'Salva'}</button>
+                <button type="submit" className="btn-marvel btn-inline" disabled={isSaving || nicknameStatus === 'taken' || nicknameStatus === 'checking'}>{confirmNickname ? 'Sì, cambia' : 'Salva'}</button>
                 <button type="button" className="btn-ghost" onClick={cancelEditName}>Annulla</button>
+                {nicknameStatus === 'ok' && <p className="nickname-check is-ok nickname-warning-inline">✓ Disponibile</p>}
+                {nicknameStatus === 'taken' && <p className="nickname-check is-taken nickname-warning-inline">✗ Già usato da un altro utente</p>}
                 {confirmNickname && (
                   <p className="nickname-warning nickname-warning-inline" role="alert">
                     <span aria-hidden="true">⚠</span>
@@ -309,7 +317,6 @@ const Profile = () => {
                 <div className="marathon-card-media" style={bg ? { backgroundImage: `url("${bg}")` } : undefined} />
                 <div className="marathon-card-content">
                   <div>
-                    <span className={`marathon-card-visibility ${m.publicList ? 'is-public' : ''}`}>{m.publicList ? '🌐 Pubblica' : '🔒 Privata'}</span>
                     <h3>{m.name}</h3>
                     <span className="marathon-card-dates">{formatDay(m.startDate)} → {formatDay(m.endDate)}</span>
                   </div>

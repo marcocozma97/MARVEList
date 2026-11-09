@@ -6,6 +6,7 @@ import { setProfile } from '../store/authSlice';
 import { userService } from '../services/userService';
 import { errorMessage } from '../utils/marathon';
 import Avatar from './Avatar';
+import { useNicknameCheck } from '../hooks/useNicknameCheck';
 
 const NicknameOnboarding = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
@@ -16,7 +17,8 @@ const NicknameOnboarding = () => {
   const [error, setError] = useState<string | null>(null);
 
   const trimmed = nickname.trim();
-  const valid = trimmed.length >= 2 && trimmed.length <= 30;
+  const status = useNicknameCheck(nickname);
+  const valid = trimmed.length >= 2 && trimmed.length <= 30 && status !== 'taken' && status !== 'checking';
 
   const next = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +75,9 @@ const NicknameOnboarding = () => {
               aria-label="Nickname"
               placeholder="Il tuo nickname"
             />
-            <p className="nickname-hint">Potrai cambiarlo solo una volta ogni 30 giorni.</p>
+            {status === 'ok' && <p className="nickname-check is-ok">✓ Disponibile</p>}
+            {status === 'taken' && <p className="nickname-check is-taken">✗ Già usato da un altro utente</p>}
+            <p className="nickname-hint">Ogni nickname è unico e resta tuo anche se poi lo cambi. Potrai cambiarlo solo una volta ogni 30 giorni.</p>
             <button type="submit" className="btn-marvel btn-inline" disabled={!valid}>Continua</button>
           </form>
         )}

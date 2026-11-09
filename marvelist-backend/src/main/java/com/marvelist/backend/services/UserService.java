@@ -2,8 +2,10 @@ package com.marvelist.backend.services;
 
 import com.marvelist.backend.dto.UserProfileRequest;
 import com.marvelist.backend.dto.UserProfileResponse;
+import com.marvelist.backend.entities.NicknameClaim;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.FollowRepository;
+import com.marvelist.backend.repositories.NicknameClaimRepository;
 import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +28,23 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final NicknameClaimRepository claimRepository;
 
     public UserProfileResponse getProfile(String email) {
         return toResponse(findUser(email));
+    }
+
+    public static String nicknameKey(String nickname) {
+        return nickname.strip().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isNicknameAvailable(String email, String nickname) {
+        if (nickname == null || nickname.isBlank()) return false;
+        User user = findUser(email);
+        return claimRepository.findByNicknameKey(nicknameKey(nickname))
+                .map(claim -> claim.getUser().getId().equals(user.getId()))
+                .orElse(true);
     }
 
     @Transactional
@@ -35,7 +52,7 @@ public class UserService {
         User user = findUser(email);
 
         if (request.getNickname() != null) {
-            String nickname = request.getNickname().trim();
+            String nickname = request.getNickname().strip().replaceAll("\\s+", " ");
             if (nickname.length() < 2 || nickname.length() > 30) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il nickname deve avere tra 2 e 30 caratteri");
             }
@@ -45,6 +62,14 @@ public class UserService {
                 if (changedAt != null && now.isBefore(changedAt.plus(NICKNAME_COOLDOWN))) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                             "Potrai cambiare di nuovo il nickname dal " + IT_DATE.format(changedAt.plus(NICKNAME_COOLDOWN)));
+                }
+                String key = nicknameKey(nickname);
+                var claim = claimRepository.findByNicknameKey(key);
+                if (claim.isPresent() && !claim.get().getUser().getId().equals(user.getId())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Il nickname \"" + nickname + "\" è già di un altro utente: scegline un altro");
+                }
+                if (claim.isEmpty()) {
+                    claimRepository.save(NicknameClaim.builder().nicknameKey(key).user(user).claimedAt(now).build());
                 }
                 user.setNickname(nickname);
                 user.setNicknameChangedAt(now);

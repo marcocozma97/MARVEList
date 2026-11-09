@@ -12,7 +12,6 @@ export interface MarathonRequest {
   maxFilmsPerWeek: number;
   maxEpisodesPerDay: number;
   mediaIds: number[];
-  publicList: boolean;
 }
 
 export interface MarathonPlan {
@@ -37,7 +36,6 @@ export interface MarathonSummary {
   doneUnits: number;
   feasible: boolean;
   nextDate: string | null;
-  publicList: boolean;
 }
 
 export interface MarathonUnit {

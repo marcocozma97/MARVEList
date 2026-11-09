@@ -1,5 +1,6 @@
 package com.marvelist.backend.services;
 
+import com.marvelist.backend.dto.MarathonDtos;
 import com.marvelist.backend.dto.SocialDtos.FollowState;
 import com.marvelist.backend.dto.SocialDtos.PublicProfile;
 import com.marvelist.backend.dto.SocialDtos.UserCard;
@@ -7,7 +8,10 @@ import com.marvelist.backend.entities.Follow;
 import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.NotificationType;
 import com.marvelist.backend.entities.User;
+import com.marvelist.backend.entities.UserProgress;
 import com.marvelist.backend.repositories.FollowRepository;
+import com.marvelist.backend.repositories.MediaRepository;
+import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.NotificationRepository;
 import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,22 +39,46 @@ public class SocialService {
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final MarathonService marathonService;
+    private final MediaRepository mediaRepository;
+    private final UserProgressRepository progressRepository;
 
     @Transactional(readOnly = true)
     public PublicProfile profile(String viewerEmail, Long userId) {
         User viewer = findUser(viewerEmail);
         User owner = findById(userId);
-        List<Long> favorites = owner.getFavoriteMedia().stream().map(Media::getId).sorted().toList();
+        boolean me = viewer.getId().equals(owner.getId());
+        boolean followed = followRepository.existsByFollowerAndFollowed(viewer, owner);
+        boolean visible = me || followed;
+
+        RankCalculator.RankInfo rank = null;
+        List<Long> favorites = List.of();
+        List<Long> watching = List.of();
+        List<MarathonDtos.PublicMarathon> lists = List.of();
+        if (visible) {
+            Set<Long> seen = owner.getSeenMedia().stream().map(Media::getId).collect(Collectors.toSet());
+            rank = RankCalculator.compute(mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc(), seen);
+            favorites = owner.getFavoriteMedia().stream().map(Media::getId).sorted().toList();
+            watching = progressRepository.findAllByUser(owner).stream()
+                    .filter(UserProgress::isStarted)
+                    .map(p -> p.getMedia().getId())
+                    .filter(id -> !seen.contains(id))
+                    .toList();
+            lists = marathonService.lists(owner);
+        }
         return new PublicProfile(
                 owner.getId(),
                 owner.displayName(),
                 owner.getAvatarUrl(),
                 followRepository.countByFollowed(owner),
                 followRepository.countByFollower(owner),
-                followRepository.existsByFollowerAndFollowed(viewer, owner),
-                viewer.getId().equals(owner.getId()),
+                followed,
+                me,
+                visible,
+                rank != null ? rank.title() : null,
+                rank != null ? rank.tone() : null,
                 favorites,
-                marathonService.publicLists(owner)
+                watching,
+                lists
         );
     }
 
@@ -80,7 +109,7 @@ public class SocialService {
 
     @Transactional(readOnly = true)
     public List<UserCard> followers(String viewerEmail, Long userId) {
-        User viewer = findUser(viewerEmail);
+        User viewer = requireOwner(viewerEmail, userId);
         List<User> users = followRepository.findByFollowedOrderByCreatedAtDesc(findById(userId), PageRequest.of(0, LIST_SIZE))
                 .stream().map(Follow::getFollower).toList();
         return toCards(viewer, users);
@@ -88,7 +117,7 @@ public class SocialService {
 
     @Transactional(readOnly = true)
     public List<UserCard> following(String viewerEmail, Long userId) {
-        User viewer = findUser(viewerEmail);
+        User viewer = requireOwner(viewerEmail, userId);
         List<User> users = followRepository.findByFollowerOrderByCreatedAtDesc(findById(userId), PageRequest.of(0, LIST_SIZE))
                 .stream().map(Follow::getFollowed).toList();
         return toCards(viewer, users);
@@ -109,6 +138,14 @@ public class SocialService {
         return users.stream()
                 .map(u -> new UserCard(u.getId(), u.displayName(), u.getAvatarUrl(), followed.contains(u.getId()), u.getId().equals(viewer.getId())))
                 .toList();
+    }
+
+    private User requireOwner(String viewerEmail, Long userId) {
+        User viewer = findUser(viewerEmail);
+        if (!viewer.getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Follower e seguiti sono visibili solo al proprietario del profilo");
+        }
+        return viewer;
     }
 
     private User findById(Long id) {

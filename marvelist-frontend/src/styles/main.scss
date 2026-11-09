@@ -5579,6 +5579,11 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   &:hover:not(:disabled) { border-color: rgba(var(--accent-rgb), 0.55); background: rgba(var(--accent-rgb), 0.1); transform: translateY(-1px); span { color: #fff; } }
   &:disabled { cursor: default; }
 }
+.social-count.is-static { cursor: default; &:hover { transform: none; border-color: var(--border-color); background: rgba(255, 255, 255, 0.04); span { color: var(--text-muted); } } }
+.profile-locked { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 34px 20px; text-align: center; strong { color: #fff; font-size: 1.05rem; } }
+.profile-locked-icon { font-size: 1.8rem; }
+.nickname-check { margin: -4px 0 0; font-size: 0.8rem; font-weight: 600; &.is-ok { color: #9ff0bf; } &.is-taken { color: #ff8a8a; } }
+
 .social-find {
   display: inline-flex;
   align-items: center;
@@ -5699,19 +5704,6 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 .public-list.is-open .public-list-chevron { transform: rotate(180deg); }
 .public-list-grid { padding: 4px 16px 16px; }
 
-.marathon-card-visibility {
-  display: inline-block;
-  margin-bottom: 6px;
-  padding: 2px 9px;
-  border-radius: var(--radius-pill);
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #d8d8d8;
-  &.is-public { border-color: rgba(var(--accent-rgb), 0.55); color: #fff; }
-}
-.visibility-toggle { margin-top: 2px; }
 
 .site-nav-bell {
   position: relative;

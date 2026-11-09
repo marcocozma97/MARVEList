@@ -40,7 +40,11 @@ export interface PublicProfile {
   following: number;
   followedByMe: boolean;
   me: boolean;
+  visible: boolean;
+  rankTitle: string | null;
+  rankTone: string | null;
   favoriteIds: number[];
+  watchingIds: number[];
   lists: PublicList[];
 }
 
@@ -59,6 +63,9 @@ export const userService = {
     const response = await api.put('/users/me', data);
     return response.data;
   },
+
+  isNicknameAvailable: async (name: string): Promise<boolean> =>
+    (await api.get('/users/nickname-available', { params: { name } })).data.available,
 
   getPublic: async (id: number): Promise<PublicProfile> => (await api.get(`/users/${id}`)).data,
 

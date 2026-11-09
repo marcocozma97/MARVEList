@@ -11,8 +11,8 @@ public final class SocialDtos {
     public record UserCard(Long id, String nickname, String avatar, boolean followedByMe, boolean me) {}
 
     public record PublicProfile(Long id, String nickname, String avatar, long followers, long following,
-                                boolean followedByMe, boolean me, List<Long> favoriteIds,
-                                List<MarathonDtos.PublicMarathon> lists) {}
+                                boolean followedByMe, boolean me, boolean visible, String rankTitle, String rankTone,
+                                List<Long> favoriteIds, List<Long> watchingIds, List<MarathonDtos.PublicMarathon> lists) {}
 
     public record FollowState(boolean following, long followers) {}
 

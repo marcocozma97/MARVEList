@@ -46,7 +46,6 @@ public class Marathon {
 
     private int maxEpisodesPerDay;
 
-    private Boolean publicList;
 
     @Builder.Default
     @OneToMany(mappedBy = "marathon", cascade = CascadeType.ALL, orphanRemoval = true)
