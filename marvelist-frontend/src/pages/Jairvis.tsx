@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
@@ -21,7 +21,7 @@ const BOOT_STEPS = [
 ];
 
 const INTRO = "Sistemi online. Salve signore, sono **J.A.I.R.V.I.S.**, la nuova intelligenza sperimentale delle **Stark Industries**.\n\n"
-  + "Per ora sono attivo in versione demo, con un utilizzo limitato: ogni 24 ore posso rispondere a uno dei suggerimenti rapidi qui sotto e a una domanda scritta da Lei. "
+  + "Per ora sono attivo in versione demo, con un utilizzo limitato: posso rispondere a due domande ogni 24 ore. "
   + "In futuro diventerò lo strumento definitivo degli utenti MARVEList.\n\nCome posso assisterla oggi?";
 
 const MAINTENANCE = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. Tornerò in funzione molto presto.";
@@ -41,9 +41,8 @@ const Jairvis = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [messages, setMessages] = useState<Message[]>([{ id: 1, text: INTRO, sender: 'jairvis' }]);
   const [input, setInput] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [remaining, setRemaining] = useState(2);
   const [nextAskAt, setNextAskAt] = useState<string | null>(null);
-  const [nextSuggestionAt, setNextSuggestionAt] = useState<string | null>(null);
   const [maintenance, setMaintenance] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [globeSize, setGlobeSize] = useState(() => Math.min(360, window.innerWidth - 64));
@@ -51,21 +50,27 @@ const Jairvis = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Mentre gira l'animazione di avvio si scopre se la domanda di oggi è ancora disponibile
+  // Quante domande restano: si chiede all'avvio e di nuovo quando una torna disponibile
+  const loadStatus = useCallback(() => {
+    return jairvisService.status().then(status => {
+      setRemaining(status.remaining);
+      setNextAskAt(status.nextAskAt);
+      return status;
+    });
+  }, []);
+
+  // Mentre gira l'animazione di avvio si scopre quante domande restano
   useEffect(() => {
     if (!isAuthenticated) return;
-    jairvisService.status()
+    loadStatus()
       .then(status => {
-        setSuggestions(status.suggestions);
-        setNextAskAt(status.nextAskAt);
-        setNextSuggestionAt(status.nextSuggestionAt);
         if (status.maintenance) {
           setMaintenance(true);
           setMessages(prev => [...prev, { id: 2, text: MAINTENANCE, sender: 'jairvis' }]);
         }
       })
       .catch(console.error);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadStatus]);
 
   // Sequenza di avvio: 3 secondi di animazione, poi parte la chat
   useEffect(() => {
@@ -84,26 +89,26 @@ const Jairvis = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, isTyping, isBooting]);
 
-  const canAsk = !nextAskAt && !maintenance;
+  const canAsk = remaining > 0 && !maintenance;
 
   useEffect(() => {
     if (!isBooting && canAsk) inputRef.current?.focus({ preventScroll: true });
   }, [isBooting, canAsk]);
 
-  // Allo scadere delle 24 ore domanda e suggerimento tornano disponibili senza ricaricare la pagina
+  // Allo scadere delle 24 ore una domanda torna disponibile senza ricaricare la pagina
   useEffect(() => {
-    const timers = ([[nextAskAt, setNextAskAt], [nextSuggestionAt, setNextSuggestionAt]] as const)
-      .filter(([at]) => at)
-      .map(([at, reset]) => window.setTimeout(() => reset(null), Math.min(2147483647, Math.max(0, new Date(at as string).getTime() - Date.now()))));
-    return () => timers.forEach(t => window.clearTimeout(t));
-  }, [nextAskAt, nextSuggestionAt]);
+    if (!nextAskAt) return;
+    const wait = Math.min(2147483647, Math.max(0, new Date(nextAskAt).getTime() - Date.now()));
+    const timer = window.setTimeout(() => { loadStatus().catch(console.error); }, wait);
+    return () => window.clearTimeout(timer);
+  }, [nextAskAt, loadStatus]);
 
   if (!isAuthenticated) return <Navigate to="/login" />;
 
-  const send = async (text: string, suggestion = false) => {
+  const send = async (text: string) => {
     const userMessage = text.trim();
-    if (!userMessage || isTyping || maintenance || (suggestion ? nextSuggestionAt : !canAsk)) return;
-    if (!suggestion) setInput('');
+    if (!userMessage || isTyping || !canAsk) return;
+    setInput('');
 
     setMessages(prev => [...prev, { id: Date.now(), text: userMessage, sender: 'user' }]);
 
@@ -114,8 +119,8 @@ const Jairvis = () => {
     setIsTyping(false);
     setMessages(prev => [...prev, { id: Date.now(), text: result.reply, sender: 'jairvis' }]);
     if (result.status === 'MAINTENANCE') setMaintenance(true);
+    if (result.remaining !== undefined) setRemaining(result.remaining);
     if (result.nextAskAt !== undefined) setNextAskAt(result.nextAskAt);
-    if (result.nextSuggestionAt !== undefined) setNextSuggestionAt(result.nextSuggestionAt);
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -141,11 +146,11 @@ const Jairvis = () => {
     );
   }
 
-  const showSuggestions = suggestions.length > 0 && !nextSuggestionAt && !isTyping && !maintenance;
   const quota = maintenance
     ? 'J.A.I.R.V.I.S. è in manutenzione: tornerà presto disponibile'
-    : `Demo · ${nextSuggestionAt ? `suggerimento rapido di nuovo ${nextAskLabel(nextSuggestionAt)}` : '1 suggerimento rapido disponibile'}`
-      + ` · ${nextAskAt ? `domanda scritta di nuovo ${nextAskLabel(nextAskAt)}` : '1 domanda scritta disponibile'}`;
+    : remaining > 0
+      ? `Demo · ${remaining === 1 ? '1 domanda disponibile' : `${remaining} domande disponibili`} · 2 ogni 24 ore`
+      : `Domande di oggi esaurite · la prossima ${nextAskAt ? nextAskLabel(nextAskAt) : 'a breve'}`;
 
   return (
     <div className="jv-page">
@@ -186,13 +191,6 @@ const Jairvis = () => {
               </div>
             )}
 
-            {showSuggestions && (
-              <div className="jv-suggestions">
-                {suggestions.map(s => (
-                  <button key={s} type="button" className="jv-chip" onClick={() => send(s, true)}>{s}</button>
-                ))}
-              </div>
-            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -202,7 +200,7 @@ const Jairvis = () => {
               ref={inputRef}
               type="text"
               className="jv-input"
-              placeholder={maintenance ? 'J.A.I.R.V.I.S. è in manutenzione' : canAsk ? 'Scrivi a J.A.I.R.V.I.S.' : 'Domanda di oggi già usata'}
+              placeholder={maintenance ? 'J.A.I.R.V.I.S. è in manutenzione' : canAsk ? 'Scrivi a J.A.I.R.V.I.S.' : 'Domande di oggi esaurite'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isTyping || !canAsk}

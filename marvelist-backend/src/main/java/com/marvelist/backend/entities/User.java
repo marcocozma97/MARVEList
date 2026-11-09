@@ -47,7 +47,7 @@ public class User implements UserDetails {
 
     private Instant jairvisLastAskAt;
 
-    private Instant jairvisLastSuggestionAt;
+    private Instant jairvisSecondAskAt;
 
     @Enumerated(EnumType.STRING)
     private Role role; // Permette di distinguere Admin da Utenti

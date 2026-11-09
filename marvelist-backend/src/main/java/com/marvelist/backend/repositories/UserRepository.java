@@ -38,13 +38,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
     @Modifying
-    @Query("update User u set u.jairvisLastSuggestionAt = :now where u.id = :id and (u.jairvisLastSuggestionAt is null or u.jairvisLastSuggestionAt <= :cutoff)")
-    int claimJairvisSuggestion(@Param("id") Long id, @Param("now") Instant now, @Param("cutoff") Instant cutoff);
+    @Query("update User u set u.jairvisSecondAskAt = :now where u.id = :id and (u.jairvisSecondAskAt is null or u.jairvisSecondAskAt <= :cutoff)")
+    int claimJairvisSecondQuestion(@Param("id") Long id, @Param("now") Instant now, @Param("cutoff") Instant cutoff);
 
     @Transactional
     @Modifying
-    @Query("update User u set u.jairvisLastSuggestionAt = :previous where u.id = :id and u.jairvisLastSuggestionAt = :claimed")
-    int releaseJairvisSuggestion(@Param("id") Long id, @Param("claimed") Instant claimed, @Param("previous") Instant previous);
+    @Query("update User u set u.jairvisSecondAskAt = :previous where u.id = :id and u.jairvisSecondAskAt = :claimed")
+    int releaseJairvisSecondQuestion(@Param("id") Long id, @Param("claimed") Instant claimed, @Param("previous") Instant previous);
 
     List<User> findByEmailIgnoreCaseIn(Collection<String> emails);
 }

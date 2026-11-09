@@ -6,17 +6,14 @@ export type JairvisReplyStatus = 'OK' | 'LIMIT' | 'MAINTENANCE' | 'ERROR';
 export interface JairvisReply {
   reply: string;
   status: JairvisReplyStatus;
+  remaining?: number;
   nextAskAt?: string | null;
-  nextSuggestionAt?: string | null;
 }
 
 export interface JairvisStatus {
-  available: boolean;
+  remaining: number;
   nextAskAt: string | null;
-  suggestionAvailable: boolean;
-  nextSuggestionAt: string | null;
   maintenance: boolean;
-  suggestions: string[];
 }
 
 export const jairvisService = {
