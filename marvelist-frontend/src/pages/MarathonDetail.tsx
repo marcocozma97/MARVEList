@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
+import { PROGRESS_CHANGED_EVENT } from '../services/mediaService';
 import { marathonService, type MarathonDetail as Marathon, type MarathonUnit } from '../services/marathonService';
 import { VISION_ORDER_LABELS } from '../utils/ordering';
 import { dayLabel, errorMessage, formatDay, getBackgroundUrl } from '../utils/marathon';
@@ -31,7 +32,12 @@ const MarathonDetail = () => {
       .then(setMarathon)
       .catch(e => setError(errorMessage(e, 'Maratona non trovata.')))
       .finally(() => setIsLoading(false));
-    return () => window.clearTimeout(undoTimer.current);
+    const refresh = () => { marathonService.get(marathonId).then(setMarathon).catch(() => {}); };
+    window.addEventListener(PROGRESS_CHANGED_EVENT, refresh);
+    return () => {
+      window.removeEventListener(PROGRESS_CHANGED_EVENT, refresh);
+      window.clearTimeout(undoTimer.current);
+    };
   }, [isAuthenticated, marathonId]);
 
   // Spunta: il titolo viene barrato (resta nel giorno fino a domani) e segnato come visto anche nel profilo.
@@ -103,7 +109,10 @@ const MarathonDetail = () => {
           <Link to="/profile" className="back-link">← Profilo</Link>
           <span className="chip chip-accent">{VISION_ORDER_LABELS[marathon.visionOrder]}</span>
           <h1 className="marathon-title">{marathon.name}</h1>
-          <p className="marathon-dates">{formatDay(marathon.startDate)} → {formatDay(marathon.endDate)}</p>
+          <p className="marathon-dates">
+            {formatDay(marathon.startDate)} → {formatDay(marathon.expectedEnd ?? marathon.endDate)}
+            {marathon.expectedEnd && marathon.expectedEnd < marathon.endDate && <span className="marathon-dates-limit"> · in anticipo sul limite del {formatDay(marathon.endDate)}</span>}
+          </p>
           <div className="marathon-progress" aria-label={`Completata al ${percent}%`}>
             <span style={{ width: `${percent}%` }} />
           </div>

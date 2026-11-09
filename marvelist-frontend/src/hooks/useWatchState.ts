@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { mediaService, type MediaItem, type MediaProgress } from '../services/mediaService';
+import { mediaService, PROGRESS_CHANGED_EVENT, type MediaItem, type MediaProgress } from '../services/mediaService';
 
 // Stato di visione dell'utente condiviso da Timeline e Road To: catalogo, visti, preferiti, "guarda dopo", progressi
 export const useWatchState = () => {
@@ -36,6 +36,19 @@ export const useWatchState = () => {
       }
     };
     load();
+  }, []);
+
+  useEffect(() => {
+    const refresh = () => {
+      Promise.all([mediaService.getSeenIds(), mediaService.getAllProgress()])
+        .then(([seen, progress]) => {
+          setSeenItems(seen);
+          setProgressById(Object.fromEntries(progress.map(p => [p.mediaId, p])));
+        })
+        .catch(() => {});
+    };
+    window.addEventListener(PROGRESS_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(PROGRESS_CHANGED_EVENT, refresh);
   }, []);
 
   const toggleIn = (list: number[], id: number) => list.includes(id) ? list.filter(item => item !== id) : [...list, id];

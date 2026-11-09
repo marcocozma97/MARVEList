@@ -315,6 +315,10 @@ public class MarathonService {
                 result.unscheduled(), result.days().size(), result.feasible() ? null : infeasibleMessage(result));
     }
 
+    private static LocalDate expectedEnd(MarathonScheduler.Result result) {
+        return result.days().isEmpty() ? null : result.days().get(result.days().size() - 1).date();
+    }
+
     private MarathonSummary toSummary(Marathon marathon) {
         List<Media> media = countedMedia(marathon, watchLaterIds(marathon.getUser()));
         List<Unit> units = scheduledUnits(marathon);
@@ -322,7 +326,7 @@ public class MarathonService {
         int total = totalUnits(marathon, media);
         return new MarathonSummary(marathon.getId(), marathon.getName(), marathon.getBackground(), marathon.getVisionOrder(),
                 marathon.getStartDate(), marathon.getEndDate(), total, total - pendingCount(units), result.feasible(),
-                result.days().isEmpty() ? null : result.days().get(0).date());
+                result.days().isEmpty() ? null : result.days().get(0).date(), expectedEnd(result));
     }
 
     private MarathonDetail toDetail(Marathon marathon) {
@@ -347,7 +351,8 @@ public class MarathonService {
                 marathon.getStartDate(), marathon.getEndDate(), marathon.isHideSeen(), marathon.isMixedDays(),
                 marathon.getMaxFilmsPerWeek(), marathon.getMaxEpisodesPerDay(), total, total - pendingCount(units),
                 items, days, toPlan(media, units, result, seenEpisodes(marathon.getUser(), marathon.isHideSeen()),
-                        marathon.getItems().stream().collect(Collectors.toMap(i -> i.getMedia().getId(), Function.identity(), (x, y) -> x))));
+                        marathon.getItems().stream().collect(Collectors.toMap(i -> i.getMedia().getId(), Function.identity(), (x, y) -> x))),
+                expectedEnd(result));
     }
 
     private void validate(MarathonRequest r) {

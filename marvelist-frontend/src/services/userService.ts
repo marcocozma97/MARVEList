@@ -43,6 +43,9 @@ export interface PublicProfile {
   visible: boolean;
   rankTitle: string | null;
   rankTone: string | null;
+  moviesSeen: number;
+  seriesSeen: number;
+  minutesWatched: number;
   favoriteIds: number[];
   watchingIds: number[];
   lists: PublicList[];

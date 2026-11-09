@@ -3,10 +3,13 @@ package com.marvelist.backend.services;
 import com.marvelist.backend.dto.ProgressRequest;
 import com.marvelist.backend.dto.ProgressResponse;
 import com.marvelist.backend.entities.EpisodeRating;
+import com.marvelist.backend.entities.Marathon;
+import com.marvelist.backend.entities.MarathonItem;
 import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.entities.UserProgress;
 import com.marvelist.backend.repositories.EpisodeRatingRepository;
+import com.marvelist.backend.repositories.MarathonRepository;
 import com.marvelist.backend.repositories.MediaRepository;
 import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.UserRepository;
@@ -32,6 +35,7 @@ public class MediaService {
     private final UserRepository userRepository;
     private final UserProgressRepository progressRepository;
     private final EpisodeRatingRepository episodeRatingRepository;
+    private final MarathonRepository marathonRepository;
 
     public List<Media> getAllMedia() {
         return mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc();
@@ -50,6 +54,8 @@ public class MediaService {
         Media media = findMedia(mediaId);
         requireReleased(media);
         UserProgress progress = findOrCreateProgress(user, media);
+        boolean wasSeen = user.getSeenMedia().contains(media);
+        Set<Integer> before = Set.copyOf(progress.getWatchedEpisodes());
 
         boolean nowSeen = !user.getSeenMedia().remove(media);
         if (nowSeen) requireFullyOut(media);
@@ -67,6 +73,7 @@ public class MediaService {
 
         userRepository.save(user);
         progressRepository.save(progress);
+        syncMarathons(user, media, wasSeen, before, progress);
         return toResponse(user, media, progress);
     }
 
@@ -152,6 +159,8 @@ public class MediaService {
         Media media = findMedia(mediaId);
         requireReleased(media);
         UserProgress progress = findOrCreateProgress(user, media);
+        boolean wasSeen = user.getSeenMedia().contains(media);
+        Set<Integer> before = Set.copyOf(progress.getWatchedEpisodes());
         boolean completed;
 
         if ("FILM".equals(media.getType())) {
@@ -177,6 +186,7 @@ public class MediaService {
 
         userRepository.save(user);
         progressRepository.save(progress);
+        syncMarathons(user, media, wasSeen, before, progress);
         return toResponse(user, media, progress);
     }
 
@@ -189,8 +199,12 @@ public class MediaService {
         List<Media> mediaList = mediaRepository.findAllById(mediaIds == null ? List.of() : mediaIds).stream()
                 .filter(m -> EpisodeSchedule.isFullyOut(m, EpisodeSchedule.today()))
                 .toList();
+        Map<Long, Boolean> wasSeen = new java.util.HashMap<>();
+        Map<Long, Set<Integer>> before = new java.util.HashMap<>();
         List<UserProgress> progresses = mediaList.stream().map(media -> {
             UserProgress progress = findOrCreateProgress(user, media);
+            wasSeen.put(media.getId(), user.getSeenMedia().contains(media));
+            before.put(media.getId(), Set.copyOf(progress.getWatchedEpisodes()));
             progress.getWatchedEpisodes().clear();
             if (seen) {
                 user.getSeenMedia().add(media);
@@ -205,6 +219,7 @@ public class MediaService {
 
         userRepository.save(user);
         progressRepository.saveAll(progresses);
+        progresses.forEach(p -> syncMarathons(user, p.getMedia(), wasSeen.get(p.getMedia().getId()), before.get(p.getMedia().getId()), p));
         return progresses.stream().map(p -> toResponse(user, p.getMedia(), p)).toList();
     }
 
@@ -214,6 +229,8 @@ public class MediaService {
         User user = findUser(userEmail);
         Media media = findMedia(mediaId);
         UserProgress progress = findOrCreateProgress(user, media);
+        boolean wasSeen = user.getSeenMedia().contains(media);
+        Set<Integer> before = Set.copyOf(progress.getWatchedEpisodes());
         if (watched) {
             requireReleased(media);
             if (episode == null) requireFullyOut(media);
@@ -238,6 +255,7 @@ public class MediaService {
 
         userRepository.save(user);
         progressRepository.save(progress);
+        syncMarathons(user, media, wasSeen, before, progress);
     }
 
     @Transactional
@@ -306,6 +324,35 @@ public class MediaService {
                 .minutesWatched(progress.getMinutesWatched() == null ? 0 : progress.getMinutesWatched())
                 .watchedEpisodes(progress.getWatchedEpisodes().stream().sorted().toList())
                 .build();
+    }
+
+    private void syncMarathons(User user, Media media, boolean wasSeen, Set<Integer> before, UserProgress progress) {
+        boolean film = "FILM".equals(media.getType());
+        boolean isSeen = user.getSeenMedia().contains(media);
+        Set<Integer> after = Set.copyOf(progress.getWatchedEpisodes());
+        if (film ? wasSeen == isSeen : before.equals(after)) return;
+        LocalDate today = LocalDate.now();
+        for (Marathon marathon : marathonRepository.findAllByUserOrderByStartDateAscIdAsc(user)) {
+            boolean changed = false;
+            for (MarathonItem item : marathon.getItems()) {
+                if (!item.getMedia().getId().equals(media.getId())) continue;
+                changed = true;
+                if (film) {
+                    item.setDone(isSeen);
+                    item.setDoneDate(isSeen ? today : null);
+                    continue;
+                }
+                after.stream().filter(ep -> !before.contains(ep)).forEach(ep -> {
+                    item.getDoneEpisodes().add(ep);
+                    item.getEpisodeDoneDates().put(ep, today);
+                });
+                before.stream().filter(ep -> !after.contains(ep)).forEach(ep -> {
+                    item.getDoneEpisodes().remove(ep);
+                    item.getEpisodeDoneDates().remove(ep);
+                });
+            }
+            if (changed) marathonRepository.save(marathon);
+        }
     }
 
     private UserProgress findOrCreateProgress(User user, Media media) {

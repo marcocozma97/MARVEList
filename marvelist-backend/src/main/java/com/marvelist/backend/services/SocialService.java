@@ -51,14 +51,32 @@ public class SocialService {
         boolean visible = me || followed;
 
         RankCalculator.RankInfo rank = null;
+        long moviesSeen = 0, seriesSeen = 0, minutes = 0;
         List<Long> favorites = List.of();
         List<Long> watching = List.of();
         List<MarathonDtos.PublicMarathon> lists = List.of();
         if (visible) {
             Set<Long> seen = owner.getSeenMedia().stream().map(Media::getId).collect(Collectors.toSet());
-            rank = RankCalculator.compute(mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc(), seen);
+            List<Media> catalog = mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc();
+            rank = RankCalculator.compute(catalog, seen);
+            List<UserProgress> progresses = progressRepository.findAllByUser(owner);
+            java.util.Map<Long, UserProgress> progressById = progresses.stream()
+                    .collect(Collectors.toMap(p -> p.getMedia().getId(), p -> p, (x, y) -> x));
+            for (Media media : catalog) {
+                boolean isSeen = seen.contains(media.getId());
+                UserProgress p = progressById.get(media.getId());
+                if ("FILM".equals(media.getType())) {
+                    if (isSeen) moviesSeen++;
+                    minutes += isSeen ? (media.getRuntime() != null ? media.getRuntime() : 120)
+                            : (p != null && p.getMinutesWatched() != null ? p.getMinutesWatched() : 0);
+                } else {
+                    if (isSeen) seriesSeen++;
+                    int watchedEps = p != null ? p.getWatchedEpisodes().size() : 0;
+                    minutes += 45L * (isSeen ? (media.getEpisodes() != null ? media.getEpisodes() : watchedEps) : watchedEps);
+                }
+            }
             favorites = owner.getFavoriteMedia().stream().map(Media::getId).sorted().toList();
-            watching = progressRepository.findAllByUser(owner).stream()
+            watching = progresses.stream()
                     .filter(UserProgress::isStarted)
                     .map(p -> p.getMedia().getId())
                     .filter(id -> !seen.contains(id))
@@ -76,6 +94,9 @@ public class SocialService {
                 visible,
                 rank != null ? rank.title() : null,
                 rank != null ? rank.tone() : null,
+                moviesSeen,
+                seriesSeen,
+                minutes,
                 favorites,
                 watching,
                 lists

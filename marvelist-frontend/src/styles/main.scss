@@ -5580,6 +5580,12 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   &:disabled { cursor: default; }
 }
 .social-count.is-static { cursor: default; &:hover { transform: none; border-color: var(--border-color); background: rgba(255, 255, 255, 0.04); span { color: var(--text-muted); } } }
+.stats-grid.stats-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 767.98px) {
+  .stats-grid.stats-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats-grid-3 .stat-tile:last-child { grid-column: 1 / -1; }
+}
+.marathon-dates-limit { font-size: 0.85em; opacity: 0.75; }
 .profile-locked { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 34px 20px; text-align: center; strong { color: #fff; font-size: 1.05rem; } }
 .profile-locked-icon { font-size: 1.8rem; }
 .nickname-check { margin: -4px 0 0; font-size: 0.8rem; font-weight: 600; &.is-ok { color: #9ff0bf; } &.is-taken { color: #ff8a8a; } }

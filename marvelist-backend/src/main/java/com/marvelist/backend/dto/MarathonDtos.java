@@ -44,7 +44,8 @@ public final class MarathonDtos {
             int totalUnits,
             int doneUnits,
             boolean feasible,
-            LocalDate nextDate
+            LocalDate nextDate,
+            LocalDate expectedEnd
     ) {}
 
     public record ItemResponse(
@@ -78,7 +79,8 @@ public final class MarathonDtos {
             int doneUnits,
             List<ItemResponse> items,
             List<DayResponse> days,
-            PlanResponse plan
+            PlanResponse plan,
+            LocalDate expectedEnd
     ) {}
 
     public record PublicMarathon(

@@ -1,5 +1,12 @@
 import { api } from './api';
 
+export const PROGRESS_CHANGED_EVENT = 'marvelist:progress-changed';
+
+const notifyProgressChanged = <T,>(value: T): T => {
+  window.dispatchEvent(new Event(PROGRESS_CHANGED_EVENT));
+  return value;
+};
+
 export interface MediaItem {
   id: number;
   tmdbId: number;
@@ -51,13 +58,13 @@ export const mediaService = {
   // Clicca "visto" o "non visto" (il backend allinea anche minuti ed episodi)
   toggleSeen: async (mediaId: number): Promise<MediaProgress> => {
     const response = await api.post(`/media/${mediaId}/seen`);
-    return response.data;
+    return notifyProgressChanged(response.data);
   },
 
   // Presa visione di un'intera fase (seen=false la azzera: voti e preferiti restano)
   setSeenBulk: async (mediaIds: number[], seen: boolean): Promise<MediaProgress[]> => {
     const response = await api.post('/media/bulk-seen', { mediaIds, seen });
-    return response.data;
+    return notifyProgressChanged(response.data);
   },
 
   getFavorites: async (): Promise<number[]> => {
@@ -99,7 +106,7 @@ export const mediaService = {
   // Minuti visti (film) o episodi visti (serie)
   updateProgress: async (mediaId: number, data: { minutesWatched?: number; watchedEpisodes?: number[] }): Promise<MediaProgress> => {
     const response = await api.put(`/media/${mediaId}/progress`, data);
-    return response.data;
+    return notifyProgressChanged(response.data);
   },
 
   // Voto a scudi da 0.5 a 10 (null lo toglie)

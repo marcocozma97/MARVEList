@@ -114,4 +114,29 @@ class MarathonSchedulerTest {
         assertEquals(MONDAY.plusWeeks(1), result.days().get(1).date());
         assertEquals(2, result.days().get(1).units().size()); // secondo film + episodio, lunedì dopo
     }
+
+    @Test
+    void quelloSegnatoOggiRestaSoloOggiEIlRestoSiCompatta() {
+        List<Unit> units = new ArrayList<>();
+        units.add(new Unit(1L, 1, false, null, true));
+        units.add(new Unit(1L, 2, false, null, false));
+        units.add(new Unit(1L, 3, false, null, true));
+        units.add(new Unit(1L, 4, false, null, true));
+        units.add(new Unit(1L, 5, false, null, false));
+
+        var result = MarathonScheduler.plan(units, MONDAY, MONDAY.plusDays(30), new Rules(3, 1, true));
+
+        assertEquals(3, result.days().get(0).units().size());
+        assertTrue(result.days().get(0).units().stream().allMatch(Unit::done));
+        assertEquals(List.of(2), result.days().get(1).units().stream().map(Unit::episode).toList());
+        assertEquals(List.of(5), result.days().get(2).units().stream().map(Unit::episode).toList());
+        assertEquals(MONDAY.plusDays(2), result.requiredEndDate());
+    }
+
+    @Test
+    void seEFattoTuttoOggiNonRestaNullaDaPianificare() {
+        var result = MarathonScheduler.plan(List.of(new Unit(1L, null, true, null, true)), MONDAY, MONDAY.plusDays(5), new Rules(1, 1, true));
+        assertTrue(result.feasible());
+        assertEquals(1, result.days().size());
+    }
 }

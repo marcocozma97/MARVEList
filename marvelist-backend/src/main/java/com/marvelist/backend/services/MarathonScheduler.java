@@ -8,7 +8,7 @@ import java.util.List;
 // Calcola il calendario di una maratona: distribuisce, nell'ordine di visione, i film e gli episodi
 // ancora da vedere sui giorni disponibili rispettando i limiti scelti dall'utente.
 // Si parte sempre da oggi: ciò che non è stato visto nei giorni passati scivola da solo sui giorni successivi.
-// Le unità spuntate oggi (done) occupano ancora il loro posto: il calendario di oggi non cambia fino a domani.
+// Le unità spuntate oggi (done) restano nel giorno di oggi, barrate, senza occupare i giorni successivi.
 public final class MarathonScheduler {
 
     // availableFrom: per i titoli "in arrivo" il giorno di uscita, prima del quale non si può vedere
@@ -35,9 +35,15 @@ public final class MarathonScheduler {
 
     private MarathonScheduler() {}
 
-    public static Result plan(List<Unit> units, LocalDate from, LocalDate to, Rules rules) {
+    public static Result plan(List<Unit> allUnits, LocalDate from, LocalDate to, Rules rules) {
         List<Day> days = new ArrayList<>();
-        if (units.isEmpty()) return new Result(days, 0, from);
+        if (allUnits.isEmpty()) return new Result(days, 0, from);
+        List<Unit> doneToday = allUnits.stream().filter(Unit::done).toList();
+        List<Unit> units = allUnits.stream().filter(u -> !u.done()).toList();
+        if (units.isEmpty()) {
+            days.add(new Day(from, doneToday));
+            return new Result(days, 0, from);
+        }
 
         int dailyFilmLimit = Math.max(1, (int) Math.ceil(rules.maxFilmsPerWeek() / 7.0));
         int index = 0;
@@ -60,6 +66,12 @@ public final class MarathonScheduler {
 
             List<Unit> today = new ArrayList<>();
             int filmsToday = 0, episodesToday = 0;
+            if (offset == 0) {
+                today.addAll(doneToday);
+                filmsToday = (int) doneToday.stream().filter(Unit::film).count();
+                episodesToday = doneToday.size() - filmsToday;
+                weekFilms += filmsToday;
+            }
             while (index < units.size()) {
                 Unit unit = units.get(index);
                 boolean fits = unit.film()
@@ -73,10 +85,12 @@ public final class MarathonScheduler {
                 index++;
             }
 
-            if (!today.isEmpty()) {
+            if (today.stream().anyMatch(u -> !u.done())) {
                 lastUsed = date;
                 if (!date.isAfter(to)) days.add(new Day(date, today));
                 else unscheduled += pending(today);
+            } else if (!today.isEmpty()) {
+                days.add(new Day(date, today));
             }
         }
 

@@ -11,6 +11,7 @@ import Avatar from '../components/Avatar';
 import FollowButton from '../components/FollowButton';
 import MediaCard from '../components/MediaCard';
 import { RankPill } from '../components/RankBadge';
+import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
 
 const UserProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -84,6 +85,14 @@ const UserProfile = () => {
         </div>
       ) : (
         <>
+          <section className="stats-grid stats-grid-3" aria-label={`Statistiche di ${profile.nickname}`}>
+            <div className="stat-tile"><span className="stat-value text-accent">{profile.moviesSeen}</span><span className="stat-label">Film visti per intero</span></div>
+            <div className="stat-tile"><span className="stat-value text-gold">{profile.seriesSeen}</span><span className="stat-label">Serie e stagioni complete</span></div>
+            <div className="stat-tile"><span className="stat-value stat-time text-info-soft" aria-label={formatWatchTime(profile.minutesWatched)}>
+                {splitWatchTime(profile.minutesWatched).map(p => <span key={p.unit} aria-hidden="true">{p.value}<small>{p.unit}</small></span>)}
+              </span><span className="stat-label">Ore di visione</span></div>
+          </section>
+
           <section className="profile-section">
             <div className="section-heading">
               <h2 className="section-title">Liste</h2>

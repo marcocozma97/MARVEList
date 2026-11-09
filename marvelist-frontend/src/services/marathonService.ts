@@ -1,4 +1,5 @@
 import { api } from './api';
+import { PROGRESS_CHANGED_EVENT } from './mediaService';
 import type { VisionOrder } from '../utils/ordering';
 
 export interface MarathonRequest {
@@ -36,6 +37,7 @@ export interface MarathonSummary {
   doneUnits: number;
   feasible: boolean;
   nextDate: string | null;
+  expectedEnd: string | null;
 }
 
 export interface MarathonUnit {
@@ -65,6 +67,7 @@ export interface MarathonItem {
 }
 
 export interface MarathonDetail extends Omit<MarathonSummary, 'feasible' | 'nextDate'> {
+  expectedEnd: string | null;
   hideSeen: boolean;
   mixedDays: boolean;
   maxFilmsPerWeek: number;
@@ -89,6 +92,9 @@ export const marathonService = {
   remove: async (id: number): Promise<void> => { await api.delete(`/marathons/${id}`); },
 
   // Spunta (o annulla) un film o un episodio
-  check: async (id: number, mediaId: number, episode: number | null, done: boolean): Promise<MarathonDetail> =>
-    (await api.post(`/marathons/${id}/check`, { mediaId, episode, done })).data,
+  check: async (id: number, mediaId: number, episode: number | null, done: boolean): Promise<MarathonDetail> => {
+    const response = await api.post(`/marathons/${id}/check`, { mediaId, episode, done });
+    window.dispatchEvent(new Event(PROGRESS_CHANGED_EVENT));
+    return response.data;
+  },
 };

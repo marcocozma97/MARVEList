@@ -12,6 +12,7 @@ public final class SocialDtos {
 
     public record PublicProfile(Long id, String nickname, String avatar, long followers, long following,
                                 boolean followedByMe, boolean me, boolean visible, String rankTitle, String rankTone,
+                                long moviesSeen, long seriesSeen, long minutesWatched,
                                 List<Long> favoriteIds, List<Long> watchingIds, List<MarathonDtos.PublicMarathon> lists) {}
 
     public record FollowState(boolean following, long followers) {}

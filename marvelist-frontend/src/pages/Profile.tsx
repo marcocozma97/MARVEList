@@ -318,7 +318,7 @@ const Profile = () => {
                 <div className="marathon-card-content">
                   <div>
                     <h3>{m.name}</h3>
-                    <span className="marathon-card-dates">{formatDay(m.startDate)} → {formatDay(m.endDate)}</span>
+                    <span className="marathon-card-dates">{formatDay(m.startDate)} → {formatDay(m.expectedEnd ?? m.endDate)}</span>
                   </div>
                   <div className="marathon-card-footer">
                     {completed
