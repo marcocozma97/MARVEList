@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { playBugleSound } from '../utils/sfx';
 import { SpiderArt } from './RoadCharacters';
 
 // Ritagli di giornale che riempiono lo schermo prima delle News
@@ -34,6 +35,9 @@ const BugleIntro = ({ onDone }: { onDone: () => void }) => {
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [running]);
+
+  // Il suono parte insieme all'animazione e si ferma se la si salta
+  useEffect(() => (running ? playBugleSound() : undefined), [running]);
 
   useEffect(() => {
     const skip = () => { setLeaving(true); window.setTimeout(onDone, 250); };

@@ -10,6 +10,7 @@ import marvelFanBg from '../assets/MARVEL FAN.jpg';
 import marvelGodBg from '../assets/MARVEL GOD.jpg';
 
 import { groupByPhase, matchesVisionOrder, type VisionOrder } from '../utils/ordering';
+import SlowLoader from '../components/SlowLoader';
 
 const Timeline = () => {
   // Filtro e ricerca restano salvati quando si apre un titolo e si torna indietro
@@ -163,10 +164,7 @@ const Timeline = () => {
       <div className="container timeline-body">
 
         {isLoading && (
-          <div className="page-loader-inline">
-            <div className="spinner-border text-danger" role="status"></div>
-            <p>Caricamento protocolli in corso...</p>
-          </div>
+          <SlowLoader inline />
         )}
 
         {error && <div className="alert-marvel">{error}</div>}

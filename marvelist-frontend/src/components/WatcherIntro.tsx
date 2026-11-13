@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { playWatcherSound } from '../utils/sfx';
 import watcherAnim from '../assets/watcher_anim.jpg';
 
 const DURATION = 3600;
@@ -16,6 +17,9 @@ const WatcherIntro = ({ onDone }: { onDone: () => void }) => {
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [running]);
+
+  // Il suono parte insieme all'animazione e si ferma se la si salta
+  useEffect(() => (running ? playWatcherSound() : undefined), [running]);
 
   useEffect(() => {
     const skip = () => { setLeaving(true); window.setTimeout(onDone, 250); };

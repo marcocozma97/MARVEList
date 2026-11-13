@@ -9,6 +9,7 @@ import { addDays, compressImage, errorMessage, formatDay, getBackgroundUrl, toIs
 import { getPosterUrl } from '../utils/poster';
 import PosterFallback from '../components/PosterFallback';
 import { availableFrom, isUpcoming, releaseLabel } from '../utils/upcoming';
+import SlowLoader from '../components/SlowLoader';
 
 const LEVELS: VisionOrder[] = ['MCU', 'FAN', 'GOD'];
 const MAX_BACKGROUND_LENGTH = 2_900_000;
@@ -184,7 +185,7 @@ const MarathonForm = () => {
   };
 
   if (!isAuthenticated) return <Navigate to="/login" />;
-  if (isLoading) return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
+  if (isLoading) return <SlowLoader />;
   if (loadError) return <div className="container page"><div className="alert-marvel">{loadError}</div><Link to="/profile" className="btn-ghost">Torna al profilo</Link></div>;
 
   const backgroundUrl = getBackgroundUrl(background);

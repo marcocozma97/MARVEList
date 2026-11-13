@@ -53,9 +53,9 @@ const PhaseList = ({ groups, watch, forceOpen = false, emptyText = 'Nessun titol
               <button type="button" className="phase-header-toggle" onClick={() => togglePhase(phase)} aria-expanded={open}>
                 <span className="phase-title">{phase}</span>
                 <span className="phase-count">
-                  {seenCount}/{total} visti
-                  {skippedCount > 0 && ` · ${skippedCount} guarda dopo`}
-                  {available.length < items.length && ` · ${items.length - available.length} in arrivo`}
+                  <span className="phase-count-part">{seenCount}/{total} visti</span>
+                  {skippedCount > 0 && <> <span className="phase-count-part">{skippedCount} guarda dopo</span></>}
+                  {available.length < items.length && <> <span className="phase-count-part">{items.length - available.length} in arrivo</span></>}
                 </span>
               </button>
               {/* Anello che si riempie con la percentuale vista; a fase completa si accende e compare la spunta */}

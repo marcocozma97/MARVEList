@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { jairvisService } from '../services/jairvisService';
+import { playJairvisSound } from '../utils/sfx';
 import NeuralGlobe from '../components/NeuralGlobe';
 import JairvisMessage from '../components/JairvisMessage';
 
@@ -71,6 +72,9 @@ const Jairvis = () => {
       })
       .catch(console.error);
   }, [isAuthenticated, loadStatus]);
+
+  // Suono di accensione insieme all'animazione di avvio
+  useEffect(() => (isAuthenticated ? playJairvisSound() : undefined), [isAuthenticated]);
 
   // Sequenza di avvio: 3 secondi di animazione, poi parte la chat
   useEffect(() => {

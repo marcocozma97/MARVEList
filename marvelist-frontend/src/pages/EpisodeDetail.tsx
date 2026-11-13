@@ -8,6 +8,7 @@ import ShieldRating from '../components/ShieldRating';
 import Community from '../components/Community';
 import { episodeAirDate, formatDay, isEpisodeOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { seasonNumber, seriesTitle } from '../utils/community';
+import SlowLoader from '../components/SlowLoader';
 
 const isEditable = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
@@ -67,7 +68,7 @@ const EpisodeDetail = () => {
   }, [close]);
 
   if (isLoading) {
-    return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
+    return <SlowLoader />;
   }
 
   const total = media?.episodes ?? series.number_of_episodes ?? 0;

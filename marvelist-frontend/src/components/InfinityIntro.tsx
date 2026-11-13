@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { playInfinitySound } from '../utils/sfx';
 
 // Le sei Gemme dell'Infinito, ognuna parte da un punto diverso dello schermo
 const GEMS = [
@@ -25,6 +26,7 @@ const InfinityIntro = ({ onDone }: InfinityIntroProps) => {
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const total = reduceMotion ? 1600 : DURATION;
+    const stopSound = playInfinitySound();
     const fadeTimer = window.setTimeout(() => setLeaving(true), total - FADE);
     const doneTimer = window.setTimeout(onDone, total);
 
@@ -36,6 +38,7 @@ const InfinityIntro = ({ onDone }: InfinityIntroProps) => {
     document.body.style.overflow = 'hidden';
 
     return () => {
+      stopSound();
       window.clearTimeout(fadeTimer);
       window.clearTimeout(doneTimer);
       window.removeEventListener('keydown', onKey);

@@ -39,6 +39,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // Le notizie sono pubbliche: si leggono anche senza account
                         .requestMatchers(HttpMethod.GET, "/api/v1/news").permitAll()
+                        // Ping pubblico per tenere sveglio il backend
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ping").permitAll()
                         // Senza questo ogni errore (400, 404...) arriva al frontend come 403
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()

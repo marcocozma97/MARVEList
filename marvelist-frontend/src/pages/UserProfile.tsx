@@ -12,6 +12,7 @@ import FollowButton from '../components/FollowButton';
 import MediaCard from '../components/MediaCard';
 import { RankPill } from '../components/RankBadge';
 import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
+import SlowLoader from '../components/SlowLoader';
 
 const UserProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +41,7 @@ const UserProfile = () => {
   if (!isAuthenticated) return <Navigate to="/login" />;
 
   if (!data || data.id !== userId) {
-    return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
+    return <SlowLoader />;
   }
 
   const profile = data.profile;

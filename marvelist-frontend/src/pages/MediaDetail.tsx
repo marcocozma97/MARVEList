@@ -12,6 +12,7 @@ import Community from '../components/Community';
 import { episodeAirDate, formatDay, isEpisodeOut, isFullyOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
 import { readPageState, writePageState } from '../hooks/usePageMemory';
+import SlowLoader from '../components/SlowLoader';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -124,7 +125,7 @@ const MediaDetail = () => {
   }, [close, goToMedia, prevMedia, nextMedia]);
 
   if (isLoading) {
-    return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
+    return <SlowLoader />;
   }
 
   if (!dbMedia) {

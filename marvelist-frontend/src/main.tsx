@@ -7,6 +7,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 import { Provider } from 'react-redux'
 import { store } from './store/store.ts'
+import { api } from './services/api.ts'
+import { unlockAudio } from './utils/sfx.ts'
+
+// Appena si apre il sito si sveglia il backend, così i dati arrivano prima
+api.get('/ping').catch(() => {})
+unlockAudio()
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

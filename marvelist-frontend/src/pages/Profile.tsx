@@ -17,6 +17,7 @@ import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
 import { AVATARS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 import { useNicknameCheck } from '../hooks/useNicknameCheck';
+import SlowLoader from '../components/SlowLoader';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -177,10 +178,7 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="page-loader">
-        <div className="spinner-border text-danger" role="status"></div>
-        <h4 className="mt-3">Accesso agli archivi Stark in corso...</h4>
-      </div>
+      <SlowLoader text="Accesso agli archivi Stark in corso..." />
     );
   }
 

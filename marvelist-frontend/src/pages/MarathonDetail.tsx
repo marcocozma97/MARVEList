@@ -8,6 +8,7 @@ import { VISION_ORDER_LABELS } from '../utils/ordering';
 import { dayLabel, errorMessage, formatDay, getBackgroundUrl } from '../utils/marathon';
 import { getPosterUrl } from '../utils/poster';
 import PosterFallback from '../components/PosterFallback';
+import SlowLoader from '../components/SlowLoader';
 
 const unitKey = (u: Pick<MarathonUnit, 'mediaId' | 'episode'>) => `${u.mediaId}-${u.episode ?? 'film'}`;
 
@@ -82,7 +83,7 @@ const MarathonDetail = () => {
   };
 
   if (!isAuthenticated) return <Navigate to="/login" />;
-  if (isLoading) return <div className="page-loader"><div className="spinner-border text-danger" role="status"></div></div>;
+  if (isLoading) return <SlowLoader />;
   if (!marathon) {
     return (
       <div className="container page">
