@@ -1,6 +1,7 @@
 package com.marvelist.backend.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -70,6 +71,22 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // Email di un token con firma valida anche se è scaduto, purché da non più di "grace";
+    // null se il token è falso, alterato o scaduto da troppo tempo
+    public String extractUsernameForRefresh(String token, java.time.Duration grace) {
+        Claims claims;
+        try {
+            claims = extractAllClaims(token);
+        } catch (ExpiredJwtException e) {
+            claims = e.getClaims();
+        } catch (RuntimeException e) {
+            return null;
+        }
+        Date expiration = claims.getExpiration();
+        if (expiration == null || expiration.toInstant().plus(grace).isBefore(java.time.Instant.now())) return null;
+        return claims.getSubject();
     }
 
     // Decodifica la chiave segreta

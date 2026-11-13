@@ -43,4 +43,11 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    // Nuovo token a partire da quello scaduto (inviato come Bearer)
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refresh(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+        String token = authorization != null && authorization.startsWith("Bearer ") ? authorization.substring(7) : null;
+        return ResponseEntity.ok(service.refresh(token));
+    }
 }

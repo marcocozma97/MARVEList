@@ -42,12 +42,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
 
-        userEmail = jwtService.extractUsername(jwt);
+        // Un token scaduto, alterato o di un utente che non esiste più non blocca la richiesta:
+        // si prosegue come ospite e le pagine pubbliche continuano a funzionare
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (RuntimeException e) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Se sono presenti l'email e l'utente non è già autenticato nel contesto attuale
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            UserDetails userDetails;
+            try {
+                userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            } catch (RuntimeException e) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

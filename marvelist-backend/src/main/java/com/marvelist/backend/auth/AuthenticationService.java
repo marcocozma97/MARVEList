@@ -31,6 +31,9 @@ public class AuthenticationService {
     @Value("${application.verification.expiration-hours}")
     private long verificationExpirationHours;
 
+    @Value("${application.security.jwt.refresh-grace-days:30}")
+    private long refreshGraceDays;
+
     // Se l'invio della mail fallisce la transazione viene annullata: l'utente non resta "a metà"
     @Transactional
     public String register(RegisterRequest request, String origin) {
@@ -104,6 +107,19 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .build();
+    }
+
+    // Rinnovo della sessione dal minigioco: un token scaduto ma autentico diventa un nuovo token da 24 ore
+    public AuthenticationResponse refresh(String expiredToken) {
+        String email = expiredToken == null ? null
+                : jwtService.extractUsernameForRefresh(expiredToken, java.time.Duration.ofDays(refreshGraceDays));
+        var user = email == null ? null : repository.findByEmail(email).orElse(null);
+        if (user == null || !user.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sessione scaduta da troppo tempo: accedi di nuovo.");
+        }
+        return AuthenticationResponse.builder()
+                .token(jwtService.generateToken(user))
                 .build();
     }
 }

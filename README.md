@@ -337,7 +337,7 @@ Il grado segue i livelli della Timeline: i titoli Marvel Fan visti "restano da p
 ## Sicurezza
 
 - Password salvate con **BCrypt**, mai in chiaro.
-- **JWT** firmato, con scadenza a 24 ore. Sono pubbliche solo le rotte di autenticazione e le notizie.
+- **JWT** firmato, con scadenza a 24 ore. Quando scade, al posto delle pagine compare il minigioco di Iron Man: prendendo la moneta degli Avengers il token scaduto (purché autentico e scaduto da non più di 30 giorni) viene scambiato con uno nuovo tramite `POST /api/v1/auth/refresh`. Il backend tratta un token scaduto come un ospite invece di bloccare la richiesta. Sono pubbliche solo le rotte di autenticazione, le notizie e il ping del keep-alive.
 - Account attivo **solo dopo la conferma via email**. Il link porta all'origine del frontend solo se questa è tra quelle ammesse dal CORS, così il token non può essere dirottato su un sito esterno.
 - **CORS** limitato a `localhost` e alla rete di casa; online, solo al dominio del frontend.
 - Ogni maratona e ogni progresso è legato all'utente del token: non si possono leggere o modificare i dati di altri.

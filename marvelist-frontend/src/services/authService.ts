@@ -19,6 +19,12 @@ export const authService = {
     return response.data;
   },
   
+  // Scambia il token scaduto con uno nuovo da 24 ore
+  refresh: async (expiredToken: string): Promise<{ token: string }> => {
+    const response = await api.post('/auth/refresh', null, { headers: { Authorization: `Bearer ${expiredToken}` } });
+    return response.data;
+  },
+
   // Non restituisce il token: l'account va prima confermato dal link nella mail
   register: async (userData: RegisterRequest): Promise<{ message: string }> => {
     const response = await api.post('/auth/register', userData);

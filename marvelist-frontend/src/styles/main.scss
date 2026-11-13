@@ -138,17 +138,55 @@ button:not(:disabled):active { transform: scale(0.97); }
 
 .page-empty { padding: 80px 16px; text-align: center; }
 
-// Caricamento lento con il minigioco di Iron Man
-.slow-loader {
-  .slow-loader-text { margin: 12px 0 0; color: var(--text-muted); font-weight: 500; }
+.slow-loader .slow-loader-text { margin: 12px 0 0; color: var(--text-muted); font-weight: 500; }
+
+// Sessione scaduta: il minigioco di Iron Man riattiva l'accesso
+.session-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: radial-gradient(ellipse at 50% 0%, rgba(214, 40, 40, 0.22), transparent 60%), rgba(5, 7, 14, 0.96);
+  animation: slow-loader-in 0.35s var(--ease-out) both;
 }
-.slow-loader-game {
+.session-gate-card {
   width: 100%;
-  max-width: 560px;
-  margin: 22px auto 0;
-  animation: slow-loader-in 0.4s var(--ease-out) both;
+  max-width: 600px;
+  text-align: center;
+  h2 { margin: 6px 0 10px; font-family: 'Anton', sans-serif; font-size: clamp(1.4rem, 5vw, 2rem); letter-spacing: 0.5px; text-transform: uppercase; color: #fff; }
 }
-.slow-loader-hint { margin: 0 0 10px; font-size: 0.85rem; color: var(--text-muted); }
+.session-gate-kicker {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: #f6bd3c;
+}
+.session-gate-text { margin: 0 auto 18px; max-width: 460px; color: var(--text-muted); }
+.session-gate-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  min-height: 48px;
+}
+.session-gate-go { animation: session-go-in 0.45s var(--ease-spring) both; }
+@keyframes session-go-in { from { opacity: 0; transform: scale(0.85); } }
+.session-gate-wait { color: var(--text-muted); font-size: 0.9rem; }
+.session-gate-link {
+  border: 0;
+  background: none;
+  padding: 4px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  &:hover { color: #fff; }
+}
 @keyframes slow-loader-in { from { opacity: 0; transform: translateY(8px); } }
 
 .iron-runner {

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Minigioco 8-bit per l'attesa: Iron Man corre sui tetti, salta da un palazzo all'altro
-// ed evita i droni e i loro laser. Si gioca con spazio/freccia su oppure toccando lo schermo.
+// Minigioco 8-bit: Iron Man corre sui tetti, salta da un palazzo all'altro ed evita i droni e i loro laser.
+// Si gioca con spazio/freccia su oppure toccando lo schermo. Dopo pochi secondi compare la moneta
+// degli Avengers: prenderla avvisa il componente padre (che rinnova la sessione).
 
 const W = 320;
 const H = 140;
 const GRAVITY = 980;
 const JUMP_V = -280;
-const JUMP_CUT = -110;
+const JUMP_CUT = -170;
 const PLAYER_X = 46;
 const START_SPEED = 110;
 const MAX_SPEED = 235;
@@ -16,6 +17,7 @@ const BEST_KEY = 'marvelist:iron-runner-best';
 const COLORS: Record<string, string> = {
   R: '#d62828', D: '#8f1414', G: '#f6bd3c', C: '#aef6ff',
   S: '#9aa4b8', K: '#4b5468', E: '#ff3b5c', P: '#cfd6e4',
+  O: '#8a5a00', Y: '#ffd23f', L: '#fff1a8', B: '#5a2a00',
 };
 
 const HEAD = [
@@ -43,6 +45,22 @@ const DRONE = [
   '..SSSSS..',
 ];
 
+const COIN = [
+  '...OOOOO...',
+  '..OYYYYYO..',
+  '.OYLYBYYYO.',
+  'OYLYBYBYYYO',
+  'OYYYBYBYYYO',
+  'OYYBBBBBYYO',
+  'OYYBYYYBYYO',
+  'OYBYYYYYBYO',
+  '.OYYYYYYYO.',
+  '..OYYYYYO..',
+  '...OOOOO...',
+];
+const COIN_SIZE = 11;
+const COIN_DELAY = 2.5;
+
 interface Building { x: number; w: number; top: number; seed: number }
 interface Drone { x: number; y: number; charge: number; fired: boolean }
 interface Laser { x: number; y: number; vx: number; vy: number }
@@ -66,13 +84,21 @@ const drawSprite = (ctx: CanvasRenderingContext2D, rows: string[], x: number, y:
   });
 };
 
-const IronRunner = () => {
+interface IronRunnerProps {
+  onCoin?: () => void;
+}
+
+const IronRunner = ({ onCoin }: IronRunnerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onCoinRef = useRef(onCoin);
+  const withCoin = !!onCoin;
   const scoreRef = useRef<HTMLSpanElement>(null);
   const pressRef = useRef<() => void>(() => {});
   const releaseRef = useRef<() => void>(() => {});
   const [phase, setPhase] = useState<Phase>('ready');
   const [best, setBest] = useState(readBest);
+
+  useEffect(() => { onCoinRef.current = onCoin; }, [onCoin]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -109,6 +135,10 @@ const IronRunner = () => {
     let overAt = 0;
     let frame = 0;
     let last = performance.now();
+    let coin: { x: number; y: number } | null = null;
+    let coinAt = COIN_DELAY;
+    let coinTaken = false;
+    let sparkle = 0;
 
     const reset = () => {
       buildings = [{ x: -10, w: W + 60, top: 110, seed: 1 }];
@@ -121,6 +151,8 @@ const IronRunner = () => {
       grounded = true;
       droneTimer = 3;
       runClock = 0;
+      coin = null;
+      coinAt = COIN_DELAY;
       if (scoreRef.current) scoreRef.current.textContent = '00000';
     };
 
@@ -235,7 +267,26 @@ const IronRunner = () => {
       lasers.forEach(l => { l.x += l.vx * dt; l.y += l.vy * dt; });
       lasers = lasers.filter(l => l.x > -10 && l.y < H + 10 && l.y > -10);
 
+      // Moneta degli Avengers: sopra un tetto, a un'altezza raggiungibile con un salto
+      sparkle = Math.max(0, sparkle - dt);
+      if (withCoin && !coinTaken) {
+        if (!coin && runClock >= coinAt) {
+          const under = buildings.find(b => b.x <= W + 4 && b.x + b.w >= W + 4 + COIN_SIZE);
+          if (under) coin = { x: W + 4, y: under.top - 27 };
+        }
+        if (coin) {
+          coin.x -= dx;
+          if (coin.x + COIN_SIZE < 0) { coin = null; coinAt = runClock + 1.5; }
+        }
+      }
+
       const top = y - 13;
+      if (coin && coin.x < right && coin.x + COIN_SIZE > left && coin.y < y && coin.y + COIN_SIZE > top) {
+        coin = null;
+        coinTaken = true;
+        sparkle = 0.6;
+        onCoinRef.current?.();
+      }
       const hit = (px: number, py: number) => px >= left && px <= right && py >= top && py <= y;
       if (lasers.some(l => hit(l.x, l.y) || hit(l.x - l.vx * 0.025, l.y - l.vy * 0.025))) { gameOver(); return; }
       if (drones.some(d => d.x < right && d.x + 9 > left && d.y < y && d.y + 5 > top)) { gameOver(); return; }
@@ -282,6 +333,12 @@ const IronRunner = () => {
         if (frame % 4 < 2) { ctx.fillStyle = '#4b5468'; ctx.fillRect(Math.round(d.x), Math.round(d.y), 9, 1); }
       });
 
+      if (coin) {
+        const bob = Math.round(Math.sin(frame / 8) * 2);
+        drawSprite(ctx, COIN, coin.x, coin.y + bob);
+        if (frame % 30 < 4) { ctx.fillStyle = '#ffffff'; ctx.fillRect(Math.round(coin.x) + 3, Math.round(coin.y) + bob + 2, 1, 1); }
+      }
+
       ctx.fillStyle = '#ff3b5c';
       lasers.forEach(l => {
         const len = Math.hypot(l.vx, l.vy) || 1;
@@ -296,6 +353,11 @@ const IronRunner = () => {
         const legs = !grounded ? LEGS.air : (state === 'run' && Math.floor(distance / 9) % 2 ? LEGS.runA : LEGS.runB);
         drawSprite(ctx, HEAD, PLAYER_X, sy, crashed ? '#e6e6e6' : undefined);
         drawSprite(ctx, legs, PLAYER_X, sy + 10, crashed ? '#e6e6e6' : undefined);
+        if (sparkle > 0) {
+          const r = Math.round((0.6 - sparkle) * 30) + 3;
+          ctx.fillStyle = frame % 4 < 2 ? '#ffd23f' : '#ffffff';
+          [[-r, 0], [r, 0], [0, -r], [0, r], [-r, -r], [r, -r]].forEach(([ox, oy]) => ctx.fillRect(PLAYER_X + 5 + ox, sy + 6 + oy, 2, 2));
+        }
         // Propulsori nei piedi quando vola
         if (!grounded && !crashed) {
           const flick = frame % 4 < 2;
@@ -341,7 +403,7 @@ const IronRunner = () => {
       window.removeEventListener('keyup', onKeyUp);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, []);
+  }, [withCoin]);
 
   return (
     <div
@@ -359,7 +421,7 @@ const IronRunner = () => {
       {phase !== 'run' && (
         <div className="iron-runner-message">
           {phase === 'ready'
-            ? <><strong>Tocca o premi spazio</strong><span>Salta tra i palazzi ed evita i laser dei droni</span></>
+            ? <><strong>Tocca o premi spazio</strong><span>{withCoin ? 'Prendi la moneta degli Avengers ed evita i laser dei droni' : 'Salta tra i palazzi ed evita i laser dei droni'}</span></>
             : <><strong>Armatura a terra!</strong><span>Tocca o premi spazio per riprovare</span></>}
         </div>
       )}

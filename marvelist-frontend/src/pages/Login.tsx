@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useDispatch } from 'react-redux';
@@ -6,11 +6,14 @@ import { loginSuccess } from '../store/authSlice';
 import { markIntroPending } from '../utils/intro';
 import Brand from '../components/Brand';
 import { errorMessage } from '../utils/marathon';
+import { clearSessionExpired, wasSessionExpired } from '../utils/session';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [expired] = useState(wasSessionExpired);
+  useEffect(clearSessionExpired, []);
   const navigate = useNavigate(); // Serve per reindirizzare l'utente dopo il login
   const dispatch = useDispatch();
 
@@ -42,6 +45,7 @@ const Login = () => {
         <Link to="/" className="auth-logo" aria-label="MARVEList, torna alla home"><Brand size="md" /></Link>
         <h1 className="auth-title">Accedi</h1>
 
+        {expired && !error && <div className="form-success" role="status">La sessione è scaduta: accedi di nuovo per continuare.</div>}
         {error && <div className="form-error" role="alert">{error}</div>}
 
         <form onSubmit={handleLogin} className="auth-form">

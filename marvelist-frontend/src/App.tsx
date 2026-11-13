@@ -24,16 +24,20 @@ import Notifications from './pages/Notifications';
 import InfinityIntro from './components/InfinityIntro';
 import { markIntroSeen, shouldShowIntro } from './utils/intro';
 import NicknameOnboarding from './components/NicknameOnboarding';
+import SessionGate from './components/SessionGate';
 
 const Shell = () => {
   const location = useLocation();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const profile = useSelector((state: RootState) => state.auth.profile);
+  const sessionExpired = useSelector((state: RootState) => state.auth.sessionExpired);
   const hasNavbar = !HIDDEN_NAVBAR_PATHS.includes(location.pathname);
 
   // Intro delle Gemme: decide sessionStorage, lo stato serve solo a ridisegnare quando finisce
   const [, setIntroFinished] = useState(0);
-  const showIntro = !['/login', '/register', '/verify'].includes(location.pathname) && shouldShowIntro(location.pathname);
+  const isAuthPage = ['/login', '/register', '/verify'].includes(location.pathname);
+  const showGate = sessionExpired && !isAuthPage;
+  const showIntro = !isAuthPage && !showGate && shouldShowIntro(location.pathname);
   const finishIntro = useCallback(() => {
     markIntroSeen();
     setIntroFinished(n => n + 1);
@@ -67,10 +71,13 @@ const Shell = () => {
 
       {!showIntro && <ScrollTopButton />}
 
-      {isAuthenticated && hasNavbar && !showIntro && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
+      {isAuthenticated && hasNavbar && !showIntro && !showGate && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
 
       {/* Intro iniziale: copre tutto, la Timeline intanto si carica sotto */}
       {showIntro && <InfinityIntro onDone={finishIntro} />}
+
+      {/* Token scaduto: minigioco per riattivare la sessione */}
+      {showGate && <SessionGate />}
     </>
   );
 };
