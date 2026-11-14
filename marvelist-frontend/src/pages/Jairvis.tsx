@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { jairvisService } from '../services/jairvisService';
@@ -22,7 +22,7 @@ const BOOT_STEPS = [
 ];
 
 const INTRO = "Sistemi online. Salve signore, sono **J.A.I.R.V.I.S.**, la nuova intelligenza sperimentale delle **Stark Industries**.\n\n"
-  + "Per ora sono attivo in versione demo, con un utilizzo limitato: posso rispondere a due domande ogni 24 ore. "
+  + "Per ora sono attivo in versione demo, con un utilizzo limitato: posso rispondere a una domanda ogni 24 ore. Per i dubbi su come funziona MARVEList Le consiglio di consultare prima la sezione **FAQ**: così non spreca la domanda di oggi. "
   + "In futuro diventerò lo strumento definitivo degli utenti MARVEList.\n\nCome posso assisterla oggi?";
 
 const MAINTENANCE = "Mi perdoni, signore: in questo momento **DUM-E** e **U** stanno lavorando alla manutenzione dei miei sistemi. Tornerò in funzione molto presto.";
@@ -42,7 +42,7 @@ const Jairvis = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [messages, setMessages] = useState<Message[]>([{ id: 1, text: INTRO, sender: 'jairvis' }]);
   const [input, setInput] = useState('');
-  const [remaining, setRemaining] = useState(2);
+  const [remaining, setRemaining] = useState(1);
   const [nextAskAt, setNextAskAt] = useState<string | null>(null);
   const [maintenance, setMaintenance] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -67,7 +67,7 @@ const Jairvis = () => {
       .then(status => {
         if (status.maintenance) {
           setMaintenance(true);
-          setMessages(prev => [...prev, { id: 2, text: MAINTENANCE, sender: 'jairvis' }]);
+          setMessages(prev => prev.some(m => m.id === 2) ? prev : [...prev, { id: 2, text: MAINTENANCE, sender: 'jairvis' }]);
         }
       })
       .catch(console.error);
@@ -153,8 +153,8 @@ const Jairvis = () => {
   const quota = maintenance
     ? 'J.A.I.R.V.I.S. è in manutenzione: tornerà presto disponibile'
     : remaining > 0
-      ? `Demo · ${remaining === 1 ? '1 domanda disponibile' : `${remaining} domande disponibili`} · 2 ogni 24 ore`
-      : `Domande di oggi esaurite · la prossima ${nextAskAt ? nextAskLabel(nextAskAt) : 'a breve'}`;
+      ? 'Demo · 1 domanda disponibile ogni 24 ore'
+      : `Domanda di oggi già usata · la prossima ${nextAskAt ? nextAskLabel(nextAskAt) : 'a breve'}`;
 
   return (
     <div className="jv-page">
@@ -198,13 +198,15 @@ const Jairvis = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <p className={`jv-quota ${canAsk ? '' : 'is-locked'}`} role="status">{quota}</p>
+          <p className={`jv-quota ${canAsk ? '' : 'is-locked'}`} role="status">
+            {quota} · <Link to="/faq">Dubbi sull'app? Prima le FAQ</Link>
+          </p>
           <form onSubmit={handleSend} className="jv-form">
             <input
               ref={inputRef}
               type="text"
               className="jv-input"
-              placeholder={maintenance ? 'J.A.I.R.V.I.S. è in manutenzione' : canAsk ? 'Scrivi a J.A.I.R.V.I.S.' : 'Domande di oggi esaurite'}
+              placeholder={maintenance ? 'J.A.I.R.V.I.S. è in manutenzione' : canAsk ? 'Scrivi a J.A.I.R.V.I.S.' : 'Domanda di oggi già usata'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isTyping || !canAsk}

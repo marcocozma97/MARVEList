@@ -105,7 +105,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('Chi è J.A.I.R.V.I.S.?',
         <>È la tua Intelligenza Artificiale personale. Puoi chiedergli curiosità sui fumetti, spiegazioni sulle scene post-credit o consigli su cosa guardare stasera! Lo trovi nel menu in alto dopo l'accesso, oppure in fondo a questa pagina.</>),
       item('Quante domande posso fare a J.A.I.R.V.I.S.?',
-        <>J.A.I.R.V.I.S. è la nuova intelligenza sperimentale delle Stark Industries ed è in versione demo: puoi fargli <strong>due domande ogni 24 ore</strong>. Ogni domanda torna disponibile 24 ore dopo averla fatta. Se è in manutenzione, DUM-E e U ci stanno lavorando e tornerà presto.</>),
+        <>J.A.I.R.V.I.S. è la nuova intelligenza sperimentale delle Stark Industries ed è in versione demo: puoi fargli <strong>una domanda ogni 24 ore</strong>, che torna disponibile 24 ore dopo averla fatta. Per i dubbi su come funziona MARVEList guarda prima queste FAQ: così non sprechi la domanda del giorno. Se è in manutenzione, DUM-E e U ci stanno lavorando e tornerà presto.</>),
     ],
   },
 ];

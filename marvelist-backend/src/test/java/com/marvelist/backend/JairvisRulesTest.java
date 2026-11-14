@@ -43,18 +43,12 @@ class JairvisRulesTest {
     }
 
     @Test
-    void dueDomandeOgni24Ore() throws Exception {
+    void unaDomandaOgni24Ore() throws Exception {
         Instant now = Instant.parse("2026-11-09T12:00:00Z");
-        Method remaining = JairvisService.class.getDeclaredMethod("remaining", Instant.class, Instant.class, Instant.class);
-        Method next = JairvisService.class.getDeclaredMethod("nextAskAt", Instant.class, Instant.class, Instant.class);
+        Method remaining = JairvisService.class.getDeclaredMethod("remaining", Instant.class, Instant.class);
         remaining.setAccessible(true);
-        next.setAccessible(true);
-        Instant fiveHoursAgo = now.minus(Duration.ofHours(5)), twoHoursAgo = now.minus(Duration.ofHours(2));
-        assertEquals(2, remaining.invoke(null, null, null, now));
-        assertEquals(1, remaining.invoke(null, fiveHoursAgo, null, now));
-        assertEquals(0, remaining.invoke(null, fiveHoursAgo, twoHoursAgo, now));
-        assertNull(next.invoke(null, fiveHoursAgo, null, now));
-        assertEquals(fiveHoursAgo.plus(Duration.ofHours(24)), next.invoke(null, twoHoursAgo, fiveHoursAgo, now));
-        assertEquals(1, remaining.invoke(null, now.minus(Duration.ofHours(25)), twoHoursAgo, now));
+        assertEquals(1, remaining.invoke(null, null, now));
+        assertEquals(0, remaining.invoke(null, now.minus(Duration.ofHours(5)), now));
+        assertEquals(1, remaining.invoke(null, now.minus(Duration.ofHours(25)), now));
     }
 }

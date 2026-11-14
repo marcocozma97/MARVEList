@@ -19,5 +19,6 @@ public class SchemaUpgrade implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         jdbcTemplate.execute("alter table if exists notifications drop constraint if exists notifications_type_check");
         jdbcTemplate.execute("alter table if exists users drop column if exists jairvis_last_suggestion_at");
+        jdbcTemplate.execute("alter table if exists users drop column if exists jairvis_second_ask_at");
     }
 }

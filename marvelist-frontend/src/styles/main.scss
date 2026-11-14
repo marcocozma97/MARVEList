@@ -4520,6 +4520,7 @@ $jv-blue: #38bdf8;
   color: rgba(#cdeffd, 0.7);
   text-align: center;
   &.is-locked { color: #ffc27a; }
+  a { color: #7df9ff; text-decoration: underline; text-underline-offset: 2px; }
 }
 
 .jv-status.is-down .jv-status-dot { background: #ff8a1f; animation: none; }

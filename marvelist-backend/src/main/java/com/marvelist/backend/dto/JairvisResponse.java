@@ -13,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class JairvisResponse {
     private String reply; // La risposta generata dall'IA
-    private String status; // OK, LIMIT (domande del giorno esaurite), MAINTENANCE (fondi IA esauriti), ERROR
-    private int remaining; // Domande ancora disponibili nelle ultime 24 ore
-    private Instant nextAskAt; // Da quando torna disponibile una domanda (null se ce n'è ancora una)
+    private String status; // OK, LIMIT (domanda del giorno già usata), MAINTENANCE (fondi IA esauriti), ERROR
+    private int remaining; // 1 se la domanda di oggi è ancora disponibile, altrimenti 0
+    private Instant nextAskAt; // Da quando torna disponibile la domanda (null se è già disponibile)
 }
