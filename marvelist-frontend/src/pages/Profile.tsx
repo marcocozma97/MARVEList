@@ -14,7 +14,7 @@ import Avatar from '../components/Avatar';
 import RankBadge from '../components/RankBadge';
 import { computeRank } from '../utils/rank';
 import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
-import { AVATARS } from '../utils/avatars';
+import { AVATARS, AVATAR_GROUPS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 import { useNicknameCheck } from '../hooks/useNicknameCheck';
 import SlowLoader from '../components/SlowLoader';
@@ -265,21 +265,26 @@ const Profile = () => {
         {showAvatarPicker && (
           <div className="avatar-picker">
             <p className="section-label">Scegli la tua immagine profilo</p>
-            <div className="avatar-grid">
-              {AVATARS.map(a => (
-                <button
-                  key={a.id}
-                  type="button"
-                  className={`avatar-option ${profile?.avatar === a.id ? 'selected' : ''}`}
-                  onClick={() => chooseAvatar(a.id)}
-                  disabled={isSaving}
-                  aria-pressed={profile?.avatar === a.id}
-                >
-                  <Avatar avatarId={a.id} size={64} />
-                  <span>{a.label}</span>
-                </button>
-              ))}
-            </div>
+            {AVATAR_GROUPS.map(group => (
+              <div key={group.title} className="avatar-group">
+                <h3 className="avatar-group-title">{group.title}</h3>
+                <div className="avatar-grid">
+                  {group.ids.map(id => AVATARS.find(a => a.id === id)).filter(a => a !== undefined).map(a => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      className={`avatar-option ${profile?.avatar === a.id ? 'selected' : ''}`}
+                      onClick={() => chooseAvatar(a.id)}
+                      disabled={isSaving}
+                      aria-pressed={profile?.avatar === a.id}
+                    >
+                      <Avatar avatarId={a.id} size={64} />
+                      <span>{a.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>

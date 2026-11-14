@@ -416,4 +416,141 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
       </>
     )
   },
+  {
+    id: 'starlord', label: 'Star-Lord',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1b0f24" />
+        <rect x="10" y="27" width="7" height="15" rx="3" fill="#b9c0c9" />
+        <rect x="47" y="27" width="7" height="15" rx="3" fill="#b9c0c9" />
+        <path d="M14 30 Q14 10 32 10 Q50 10 50 30 L50 42 Q48 54 32 56 Q16 54 14 42 Z" fill="#8b1e1e" />
+        <path d="M32 11 L32 24" stroke="#5c1212" strokeWidth="4" strokeLinecap="round" />
+        <path d="M18 28 Q24 23 30 30 Q26 36 19 34 Z" fill="#ff2d2d" />
+        <path d="M46 28 Q40 23 34 30 Q38 36 45 34 Z" fill="#ff2d2d" />
+        <ellipse cx="22" cy="29" rx="2" ry="1.2" fill="#ffb3b3" />
+        <ellipse cx="42" cy="29" rx="2" ry="1.2" fill="#ffb3b3" />
+        <path d="M20 39 L26 43 M44 39 L38 43" stroke="#b9c0c9" strokeWidth="2" strokeLinecap="round" />
+        <path d="M25 46 H39 M26 50 H38" stroke="#3a0b0b" strokeWidth="2" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'gamora', label: 'Gamora',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#0f1d14" />
+        <path d="M12 34 Q10 8 32 8 Q54 8 52 34 L54 60 L10 60 Z" fill="#1a1020" />
+        <path d="M10 46 Q14 54 11 60 L19 60 Q16 52 17 44 Z" fill="#d23c95" />
+        <path d="M54 46 Q50 54 53 60 L45 60 Q48 52 47 44 Z" fill="#d23c95" />
+        <ellipse cx="32" cy="33" rx="13" ry="16" fill="#4f9a55" />
+        <path d="M19 27 Q20 12 32 12 Q44 12 45 27 Q38 18 32 20 Q26 18 19 27 Z" fill="#1a1020" />
+        <ellipse cx="26" cy="31" rx="2.6" ry="1.8" fill="#111" />
+        <ellipse cx="38" cy="31" rx="2.6" ry="1.8" fill="#111" />
+        <path d="M21 35 L25 39 M43 35 L39 39" stroke="#d6dde6" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="24" cy="26" r="1" fill="#d6dde6" />
+        <circle cx="40" cy="26" r="1" fill="#d6dde6" />
+        <path d="M28 42 Q32 44 36 42" stroke="#2a5e2f" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'drax', label: 'Drax',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1d1310" />
+        <path d="M16 26 Q16 8 32 8 Q48 8 48 26 L48 40 Q46 56 32 58 Q18 56 16 40 Z" fill="#7d8a86" />
+        <path d="M32 9 Q29 16 32 23 Q35 16 32 9 Z" fill="#a3221c" />
+        <path d="M18 22 Q24 17 26 23 M46 22 Q40 17 38 23 M20 44 Q24 48 22 54 M44 44 Q40 48 42 54" stroke="#a3221c" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        <path d="M21 29 L29 31 M43 29 L35 31" stroke="#3b4441" strokeWidth="3" strokeLinecap="round" />
+        <ellipse cx="25" cy="34" rx="2.4" ry="1.8" fill="#1a1a1a" />
+        <ellipse cx="39" cy="34" rx="2.4" ry="1.8" fill="#1a1a1a" />
+        <path d="M26 46 L38 46" stroke="#3b4441" strokeWidth="2.5" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'rocket', label: 'Rocket',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#14202a" />
+        <path d="M12 24 L16 6 L27 17 Z" fill="#6b4a33" />
+        <path d="M52 24 L48 6 L37 17 Z" fill="#6b4a33" />
+        <path d="M15 19 L17 11 L22 16 Z" fill="#d9b99a" />
+        <path d="M49 19 L47 11 L42 16 Z" fill="#d9b99a" />
+        <ellipse cx="32" cy="34" rx="20" ry="18" fill="#8a6446" />
+        <path d="M20 40 Q32 30 44 40 Q42 54 32 56 Q22 54 20 40 Z" fill="#e7d3bd" />
+        <path d="M12 30 Q22 24 32 30 Q42 24 52 30 Q50 38 42 38 Q36 36 32 34 Q28 36 22 38 Q14 38 12 30 Z" fill="#2b1d14" />
+        <path d="M32 18 L32 27" stroke="#2b1d14" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="24" cy="32" r="3" fill="#f4f4f4" />
+        <circle cx="40" cy="32" r="3" fill="#f4f4f4" />
+        <circle cx="24" cy="32" r="1.6" fill="#111" />
+        <circle cx="40" cy="32" r="1.6" fill="#111" />
+        <ellipse cx="32" cy="44" rx="3.5" ry="2.5" fill="#111" />
+        <path d="M28 49 Q32 52 36 49" stroke="#5a3e2b" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'groot', label: 'Groot',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#10200f" />
+        <path d="M24 13 L20 6 M41 12 L44 5" stroke="#5a3b21" strokeWidth="2.2" strokeLinecap="round" />
+        <ellipse cx="18" cy="6" rx="5" ry="3" fill="#5fbf4a" transform="rotate(-30 18 6)" />
+        <ellipse cx="47" cy="6" rx="5" ry="3" fill="#5fbf4a" transform="rotate(25 47 6)" />
+        <path d="M16 28 Q16 10 32 10 Q48 10 48 28 L47 44 Q44 58 32 58 Q20 58 17 44 Z" fill="#7a5230" />
+        <path d="M21 15 Q19 30 22 50 M32 12 L32 22 M43 15 Q45 30 42 50" stroke="#5a3b21" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M20 28 Q26 25 30 29 M44 28 Q38 25 34 29" stroke="#4a2f1a" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <circle cx="25" cy="33" r="3.2" fill="#1e140b" />
+        <circle cx="39" cy="33" r="3.2" fill="#1e140b" />
+        <circle cx="26" cy="32" r="1" fill="#f4f4f4" />
+        <circle cx="40" cy="32" r="1" fill="#f4f4f4" />
+        <path d="M25 45 Q32 51 39 45" stroke="#3a2412" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'mantis', label: 'Mantis',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1b1430" />
+        <path d="M26 14 Q22 7 18 5 M38 14 Q42 7 46 5" stroke="#2a3a1a" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <circle cx="18" cy="5" r="2.6" fill="#b6ff6a" />
+        <circle cx="46" cy="5" r="2.6" fill="#b6ff6a" />
+        <path d="M13 34 Q12 12 32 12 Q52 12 51 34 L52 56 L12 56 Z" fill="#111" />
+        <ellipse cx="32" cy="35" rx="13" ry="16" fill="#9fd28a" />
+        <path d="M18 27 Q17 13 32 13 Q47 13 46 27 Z" fill="#111" />
+        <ellipse cx="26" cy="33" rx="4" ry="3" fill="#111" />
+        <ellipse cx="38" cy="33" rx="4" ry="3" fill="#111" />
+        <circle cx="27" cy="32" r="1" fill="#f4f4f4" />
+        <circle cx="39" cy="32" r="1" fill="#f4f4f4" />
+        <path d="M29 45 Q32 47 35 45" stroke="#4d7a3f" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'nebula', label: 'Nebula',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#0d0f22" />
+        <path d="M17 28 Q17 9 32 9 Q47 9 47 28 L46 42 Q43 56 32 57 Q21 56 18 42 Z" fill="#3e6fb8" />
+        <path d="M17 27 Q18 16 25 12 L25 24 Z" fill="#9aa4b1" />
+        <path d="M32 10 L32 20 M44 17 Q40 21 40 25 L44 29" stroke="#6b2a7a" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <ellipse cx="26" cy="33" rx="3.2" ry="2.4" fill="#0a0a14" />
+        <ellipse cx="38" cy="33" rx="3.2" ry="2.4" fill="#0a0a14" />
+        <path d="M21 38 L26 42 M43 38 L38 42" stroke="#2a4f8a" strokeWidth="2" strokeLinecap="round" />
+        <path d="M28 47 L36 47" stroke="#1f3a66" strokeWidth="2.2" strokeLinecap="round" />
+      </>
+    )
+  },
+];
+
+// Categorie in cui sono divisi gli avatar nella scelta dell'immagine profilo
+export const AVATAR_GROUPS: { title: string; ids: string[] }[] = [
+  { title: 'Avengers', ids: ['shield', 'reactor', 'spider', 'hammer', 'hawkeye', 'hulk', 'panther', 'widow', 'strange', 'scarlet'] },
+  { title: 'Guardiani della Galassia', ids: ['starlord', 'gamora', 'drax', 'rocket', 'groot', 'mantis', 'nebula'] },
+  { title: 'X-Men', ids: ['wolverine', 'cyclops', 'phoenix', 'storm', 'gambit', 'nightcrawler', 'jubilee', 'deadpool'] },
+  { title: 'Fantastici 4', ids: ['fantastic', 'invisible', 'torch', 'thing'] },
+  { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron', 'hydra'] },
+  { title: 'Simboli', ids: ['shield-agency', 'infinity'] },
 ];

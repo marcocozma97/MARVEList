@@ -2571,6 +2571,18 @@ $stop-dot: 14px;
   animation: panel-in 0.3s var(--ease-spring);
 }
 
+.avatar-group + .avatar-group { margin-top: 22px; }
+
+.avatar-group-title {
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
