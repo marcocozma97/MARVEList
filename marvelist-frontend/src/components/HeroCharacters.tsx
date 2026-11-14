@@ -9,7 +9,7 @@ const PixelSprite = ({ sprite, className = '' }: { sprite: SpriteDef; className?
   const width = Math.max(...sprite.rows.map(r => r.length)) * PX;
   return (
     <span className={`pixel-sprite ${className}`} style={{ width, height: sprite.rows.length * PX }} aria-hidden="true">
-      <span className="pixel-sprite-dots" style={{ width: PX, height: PX, boxShadow: shadow }} />
+      <span className="pixel-sprite-dots" style={{ left: -PX, top: -PX, width: PX, height: PX, boxShadow: shadow }} />
     </span>
   );
 };

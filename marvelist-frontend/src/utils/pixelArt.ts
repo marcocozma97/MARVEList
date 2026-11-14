@@ -1,5 +1,6 @@
 // Sprite a 8 bit: ogni carattere è un pixel (il punto è trasparente), la palette dà il colore.
-// Il componente PixelSprite li disegna in CSS puro con un box-shadow per pixel.
+// Il componente PixelSprite li disegna in CSS puro con un box-shadow per pixel,
+// spostati di un pixel perché un'ombra senza offset resterebbe nascosta sotto l'elemento.
 export interface SpriteDef { rows: string[]; palette: Record<string, string> }
 
 export const IRON_MAN: SpriteDef = {
@@ -91,7 +92,7 @@ export const spriteShadow = ({ rows, palette }: SpriteDef, px: number) => {
   const shadows: string[] = [];
   rows.forEach((row, y) => [...row].forEach((ch, x) => {
     const color = palette[ch];
-    if (color) shadows.push(`${x * px}px ${y * px}px 0 ${color}`);
+    if (color) shadows.push(`${(x + 1) * px}px ${(y + 1) * px}px 0 ${color}`);
   }));
   return shadows.join(',');
 };
