@@ -67,6 +67,36 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
     )
   },
   {
+    id: 'hawkeye', label: 'Hawkeye',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1e0f33" />
+        <circle cx="32" cy="32" r="24" fill="#5b2a96" />
+        <circle cx="32" cy="32" r="17" fill="#f4f4f4" />
+        <circle cx="32" cy="32" r="11" fill="#5b2a96" />
+        <circle cx="32" cy="32" r="5" fill="#f4f4f4" />
+        <path d="M10 54 L32 32" stroke="#2a1a10" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M32 32 L27 31 L31 27 Z" fill="#c9ced6" />
+        <path d="M10 54 L8 47 M10 54 L17 56 M13 51 L11 44 M13 51 L20 53" stroke="#c8102e" strokeWidth="2" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'hulk', label: 'Hulk',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#0f2410" />
+        <path d="M14 26 Q14 8 32 8 Q50 8 50 26 L50 40 Q48 56 32 58 Q16 56 14 40 Z" fill="#4c9a2a" />
+        <path d="M14 26 Q14 8 32 8 Q50 8 50 26 Q46 16 40 18 Q34 12 28 18 Q20 14 14 26 Z" fill="#1a1a1a" />
+        <path d="M19 30 L29 33 M45 30 L35 33" stroke="#1f4d12" strokeWidth="3.5" strokeLinecap="round" />
+        <ellipse cx="25" cy="36" rx="3" ry="2" fill="#f4f4f4" />
+        <ellipse cx="39" cy="36" rx="3" ry="2" fill="#f4f4f4" />
+        <path d="M22 47 Q32 42 42 47 L40 51 Q32 48 24 51 Z" fill="#1f4d12" />
+        <path d="M25 47 L39 47 L38 49 L26 49 Z" fill="#f4f4f4" />
+      </>
+    )
+  },
+  {
     id: 'panther', label: 'Black Panther',
     svg: (
       <>
