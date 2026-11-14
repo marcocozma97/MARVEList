@@ -326,7 +326,7 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
     svg: (
       <>
         <rect width="64" height="64" fill="#f2c21b" />
-        <path d="M4 10 L24 26 L32 30 L40 26 L60 10 L52 34 L40 40 L32 38 L24 40 L12 34 Z" fill="#111" />
+        <path d="M11 12 L24 26 L32 30 L40 26 L53 12 L52 34 L40 40 L32 38 L24 40 L12 34 Z" fill="#111" />
         <path d="M18 28 L28 32 L26 36 L19 33 Z" fill="#f4f4f4" />
         <path d="M46 28 L36 32 L38 36 L45 33 Z" fill="#f4f4f4" />
         <g stroke="#c9ced6" strokeWidth="2.6" strokeLinecap="round"><path d="M22 62 L26 46" /><path d="M32 62 L32 46" /><path d="M42 62 L38 46" /></g>
