@@ -9,7 +9,7 @@ public class CommentDtos {
 
     public record CommentResponse(Long id, Long parentId, Integer episode, Long authorId, String authorName, String authorAvatar,
                                   String text, String gifUrl, boolean spoiler, Instant createdAt, boolean mine,
-                                  long likes, boolean liked, List<CommentResponse> replies) {}
+                                  long likes, boolean liked, boolean official, List<CommentResponse> replies) {}
 
     public record CommentCount(long count) {}
 

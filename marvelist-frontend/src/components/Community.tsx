@@ -201,7 +201,9 @@ const Community = ({ mediaId, episode = null, kind, seen }: CommunityProps) => {
         setOpen(true);
         setComments([created]);
       } else if (comments) {
-        setComments([created, ...comments]);
+        // Il nuovo commento va subito sotto quelli dell'account ufficiale, che restano in cima
+        const pinned = created.official ? 0 : comments.filter(c => c.official).length;
+        setComments([...comments.slice(0, pinned), created, ...comments.slice(pinned)]);
       }
       setSentNote(showsList ? 'Commento pubblicato!' : 'Commento pubblicato! Premi il pulsante qui sotto per vederlo insieme agli altri.');
       window.setTimeout(() => setSentNote(null), 4000);

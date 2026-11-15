@@ -64,7 +64,10 @@ public class CommentService {
         likeRepository.countByCommentIds(allIds).forEach(row -> likes.put((Long) row[0], (Long) row[1]));
         Set<Long> liked = new HashSet<>(likeRepository.likedAmong(user, allIds));
 
-        return roots.stream().map(root -> toResponse(root, user, likes, liked,
+        // I commenti dell'account ufficiale restano in cima, gli altri dal più recente
+        return roots.stream()
+                .sorted(Comparator.comparing((Comment root) -> !UserService.isOfficial(root.getUser())))
+                .map(root -> toResponse(root, user, likes, liked,
                 repliesByRoot.getOrDefault(root.getId(), List.of()).stream()
                         .map(reply -> toResponse(reply, user, likes, liked, List.of()))
                         .toList()))
@@ -180,6 +183,7 @@ public class CommentService {
                 author.getId().equals(viewer.getId()),
                 likes.getOrDefault(c.getId(), 0L),
                 liked.contains(c.getId()),
+                UserService.isOfficial(author),
                 replies
         );
     }

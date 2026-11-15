@@ -14,6 +14,7 @@ export interface CommentItem {
   mine: boolean;
   likes: number;
   liked: boolean;
+  official: boolean;
   replies: CommentItem[];
 }
 
