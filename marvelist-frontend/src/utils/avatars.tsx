@@ -554,6 +554,180 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
     )
   },
   {
+    id: 'vision', label: 'Visione',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#0f2a1c" />
+        <path d="M12 30 Q12 6 32 6 Q52 6 52 30 L52 50 Q46 60 32 61 Q18 60 12 50 Z" fill="#2f7d3a" />
+        <path d="M18 30 Q18 12 32 12 Q46 12 46 30 L46 42 Q44 54 32 56 Q20 54 18 42 Z" fill="#c4263c" />
+        <path d="M32 12 L32 17 M24 15 Q27 22 26 28 M40 15 Q37 22 38 28" stroke="#e8b33a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        <path d="M32 17 L36 21 L32 25 L28 21 Z" fill="#ffd84a" stroke="#a87b10" strokeWidth="0.8" />
+        <ellipse cx="25.5" cy="33" rx="3" ry="1.8" fill="#f6e7a8" />
+        <ellipse cx="38.5" cy="33" rx="3" ry="1.8" fill="#f6e7a8" />
+        <path d="M24 38 L26 45 M40 38 L38 45" stroke="#8f1a2a" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M28 47 Q32 48.5 36 47" stroke="#7a1422" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'daredevil', label: 'Daredevil',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#140608" />
+        <path d="M17 34 Q17 16 32 14 Q47 16 47 34 L46 44 Q43 56 32 57 Q21 56 18 44 Z" fill="#e0ad86" />
+        <path d="M16 38 L16 24 Q16 10 32 10 Q48 10 48 24 L48 38 Q40 36 38 40 L26 40 Q24 36 16 38 Z" fill="#b0121b" />
+        <path d="M20 16 L16 4 L26 12 Z" fill="#b0121b" />
+        <path d="M44 16 L48 4 L38 12 Z" fill="#b0121b" />
+        <path d="M20 29 Q25 25 30 30 Q25 33 20 29 Z" fill="#4a070c" />
+        <path d="M44 29 Q39 25 34 30 Q39 33 44 29 Z" fill="#4a070c" />
+        <path d="M32 18 L32 26" stroke="#7d0c13" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M27 49 Q32 50.5 37 49" stroke="#9a6a4c" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'punisher', label: 'The Punisher',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#101010" />
+        <path d="M14 26 Q14 8 32 8 Q50 8 50 26 Q50 34 45 38 L19 38 Q14 34 14 26 Z" fill="#f2f2f2" />
+        <path d="M19 38 L21 56 L25 58 L27 39 L29 59 L32 60 L35 59 L37 39 L39 58 L43 56 L45 38 Z" fill="#f2f2f2" />
+        <path d="M18 24 Q24 19 30 25 Q29 32 22 32 Q18 30 18 24 Z" fill="#101010" />
+        <path d="M46 24 Q40 19 34 25 Q35 32 42 32 Q46 30 46 24 Z" fill="#101010" />
+        <path d="M32 30 L29.5 36 L34.5 36 Z" fill="#101010" />
+      </>
+    )
+  },
+  {
+    id: 'jessica', label: 'Jessica Jones',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#2a1638" />
+        <path d="M12 36 Q10 8 32 8 Q54 8 52 36 L54 60 L10 60 Z" fill="#17121c" />
+        <ellipse cx="32" cy="33" rx="12.5" ry="15.5" fill="#f0cfb6" />
+        <path d="M19 30 Q19 13 33 13 Q45 14 45 28 Q39 18 30 20 Q23 22 19 30 Z" fill="#17121c" />
+        <path d="M23 31 Q26 29.5 29 31 M35 31 Q38 29.5 41 31" stroke="#2a1a14" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <circle cx="26" cy="33" r="1.3" fill="#2a1a14" />
+        <circle cx="38" cy="33" r="1.3" fill="#2a1a14" />
+        <path d="M28.5 42 Q32 41 35.5 42" stroke="#b5675e" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M18 54 Q32 46 46 54 L48 64 L16 64 Z" fill="#8c8f99" />
+        <path d="M22 52 Q32 49 42 52" stroke="#6f727c" strokeWidth="1.4" fill="none" />
+      </>
+    )
+  },
+  {
+    id: 'lukecage', label: 'Luke Cage',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#2b2410" />
+        <path d="M10 64 L12 46 Q32 36 52 46 L54 64 Z" fill="#f2c21b" />
+        <path d="M26 44 L32 54 L38 44" fill="#5c3a22" />
+        <circle cx="20" cy="54" r="1.6" fill="#7a5a10" />
+        <circle cx="45" cy="57" r="1.6" fill="#7a5a10" />
+        <circle cx="40" cy="50" r="1.3" fill="#7a5a10" />
+        <path d="M18 28 Q18 9 32 9 Q46 9 46 28 L45 38 Q42 48 32 48 Q22 48 19 38 Z" fill="#5c3a22" />
+        <path d="M22 12 Q32 8 42 12" stroke="#b9c0c9" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+        <path d="M22 28 L29 29 M42 28 L35 29" stroke="#2a1a10" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="26" cy="32" rx="2" ry="1.4" fill="#16100a" />
+        <ellipse cx="38" cy="32" rx="2" ry="1.4" fill="#16100a" />
+        <path d="M26 40 Q32 38 38 40 L36 46 Q32 48 28 46 Z" fill="#1c140d" />
+        <path d="M29 42 L35 42" stroke="#7a4c30" strokeWidth="1.3" strokeLinecap="round" />
+      </>
+    )
+  },
+  {
+    id: 'ironfist', label: 'Iron Fist',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#0d2414" />
+        <circle cx="32" cy="34" r="22" fill="#ffd84a" opacity="0.2" />
+        <path d="M14 32 Q14 8 32 8 Q50 8 50 32 L50 46 Q46 58 32 59 Q18 58 14 46 Z" fill="#1f8a43" />
+        <path d="M20 44 Q20 38 24 38 L40 38 Q44 38 44 44 Q42 54 32 55 Q22 54 20 44 Z" fill="#e8b48e" />
+        <path d="M14 24 Q22 18 28 25 L32 28 L36 25 Q42 18 50 24 L48 34 Q40 36 34 33 L32 34 L30 33 Q24 36 16 34 Z" fill="#f5c518" />
+        <path d="M14 24 L9 18 L16 22 M50 24 L55 18 L48 22" stroke="#f5c518" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="24" cy="28.5" rx="3.6" ry="2.2" fill="#f7fbff" />
+        <ellipse cx="40" cy="28.5" rx="3.6" ry="2.2" fill="#f7fbff" />
+        <path d="M28 49 Q32 50.5 36 49" stroke="#a8765a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M32 12 Q28 16 32 19 Q36 16 32 12 Z" fill="#f5c518" />
+      </>
+    )
+  },
+  {
+    id: 'venom', label: 'Venom',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1a1d2e" />
+        <path d="M12 30 Q12 6 32 6 Q52 6 52 30 Q52 50 32 60 Q12 50 12 30 Z" fill="#0b0b10" />
+        <path d="M14 22 Q20 14 30 26 Q28 34 22 36 Q14 34 14 22 Z" fill="#f4f4f4" />
+        <path d="M50 22 Q44 14 34 26 Q36 34 42 36 Q50 34 50 22 Z" fill="#f4f4f4" />
+        <path d="M17 40 Q32 34 47 40 Q44 54 32 56 Q20 54 17 40 Z" fill="#7a0f1e" />
+        <path d="M17 40 L20 45 L22 39.5 L25 45 L27 38.5 L30 44.5 L32 38 L34 44.5 L37 38.5 L39 45 L42 39.5 L44 45 L47 40 Z" fill="#f4f4f4" />
+        <path d="M19 49 L22 45.5 L25 50 L28 46 L32 51 L36 46 L39 50 L42 45.5 L45 49 Q40 55 32 55.5 Q24 55 19 49 Z" fill="#f4f4f4" />
+        <path d="M30 47 Q26 56 33 60 Q30 54 34 48 Z" fill="#e0405a" />
+      </>
+    )
+  },
+  {
+    id: 'miles', label: 'Miles Morales',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1a1030" />
+        <path d="M0 50 L64 38 L64 44 L0 56 Z" fill="#e0245e" opacity="0.35" />
+        <path d="M0 14 L64 22 L64 26 L0 18 Z" fill="#26c6ff" opacity="0.3" />
+        <path d="M14 30 Q14 7 32 7 Q50 7 50 30 Q50 52 32 59 Q14 52 14 30 Z" fill="#141418" />
+        <g stroke="#d4123a" strokeWidth="1.1" fill="none">
+          <path d="M32 7 L32 59 M14 30 L50 30 M18 16 L46 46 M46 16 L18 46" />
+          <path d="M22 13 Q32 20 42 13 M17 23 Q32 30 47 23 M16 38 Q32 32 48 38 M20 49 Q32 42 44 49" />
+        </g>
+        <path d="M17 25 Q23 20 30 28 Q27 35 20 34 Q16 31 17 25 Z" fill="#f4f4f4" stroke="#000" strokeWidth="1.6" />
+        <path d="M47 25 Q41 20 34 28 Q37 35 44 34 Q48 31 47 25 Z" fill="#f4f4f4" stroke="#000" strokeWidth="1.6" />
+      </>
+    )
+  },
+  {
+    id: 'goblin', label: 'Green Goblin',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#1a0f26" />
+        <path d="M10 40 Q8 10 32 6 Q56 10 54 40 L50 34 Q50 14 32 12 Q14 14 14 34 Z" fill="#6b2f8f" />
+        <path d="M16 30 L6 22 L17 26 Z" fill="#4e9a2c" />
+        <path d="M48 30 L58 22 L47 26 Z" fill="#4e9a2c" />
+        <path d="M16 28 Q16 12 32 12 Q48 12 48 28 L47 42 Q44 56 32 58 Q20 56 17 42 Z" fill="#5fb336" />
+        <path d="M20 26 L30 30 M44 26 L34 30" stroke="#24521a" strokeWidth="2.6" strokeLinecap="round" />
+        <path d="M21 30 Q25 28 29 32 Q25 35 21 30 Z" fill="#ffe14a" />
+        <path d="M43 30 Q39 28 35 32 Q39 35 43 30 Z" fill="#ffe14a" />
+        <path d="M32 31 Q30 38 33 40" stroke="#3a7a20" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <path d="M21 44 Q32 54 43 44 Q32 49 21 44 Z" fill="#1d1d1d" />
+        <path d="M23 45 L25 47.5 L27 46 L29 48.5 L32 47 L35 48.5 L37 46 L39 47.5 L41 45" stroke="#f4f4f4" strokeWidth="1.2" fill="none" strokeLinejoin="round" />
+      </>
+    )
+  },
+  {
+    id: 'docock', label: 'Doctor Octopus',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#13221c" />
+        <g stroke="#9aa4b1" strokeWidth="4" fill="none" strokeLinecap="round">
+          <path d="M20 54 Q6 50 8 36 Q10 26 4 20" />
+          <path d="M44 54 Q58 50 56 36 Q54 26 60 20" />
+          <path d="M22 56 Q10 60 6 52" />
+          <path d="M42 56 Q54 60 58 52" />
+        </g>
+        <circle cx="4" cy="20" r="3" fill="#c94b2a" />
+        <circle cx="60" cy="20" r="3" fill="#c94b2a" />
+        <path d="M18 30 Q18 12 32 12 Q46 12 46 30 L45 42 Q42 54 32 55 Q22 54 19 42 Z" fill="#e8b48e" />
+        <path d="M17 30 Q16 10 32 10 Q48 10 47 30 L45 24 Q40 18 32 19 Q24 18 19 24 Z" fill="#3a2a1c" />
+        <circle cx="25" cy="32" r="5.2" fill="#1b1b1b" stroke="#5a5a5a" strokeWidth="1.2" />
+        <circle cx="39" cy="32" r="5.2" fill="#1b1b1b" stroke="#5a5a5a" strokeWidth="1.2" />
+        <path d="M30 32 L34 32" stroke="#5a5a5a" strokeWidth="1.4" />
+        <circle cx="23.5" cy="30.5" r="1.2" fill="#7fb3ff" opacity="0.7" />
+        <circle cx="37.5" cy="30.5" r="1.2" fill="#7fb3ff" opacity="0.7" />
+        <path d="M27 46 Q32 44 37 46" stroke="#8a5a3e" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M24 56 L40 56 L38 62 L26 62 Z" fill="#4a5a3a" />
+      </>
+    )
+  },
+  {
     id: 'watcher', label: 'The Watcher',
     svg: (
       <>
@@ -584,11 +758,13 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
 
 // Categorie in cui sono divisi gli avatar nella scelta dell'immagine profilo
 export const AVATAR_GROUPS: { title: string; ids: string[]; onlyFor?: string }[] = [
-  { title: 'Avengers', ids: ['shield', 'reactor', 'spider', 'hammer', 'hawkeye', 'hulk', 'panther', 'widow', 'strange', 'scarlet'] },
+  { title: 'Avengers', ids: ['shield', 'reactor', 'hammer', 'hawkeye', 'hulk', 'panther', 'widow', 'strange', 'scarlet', 'vision'] },
   { title: 'Guardiani della Galassia', ids: ['starlord', 'gamora', 'drax', 'rocket', 'groot', 'mantis', 'nebula'] },
   { title: 'X-Men', ids: ['wolverine', 'cyclops', 'phoenix', 'storm', 'gambit', 'nightcrawler', 'jubilee', 'deadpool'] },
+  { title: 'Spiderverse', ids: ['spider', 'miles', 'venom'] },
+  { title: 'The Defenders', ids: ['daredevil', 'punisher', 'jessica', 'lukecage', 'ironfist'] },
   { title: 'Fantastici 4', ids: ['fantastic', 'invisible', 'torch', 'thing'] },
-  { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron'] },
+  { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron', 'goblin', 'docock'] },
   { title: 'Simboli', ids: ['shield-agency', 'hydra', 'infinity'] },
   // Visibile solo all'account ufficiale di MARVEList (il backend rifiuta la scelta agli altri)
   { title: 'Esclusivo', ids: ['watcher'], onlyFor: 'marvelist.app@gmail.com' },
