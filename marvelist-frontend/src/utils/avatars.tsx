@@ -136,16 +136,26 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
     id: 'infinity', label: 'Guanto dell’Infinito',
     svg: (
       <>
-        <rect width="64" height="64" fill="#3a2a05" />
-        <circle cx="32" cy="32" r="25" fill="#c9a227" />
-        <circle cx="32" cy="32" r="25" fill="none" stroke="#f1d36b" strokeWidth="2" />
-        <circle cx="32" cy="32" r="6" fill="#f5a623" />
-        <circle cx="32" cy="17" r="4.5" fill="#3b82f6" />
-        <circle cx="45" cy="24.5" r="4.5" fill="#ef4444" />
-        <circle cx="45" cy="39.5" r="4.5" fill="#a855f7" />
-        <circle cx="32" cy="47" r="4.5" fill="#22c55e" />
-        <circle cx="19" cy="39.5" r="4.5" fill="#facc15" />
-        <circle cx="19" cy="24.5" r="4.5" fill="#f97316" />
+        <rect width="64" height="64" fill="#1c1030" />
+        <circle cx="31" cy="34" r="24" fill="#6d28d9" opacity="0.22" />
+        <rect x="18" y="49" width="26" height="13" rx="2" fill="#8a6510" />
+        <rect x="18" y="51" width="26" height="2.5" fill="#f3d36b" />
+        <rect x="14.5" y="19" width="6.5" height="20" rx="3.2" fill="#c99a1a" />
+        <rect x="21.5" y="13" width="6.5" height="26" rx="3.2" fill="#d4a62a" />
+        <rect x="28.5" y="10" width="6.5" height="29" rx="3.2" fill="#dcae2e" />
+        <rect x="35.5" y="13" width="6.5" height="26" rx="3.2" fill="#d4a62a" />
+        <path d="M41 42 L46 30 Q48 26 51 28 Q53 30 51.5 33 L46 46 Z" fill="#c99a1a" />
+        <path d="M14.5 34 Q15 31 18 31 L42 31 Q46 33 46.5 38 L46 46 Q44 53 31 53 Q17 53 15.5 46 Z" fill="#e0b23a" />
+        <path d="M17 34 Q30 30 44 34" stroke="#f3d36b" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <path d="M15 28 h6 M22 26 h6 M29 25 h6 M36 26 h6" stroke="#8a6510" strokeWidth="1.2" />
+        <circle cx="17.75" cy="23.5" r="2.3" fill="#facc15" stroke="#8a6510" strokeWidth="0.8" />
+        <circle cx="24.75" cy="19" r="2.3" fill="#a855f7" stroke="#8a6510" strokeWidth="0.8" />
+        <circle cx="31.75" cy="16.5" r="2.3" fill="#ef2b2b" stroke="#8a6510" strokeWidth="0.8" />
+        <circle cx="38.75" cy="19" r="2.3" fill="#3b82f6" stroke="#8a6510" strokeWidth="0.8" />
+        <circle cx="49.2" cy="31" r="2.2" fill="#f97316" stroke="#8a6510" strokeWidth="0.8" />
+        <circle cx="30.5" cy="42" r="5.6" fill="#8a6510" />
+        <circle cx="30.5" cy="42" r="4.2" fill="#22c55e" />
+        <circle cx="29.2" cy="40.6" r="1.3" fill="#bbf7d0" />
       </>
     )
   },
