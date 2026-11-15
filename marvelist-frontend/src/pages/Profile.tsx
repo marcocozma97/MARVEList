@@ -265,7 +265,7 @@ const Profile = () => {
         {showAvatarPicker && (
           <div className="avatar-picker">
             <p className="section-label">Scegli la tua immagine profilo</p>
-            {AVATAR_GROUPS.map(group => (
+            {AVATAR_GROUPS.filter(group => !group.onlyFor || profile?.email?.toLowerCase() === group.onlyFor).map(group => (
               <div key={group.title} className="avatar-group">
                 <h3 className="avatar-group-title">{group.title}</h3>
                 <div className="avatar-grid">

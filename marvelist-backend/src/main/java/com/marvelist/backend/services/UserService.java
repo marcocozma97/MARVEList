@@ -24,6 +24,9 @@ import java.util.Locale;
 public class UserService {
 
     public static final Duration NICKNAME_COOLDOWN = Duration.ofDays(30);
+    // Avatar esclusivo dell'account ufficiale di MARVEList
+    static final String WATCHER_AVATAR = "watcher";
+    static final String WATCHER_OWNER = "marvelist.app@gmail.com";
     private static final DateTimeFormatter IT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Rome"));
 
     private final UserRepository userRepository;
@@ -81,6 +84,9 @@ public class UserService {
             // Solo ID semplici degli avatar predefiniti (es. "shield"), niente URL esterni
             if (!request.getAvatar().matches("^[a-z0-9-]{1,30}$")) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Avatar non valido");
+            }
+            if (WATCHER_AVATAR.equals(request.getAvatar()) && !WATCHER_OWNER.equalsIgnoreCase(user.getEmail())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Avatar non disponibile");
             }
             user.setAvatarUrl(request.getAvatar());
         }

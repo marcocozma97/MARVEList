@@ -553,14 +553,43 @@ export const AVATARS: { id: string; label: string; svg: ReactNode }[] = [
       </>
     )
   },
+  {
+    id: 'watcher', label: 'The Watcher',
+    svg: (
+      <>
+        <rect width="64" height="64" fill="#070b1f" />
+        <circle cx="10" cy="14" r="0.9" fill="#cfd8ff" />
+        <circle cx="54" cy="10" r="1.1" fill="#cfd8ff" />
+        <circle cx="57" cy="30" r="0.8" fill="#cfd8ff" />
+        <circle cx="7" cy="34" r="0.8" fill="#cfd8ff" />
+        <circle cx="32" cy="22" r="22" fill="#3b4cc0" opacity="0.18" />
+        <path d="M6 64 L9 42 L22 50 Z" fill="#2c2f5e" />
+        <path d="M58 64 L55 42 L42 50 Z" fill="#2c2f5e" />
+        <path d="M9 64 Q12 50 32 47 Q52 50 55 64 Z" fill="#1b1d3d" />
+        <path d="M18 30 Q14 5 32 4 Q50 5 46 30 Q46 42 40 47 Q32 52 24 47 Q18 42 18 30 Z" fill="#ece0cf" />
+        <path d="M22 14 Q32 9 42 14" stroke="#d3c4ae" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+        <path d="M21 30 Q26 26.5 31 30 M43 30 Q38 26.5 33 30" stroke="#a8977f" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <ellipse cx="26" cy="33.5" rx="3.8" ry="2.6" fill="#f7fbff" />
+        <ellipse cx="38" cy="33.5" rx="3.8" ry="2.6" fill="#f7fbff" />
+        <ellipse cx="26" cy="33.5" rx="5" ry="3.6" fill="#9fc3ff" opacity="0.25" />
+        <ellipse cx="38" cy="33.5" rx="5" ry="3.6" fill="#9fc3ff" opacity="0.25" />
+        <path d="M32 33 L30.8 39.5 L33.2 39.5" stroke="#b5a38b" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M28 43.5 Q32 44.5 36 43.5" stroke="#9c8a72" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        <rect x="25.5" y="50.5" width="13" height="11" rx="2.5" fill="#111" stroke="#e62429" strokeWidth="1.2" />
+        <path d="M28.3 59 V53.3 L32 57 L35.7 53.3 V59" stroke="#e62429" strokeWidth="2" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+      </>
+    )
+  },
 ];
 
 // Categorie in cui sono divisi gli avatar nella scelta dell'immagine profilo
-export const AVATAR_GROUPS: { title: string; ids: string[] }[] = [
+export const AVATAR_GROUPS: { title: string; ids: string[]; onlyFor?: string }[] = [
   { title: 'Avengers', ids: ['shield', 'reactor', 'spider', 'hammer', 'hawkeye', 'hulk', 'panther', 'widow', 'strange', 'scarlet'] },
   { title: 'Guardiani della Galassia', ids: ['starlord', 'gamora', 'drax', 'rocket', 'groot', 'mantis', 'nebula'] },
   { title: 'X-Men', ids: ['wolverine', 'cyclops', 'phoenix', 'storm', 'gambit', 'nightcrawler', 'jubilee', 'deadpool'] },
   { title: 'Fantastici 4', ids: ['fantastic', 'invisible', 'torch', 'thing'] },
   { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron'] },
   { title: 'Simboli', ids: ['shield-agency', 'hydra', 'infinity'] },
+  // Visibile solo all'account ufficiale di MARVEList (il backend rifiuta la scelta agli altri)
+  { title: 'Esclusivo', ids: ['watcher'], onlyFor: 'marvelist.app@gmail.com' },
 ];
