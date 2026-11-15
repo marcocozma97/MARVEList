@@ -1054,8 +1054,9 @@ $stop-dot: 14px;
   flex: 1;
   min-width: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 4px 14px;
   padding: 0;
   border: 0;
   background: none;
@@ -1151,20 +1152,22 @@ $stop-dot: 14px;
   100% { transform: scale(1); }
 }
 
-// Il titolo della fase resta su una riga: se manca spazio vanno a capo i dettagli accanto
+// Se manca spazio vanno a capo prima i dettagli accanto al titolo e poi, se non bastasse,
+// i dettagli scendono sotto al titolo: non finiscono mai sopra al cerchio di completamento
 .phase-title {
-  flex-shrink: 0;
+  flex: 0 1 auto;
+  min-width: min-content;
   max-width: 65%;
   font-family: 'Anton', sans-serif;
   font-size: clamp(1.15rem, 3.5vw, 1.5rem);
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .phase-count {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 1 1 0;
+  min-width: min-content;
   font-size: 0.8rem;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.72);
