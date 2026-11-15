@@ -551,6 +551,6 @@ export const AVATAR_GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Guardiani della Galassia', ids: ['starlord', 'gamora', 'drax', 'rocket', 'groot', 'mantis', 'nebula'] },
   { title: 'X-Men', ids: ['wolverine', 'cyclops', 'phoenix', 'storm', 'gambit', 'nightcrawler', 'jubilee', 'deadpool'] },
   { title: 'Fantastici 4', ids: ['fantastic', 'invisible', 'torch', 'thing'] },
-  { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron', 'hydra'] },
-  { title: 'Simboli', ids: ['shield-agency', 'infinity'] },
+  { title: 'Villain', ids: ['thanos', 'loki', 'doom', 'magneto', 'ultron'] },
+  { title: 'Simboli', ids: ['shield-agency', 'hydra', 'infinity'] },
 ];
