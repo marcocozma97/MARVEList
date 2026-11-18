@@ -52,6 +52,21 @@ const Navbar = () => {
   // Le maratone si aprono dal profilo: anche lì "Profilo" resta evidenziato
   const isProfileArea = location.pathname.startsWith('/profile') || location.pathname.startsWith('/marathons');
 
+  // Campanella delle notifiche: nel menu su desktop, accanto all'hamburger quando il menu è chiuso a tendina
+  const bell = (className: string) => (
+    <NavLink
+      to="/notifications"
+      className={({ isActive }) => `site-nav-bell ${className} ${isActive ? 'active' : ''}`}
+      aria-label={unread ? `Notifiche, ${unread} da leggere` : 'Notifiche'}
+      title="Notifiche"
+      onClick={() => setMenuOpen(false)}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>
+      <span className="site-nav-bell-label">Notifiche</span>
+      {unread > 0 && <span className="site-nav-badge">{unread > 99 ? '99+' : unread}</span>}
+    </NavLink>
+  );
+
   return (
     <nav className={`site-nav ${menuOpen ? 'menu-open' : ''}`} aria-label="Navigazione principale">
       <div className="container site-nav-inner">
@@ -59,16 +74,19 @@ const Navbar = () => {
           <Brand size="sm" />
         </Link>
 
-        <button
-          className={`site-nav-toggle ${unread ? 'has-unread' : ''}`}
-          type="button"
-          onClick={() => setMenuOpen(v => !v)}
-          aria-expanded={menuOpen}
-          aria-controls="site-nav-menu"
-          aria-label={menuOpen ? 'Chiudi menu' : 'Apri menu'}
-        >
-          <span /><span /><span />
-        </button>
+        <div className="site-nav-quick">
+          {isAuthenticated && bell('is-quick')}
+          <button
+            className="site-nav-toggle"
+            type="button"
+            onClick={() => setMenuOpen(v => !v)}
+            aria-expanded={menuOpen}
+            aria-controls="site-nav-menu"
+            aria-label={menuOpen ? 'Chiudi menu' : 'Apri menu'}
+          >
+            <span /><span /><span />
+          </button>
+        </div>
 
         {/* Qualsiasi click su un link (o su Esci) chiude il menu mobile */}
         <div className="site-nav-menu" id="site-nav-menu" onClick={() => setMenuOpen(false)}>
@@ -80,16 +98,7 @@ const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="site-nav-user">
-              <NavLink
-                to="/notifications"
-                className={({ isActive }) => `site-nav-bell ${isActive ? 'active' : ''}`}
-                aria-label={unread ? `Notifiche, ${unread} da leggere` : 'Notifiche'}
-                title="Notifiche"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>
-                <span className="site-nav-bell-label">Notifiche</span>
-                {unread > 0 && <span className="site-nav-badge">{unread > 99 ? '99+' : unread}</span>}
-              </NavLink>
+              {bell('is-in-menu')}
               {/* Avatar e scritta "Profilo" sono un unico link: qualsiasi punto si tocchi porta al profilo */}
               <Link
                 to="/profile"

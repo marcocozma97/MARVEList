@@ -6156,16 +6156,16 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   line-height: 1;
 }
 .site-nav-toggle { position: relative; }
-.site-nav-toggle.has-unread::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 2px #0a0a0a;
+
+// Campanella e hamburger affiancati: le notifiche si aprono senza passare dal menu
+.site-nav-quick { display: none; align-items: center; gap: 10px; margin-left: auto; }
+.site-nav-bell.is-quick {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  border-color: rgba(255, 255, 255, 0.16);
+  .site-nav-bell-label { display: none; }
+  .site-nav-badge { position: absolute; top: -6px; right: -6px; border: 2px solid #0a0a0a; }
 }
 
 .notifications-page { max-width: 760px; }
@@ -6274,9 +6274,8 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 .notif-empty-icon { font-size: 2rem; }
 
 @media (max-width: 991.98px) {
-  .site-nav-bell { width: auto; height: auto; padding: 8px 14px; border-radius: var(--radius-pill); }
-  .site-nav-bell-label { display: inline; font-weight: 500; }
-  .site-nav-badge { position: static; border: none; }
+  .site-nav-quick { display: flex; }
+  .site-nav-bell.is-in-menu { display: none; }
 }
 
 @media (max-width: 575.98px) {
