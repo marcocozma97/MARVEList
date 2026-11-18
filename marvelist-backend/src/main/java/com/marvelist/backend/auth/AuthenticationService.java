@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -40,8 +41,16 @@ public class AuthenticationService {
     // Tra due mail di conferma allo stesso indirizzo: chi clicca più volte "Crea account" non consuma gli invii di Gmail
     static final Duration RESEND_COOLDOWN = Duration.ofMinutes(2);
 
-    private static final String QUOTA_MESSAGE =
-            "Oggi abbiamo raggiunto il limite di email di conferma: il tuo account è già attivo, puoi accedere subito";
+    private static final String QUOTA_MESSAGE = "Grazie per esserti registrato! Ora puoi accedere";
+
+    // Senza mail di conferma si accettano solo i provider più diffusi, per evitare indirizzi inventati
+    static final Set<String> TRUSTED_DOMAINS = Set.of(
+            "gmail.com", "outlook.com", "outlook.it", "hotmail.com", "hotmail.it",
+            "alice.it", "tiscali.it", "fastwebnet.it");
+
+    private static final String TRUSTED_DOMAINS_MESSAGE =
+            "Inserisci un'email valida con uno di questi domini: gmail.com, outlook.com, outlook.it, hotmail.com, "
+                    + "hotmail.it, alice.it, tiscali.it, fastwebnet.it";
 
     public record RegisterResult(String message, boolean active) {}
 
@@ -135,6 +144,11 @@ public class AuthenticationService {
             emailService.sendVerificationEmail(user, origin);
             return true;
         } catch (EmailQuotaExceededException e) {
+            // Dominio sconosciuto: la registrazione viene annullata (rollback) e l'utente deve usare un altro indirizzo
+            String domain = user.getEmail().substring(user.getEmail().indexOf('@') + 1).toLowerCase(Locale.ROOT);
+            if (!TRUSTED_DOMAINS.contains(domain)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, TRUSTED_DOMAINS_MESSAGE);
+            }
             user.setEnabled(true);
             repository.save(user);
             System.err.println("Account '" + user.getEmail() + "' attivato senza conferma: limite di email raggiunto");

@@ -130,14 +130,27 @@ class AuthenticationServiceTest {
 
     @Test
     void conIlLimiteDiEmailRaggiuntoLAccountVieneAttivatoSubito() {
+        when(repository.findByEmailForLogin("tony@gmail.com")).thenReturn(Optional.empty());
+        doThrow(new EmailQuotaExceededException("Limite giornaliero di email raggiunto"))
+                .when(emailService).sendVerificationEmail(any(), any());
+
+        var result = service.register(request("Tony@Gmail.com"), ORIGIN);
+
+        assertTrue(result.active());
+        assertFalse(result.message().contains("limite"));
+        verify(repository, atLeastOnce()).save(argThat(user -> user.getEnabled() && user.getEmail().equals("tony@gmail.com")));
+    }
+
+    @Test
+    void conIlLimiteDiEmailRaggiuntoUnDominioNonAmmessoVieneRifiutato() {
         when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.empty());
         doThrow(new EmailQuotaExceededException("Limite giornaliero di email raggiunto"))
                 .when(emailService).sendVerificationEmail(any(), any());
 
-        var result = service.register(request("tony@stark.it"), ORIGIN);
-
-        assertTrue(result.active());
-        verify(repository, atLeastOnce()).save(argThat(user -> user.getEnabled() && user.getEmail().equals("tony@stark.it")));
+        var error = assertThrows(ResponseStatusException.class, () -> service.register(request("tony@stark.it"), ORIGIN));
+        assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertTrue(error.getReason().contains("gmail.com"));
+        verify(repository, never()).save(argThat(user -> Boolean.TRUE.equals(user.getEnabled())));
     }
 
     @Test

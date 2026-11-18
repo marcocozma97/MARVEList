@@ -14,7 +14,7 @@ const Register = () => {
   const [submitted, setSubmitted] = useState(false); // dopo il primo invio i campi mostrano i propri errori
   const [loading, setLoading] = useState(false);
   const [sentMessage, setSentMessage] = useState(''); // registrazione riuscita: mail di conferma inviata
-  const [active, setActive] = useState(false); // account già attivo perché le mail del giorno sono finite
+  const [active, setActive] = useState(false); // account già attivo, senza mail di conferma
 
   const emailError = submitted && !isValidEmail(email) ? "Inserisci un'email valida (es. nome@dominio.it)" : '';
   const passwordError = submitted && !isValidPassword(password) ? PASSWORD_RULE : '';
@@ -44,7 +44,7 @@ const Register = () => {
       <div className="auth-page">
         <div className="auth-card">
           <Link to="/" className="auth-logo" aria-label="MARVEList, torna alla home"><Brand size="md" /></Link>
-          <h1 className="auth-title">{active ? 'Account attivo' : 'Controlla la tua email'}</h1>
+          <h1 className="auth-title">{active ? 'Registrazione completata' : 'Controlla la tua email'}</h1>
           <div className="form-success" role="status">{sentMessage}</div>
           {!active && <p className="auth-note">Dopo aver confermato potrai accedere. Non trovi la mail? Guarda anche nello spam.</p>}
           <Link to="/login" className="btn-marvel">Vai al login</Link>
