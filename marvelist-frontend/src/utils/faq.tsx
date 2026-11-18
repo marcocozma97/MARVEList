@@ -57,7 +57,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('Cosa indica la barra sottile sotto le locandine?',
         <>Quanto hai visto di quel titolo: i minuti sulla durata per i film, gli episodi visti sul totale per le serie.</>),
       item('Come funziona il voto a scudi?',
-        <>Dai da 1 a 10 scudi di Capitan America: la metà sinistra di uno scudo vale mezzo voto. Ricliccando il voto dato lo togli. I voti restano salvati anche se segni il titolo come non visto.</>),
+        <>Dai da 1 a 10 scudi di Capitan America: la metà sinistra di uno scudo vale mezzo voto. Ricliccando il voto dato lo togli. Da smartphone e tablet puoi anche far scorrere il dito sugli scudi: il voto segue il dito, e toccando di nuovo lo scudo del voto lo togli. I voti restano salvati anche se segni il titolo come non visto.</>),
       item("Perché alcune locandine hanno un simbolo invece dell'immagine?",
         <>Se un titolo non ha ancora una locandina ufficiale ne mostriamo una provvisoria: prima cerchiamo un'immagine, altrimenti compare un simbolo legato al personaggio. Viene sostituita in automatico appena esce quella vera. Se manca la trama trovi "Trama non trovata".</>),
     ],

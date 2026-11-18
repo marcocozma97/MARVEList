@@ -17,7 +17,19 @@ interface Road {
   image: string; // personaggio su sfondo trasparente
   theme: { accent: string; accentText: string; accentRgb: string; glow: string };
   pick: (list: MediaItem[]) => MediaItem[];
+  essentials?: (list: MediaItem[]) => MediaItem[]; // versione ridotta, scelta con "Essenziali"
 }
+
+type Scope = 'all' | 'essential';
+
+// Road to Doomsday "Essenziali": solo i titoli indispensabili, riconosciuti dall'id TMDB
+// (X-Men, X2, Il primo vendicatore, The Avengers, Infinity War, Endgame, Loki 1 e 2, Shang-Chi,
+// No Way Home, Multiverso della Follia, Wakanda Forever, Deadpool & Wolverine, Brave New World,
+// Thunderbolts*, I Fantastici Quattro: Gli Inizi)
+const DOOMSDAY_ESSENTIALS = new Set([
+  36657, 36658, 1771, 24428, 299536, 299534, 84958, 566525,
+  634649, 453395, 505642, 533535, 822119, 986056, 617126,
+]);
 
 const hasTag = (media: MediaItem, tag: string) => (media.tags ?? '').split(',').includes(tag);
 
@@ -31,6 +43,7 @@ const ROADS: Road[] = [
     theme: { accent: '#22c55e', accentText: '#86efac', accentRgb: '34, 197, 94', glow: '#052e16' },
     // Solo i titoli segnati "doomsday" nel marvel_data.json: la preparazione al film
     pick: list => list.filter(m => m.doomsday === true),
+    essentials: list => list.filter(m => m.doomsday === true && DOOMSDAY_ESSENTIALS.has(m.tmdbId)),
   },
   {
     id: 'endgame',
@@ -119,6 +132,7 @@ const RoadTo = () => {
   const watch = useWatchState();
   const { mediaList, seenItems, isLoading, error, isSkipped } = watch;
   const [selectedId, setSelectedId] = useState<RoadId | null>(null);
+  const [scope, setScope] = useState<Scope>('all');
   const listRef = useRef<HTMLDivElement>(null);
 
   const lists = useMemo(
@@ -128,11 +142,14 @@ const RoadTo = () => {
 
   const select = (id: RoadId) => {
     setSelectedId(prev => prev === id ? null : id);
+    setScope('all');
     // Dopo la selezione si scende agli accordion del percorso scelto
     window.setTimeout(() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
   };
 
   const selected = ROADS.find(r => r.id === selectedId) ?? null;
+  const essentials = useMemo(() => selected?.essentials?.(mediaList) ?? null, [selected, mediaList]);
+  const shownList = selected ? (scope === 'essential' && essentials ? essentials : lists[selected.id]) : [];
   // Un backend non aggiornato non invia i segni "doomsday" e i tag del JSON
   const missingRoadData = !isLoading && mediaList.length > 0 && mediaList.every(m => m.doomsday == null && m.tags == null);
 
@@ -177,12 +194,36 @@ const RoadTo = () => {
             style={{ '--accent': selected.theme.accent, '--accent-text': selected.theme.accentText, '--accent-rgb': selected.theme.accentRgb } as React.CSSProperties}
           >
             <div className="road-list-header">
-              <h2>{selected.title}</h2>
-              <p>{selected.tagline}</p>
+              <div className="road-list-heading">
+                <h2>{selected.title}</h2>
+                <p>{scope === 'essential' ? 'Solo i titoli indispensabili per arrivare pronto al film' : selected.tagline}</p>
+              </div>
+              {essentials && (
+                <div className={`road-scope ${scope === 'essential' ? 'is-essential' : ''}`} role="radiogroup" aria-label="Titoli da mostrare">
+                  <span className="road-scope-thumb" aria-hidden="true" />
+                  {([['all', 'Tutto', lists[selected.id].length], ['essential', 'Essenziali', essentials.length]] as const).map(([id, label, count]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      role="radio"
+                      aria-checked={scope === id}
+                      className={`road-scope-option ${scope === id ? 'active' : ''}`}
+                      onClick={() => setScope(id)}
+                    >
+                      <span className="road-scope-label">{label}</span>
+                      <span className="road-scope-count">{count} titoli</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {isLoading
               ? <div className="page-loader-inline"><div className="spinner-border" role="status"></div></div>
-              : <PhaseList groups={groupByPhase(lists[selected.id])} watch={watch} emptyText="Nessun titolo in questo percorso." />}
+              : (
+                <div key={scope} className="road-scope-list">
+                  <PhaseList groups={groupByPhase(shownList)} watch={watch} emptyText="Nessun titolo in questo percorso." />
+                </div>
+              )}
           </section>
         )}
       </div>

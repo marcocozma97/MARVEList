@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MediaItem } from '../services/mediaService';
-import { formatWatchTime } from './watchTime';
+import { formatWatchTime, speakWatchTime } from './watchTime';
 import { isValidEmail, isValidPassword } from './validation';
 import { groupByPhase, matchesVisionOrder, phaseRank } from './ordering';
 import { computeRank } from './rank';
@@ -29,16 +29,19 @@ const media = (overrides: Partial<MediaItem> = {}): MediaItem => ({
 
 describe('formatWatchTime', () => {
   it('mostra ore e minuti sotto le 24 ore', () => {
-    expect(formatWatchTime(125)).toBe('2 h 5 min');
+    expect(formatWatchTime(125)).toBe('2h 5m');
   });
   it('esattamente 24 ore restano ore', () => {
-    expect(formatWatchTime(24 * 60)).toBe('24 h');
+    expect(formatWatchTime(24 * 60)).toBe('24h');
   });
   it('oltre le 24 ore passa ai giorni', () => {
-    expect(formatWatchTime(25 * 60)).toBe('1 giorno 1 h');
+    expect(formatWatchTime(25 * 60)).toBe('1g 1h');
   });
   it('zero minuti', () => {
-    expect(formatWatchTime(0)).toBe('0 min');
+    expect(formatWatchTime(0)).toBe('0m');
+  });
+  it('forma estesa per i lettori di schermo', () => {
+    expect(speakWatchTime(25 * 60 + 1)).toBe('1 giorno 1 ora 1 minuto');
   });
 });
 

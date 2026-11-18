@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
@@ -244,7 +245,8 @@ const MediaDetail = () => {
       <div className="container detail-container">
         <section className="detail-panel" aria-labelledby="detail-title">
 
-          {position >= 0 && (
+          {/* Nel body: dentro al pannello (che ha il backdrop-filter) le frecce fisse non arriverebbero ai bordi dello schermo */}
+          {position >= 0 && createPortal(
             <nav className="detail-step" aria-label={`Timeline ${VISION_ORDER_LABELS[order]}`}>
               <button
                 type="button"
@@ -266,7 +268,8 @@ const MediaDetail = () => {
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
                 {nextMedia && <span className="detail-step-label">{nextMedia.title}</span>}
               </button>
-            </nav>
+            </nav>,
+            document.body
           )}
 
           {/* In alto a destra: cerchio "visto" e X per tornare indietro */}

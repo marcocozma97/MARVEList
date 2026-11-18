@@ -13,7 +13,7 @@ import MediaCard from '../components/MediaCard';
 import Avatar from '../components/Avatar';
 import RankBadge from '../components/RankBadge';
 import { computeRank } from '../utils/rank';
-import { formatWatchTime, splitWatchTime } from '../utils/watchTime';
+import { speakWatchTime, splitWatchTime } from '../utils/watchTime';
 import { AVATARS, AVATAR_GROUPS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 import { useNicknameCheck } from '../hooks/useNicknameCheck';
@@ -292,7 +292,7 @@ const Profile = () => {
       <section className="stats-grid" aria-label="Rapporto missioni">
         <div className="stat-tile"><span className="stat-value text-accent">{moviesSeen}</span><span className="stat-label">Film visti per intero</span></div>
         <div className="stat-tile"><span className="stat-value text-gold">{seriesSeen}</span><span className="stat-label">Serie e stagioni complete</span></div>
-        <div className="stat-tile"><span className="stat-value stat-time text-info-soft" aria-label={formatWatchTime(minutesWatched)}>
+        <div className="stat-tile"><span className="stat-value stat-time text-info-soft" style={{ '--parts': watchedParts.length } as React.CSSProperties} aria-label={speakWatchTime(minutesWatched)}>
             {watchedParts.map(p => <span key={p.unit} aria-hidden="true">{p.value}<small>{p.unit}</small></span>)}
           </span><span className="stat-label">Ore di visione</span></div>
         <div className="stat-tile"><span className="stat-value">{averageRating}</span><span className="stat-label">Voto medio</span></div>

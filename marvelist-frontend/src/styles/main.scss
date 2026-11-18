@@ -1770,14 +1770,21 @@ $stop-dot: 14px;
 
 // Tempo di visione: ogni unità è un numero grande con la sua etichetta piccola
 // (doppia classe: deve vincere sulla dimensione generica di .stat-value definita più avanti)
+// Occupa la stessa altezza degli altri numeri, così l'etichetta sotto resta allineata alle altre card;
+// solo giorni, ore e minuti si rimpiccioliscono (senza andare a capo) quando la card è stretta.
 .stat-value.stat-time {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  align-items: baseline;
-  gap: 0 6px;
-  font-size: clamp(1.25rem, 2.5vw, 2rem);
-  small { margin-left: 2px; font-family: 'Roboto', sans-serif; font-size: 0.5em; font-weight: 700; letter-spacing: 0.02em; opacity: 0.85; }
+  align-items: center;
+  gap: 0 0.22em;
+  max-width: 100%;
+  height: calc(1.1 * var(--stat-value-size));
+  // Ogni valore (es. "12g") occupa circa 1,5 em: si rimpicciolisce solo se tutti insieme non stanno nella card
+  font-size: min(var(--stat-value-size), calc(86cqi / (var(--parts, 3) * 1.5)));
+  white-space: nowrap;
+  > span { display: inline-flex; align-items: baseline; }
+  small { margin-left: 1px; font-family: 'Roboto', sans-serif; font-size: 0.5em; font-weight: 700; letter-spacing: 0.02em; opacity: 0.85; }
 }
 
 .chip-upcoming { background: #b3121b; border-color: #f2232a; color: #fff; font-family: 'Anton', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -1962,7 +1969,26 @@ $stop-dot: 14px;
 .detail-step-next .detail-step-label { right: calc(100% + 10px); }
 .detail-step-btn:hover .detail-step-label, .detail-step-btn:focus-visible .detail-step-label { opacity: 1; }
 
-@media (max-width: 1199px) {
+// Tablet: le frecce restano ai lati a metà schermo, più piccole; il pannello lascia loro spazio
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .detail-step-btn {
+    width: 46px;
+    height: 46px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    svg { width: 20px; height: 20px; }
+  }
+  .detail-step-prev { left: max(10px, env(safe-area-inset-left)); }
+  .detail-step-next { right: max(10px, env(safe-area-inset-right)); }
+  .detail-step-label { display: none; }
+  body:has(.detail-step) .detail-container {
+    max-width: none;
+    padding-left: max(68px, calc(env(safe-area-inset-left) + 58px));
+    padding-right: max(68px, calc(env(safe-area-inset-right) + 58px));
+  }
+}
+
+// Telefono: le due frecce stanno insieme in basso, a portata di pollice
+@media (max-width: 767.98px) {
   .detail-step {
     position: fixed;
     left: 50%;
@@ -2036,7 +2062,11 @@ $stop-dot: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-right: 104px; // lascia spazio ai pulsanti in alto a destra sulla prima riga
+}
+
+// Solo le prime righe lasciano spazio ai pulsanti in alto a destra: il resto (voto, minuti) usa tutta la larghezza
+@media (min-width: 768px) {
+  .detail-info .detail-kicker, .detail-info .detail-title-row { padding-right: 104px; }
 }
 
 .detail-kicker {
@@ -2109,22 +2139,36 @@ $stop-dot: 14px;
 }
 
 // --- Voto a scudi di Capitan America (CSS puro) ---
+// I 10 scudi restano sempre su una fila: se manca spazio si rimpiccioliscono tutti insieme
 .shield-rating { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
 
 .shield-rating-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+  --shield-gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 30px));
+  gap: var(--shield-gap);
+  flex: 0 1 calc(10 * 30px + 9 * var(--shield-gap));
+  min-width: 0;
   max-width: 100%;
+  // Lo scorrimento orizzontale del dito vota, quello verticale continua a far scorrere la pagina
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .shield {
   position: relative;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 1;
   transition: transform 0.15s var(--ease-spring);
-  &:hover { transform: scale(1.15); }
+  @media (hover: hover) { &:hover { transform: scale(1.15); } }
+}
+
+// Mentre si vota col dito gli scudi pieni si sollevano leggermente
+.shield-rating-row.is-dragging {
+  .shield-full, .shield-half { transform: scale(1.12); }
+  .shield { transition: transform 0.1s ease-out; }
 }
 
 // Cerchi concentrici rosso/bianco/rosso/blu + stella bianca al centro
@@ -2619,6 +2663,8 @@ $stop-dot: 14px;
 }
 
 .stat-tile {
+  --stat-value-size: clamp(1.8rem, 6vw, 2.6rem);
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2629,7 +2675,7 @@ $stop-dot: 14px;
   border: 1px solid var(--border-color);
   text-align: center;
 }
-.stat-value { font-family: 'Anton', sans-serif; font-size: clamp(1.8rem, 6vw, 2.6rem); line-height: 1.1; color: #fff; }
+.stat-value { font-family: 'Anton', sans-serif; font-size: var(--stat-value-size, clamp(1.8rem, 6vw, 2.6rem)); line-height: 1.1; color: #fff; }
 .stat-label { font-size: 0.82rem; color: var(--text-muted); }
 
 .profile-section { margin-bottom: 40px; }
@@ -4894,6 +4940,11 @@ $jv-blue: #38bdf8;
 .road-list-anchor { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .road-list { animation: panel-in 0.5s var(--ease-spring); }
 .road-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
   margin-bottom: 18px;
   padding: 18px 22px;
   border-radius: var(--radius-lg);
@@ -4901,6 +4952,59 @@ $jv-blue: #38bdf8;
   background: radial-gradient(ellipse at 0% 0%, rgba(var(--accent-rgb), 0.25), transparent 60%), var(--card-bg);
   h2 { margin: 0 0 4px; font-size: clamp(1.4rem, 4vw, 2rem); }
   p { margin: 0; color: var(--text-muted); }
+}
+.road-list-heading { flex: 1 1 260px; min-width: 0; }
+
+// "Tutto" / "Essenziali": due opzioni con il numero di titoli, l'indicatore colorato scorre sotto la scelta
+.road-scope {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 0 1 340px;
+  padding: 5px;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  isolation: isolate;
+}
+.road-scope-thumb {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  z-index: -1;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #000));
+  box-shadow: 0 8px 22px -8px rgba(var(--accent-rgb), 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.45s var(--ease-spring);
+}
+.road-scope.is-essential .road-scope-thumb { transform: translateX(100%); }
+.road-scope-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-height: 52px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.25s;
+  &:hover:not(.active) { color: #fff; }
+  &.active { color: #fff; }
+  &:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+}
+.road-scope-label { font-family: 'Anton', sans-serif; font-size: 1.05rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.2; }
+.road-scope-count { font-size: 0.75rem; font-weight: 600; opacity: 0.8; }
+.road-scope-list { animation: road-scope-in 0.4s var(--ease-out) both; }
+@keyframes road-scope-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (max-width: 575.98px) {
+  .road-list-header { padding: 16px; }
+  .road-scope { flex-basis: 100%; }
 }
 
 @media (max-width: 767.98px) {
@@ -5124,8 +5228,7 @@ $jv-blue: #38bdf8;
   .detail-poster-wrap { width: 46%; max-width: 190px; }
   .detail-info { padding-right: 0; }
   .detail-overview { font-size: 0.95rem; }
-  .shield { width: 27px; height: 27px; }
-  .shield-rating-row { gap: 3px; }
+  .shield-rating-row { --shield-gap: 3px; }
 
   .phase-header { padding: 14px 16px 18px; gap: 10px; min-height: 68px; }
 
@@ -5174,8 +5277,7 @@ $jv-blue: #38bdf8;
 }
 
 @media (max-width: 359.98px) {
-  .shield { width: 23px; height: 23px; }
-  .shield-rating-row { gap: 2px; }
+  .shield-rating-row { --shield-gap: 2px; }
   .media-grid { gap: 8px; }
   .media-card-title { font-size: 0.78rem; }
 }

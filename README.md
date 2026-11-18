@@ -107,7 +107,7 @@ Da ogni card si apre la scheda, con dati presi in tempo reale da **TMDB**: trama
 
 - per i **film**, segnare i minuti visti con lo slider e salvarli: il film finisce in "Continua a guardare" e, a durata completa, diventa visto da solo;
 - per le **serie**, toccare i singoli episodi o il pulsante **ALL**;
-- dare un **voto a scudi** di Capitan America da 0,5 a 10 (metà scudo = mezzo voto);
+- dare un **voto a scudi** di Capitan America da 0,5 a 10 (metà scudo = mezzo voto), sempre su una fila; da touch si vota facendo scorrere il dito e si toglie il voto toccando di nuovo il suo scudo;
 - aggiungerlo ai **preferiti**;
 - metterlo in **"Guarda dopo"**.
 
@@ -162,7 +162,7 @@ Mentre compilo il form, il backend calcola un'**anteprima del piano**. Se non c'
 
 Tre percorsi pronti, ognuno guidato da un personaggio con le sue animazioni e il suo colore:
 
-- **Road to Doomsday** (Doctor Doom): tutto quello che serve prima di *Avengers: Doomsday*;
+- **Road to Doomsday** (Doctor Doom): tutto quello che serve prima di *Avengers: Doomsday*. Un selettore permette di passare da **Tutto** agli **Essenziali**, i 15 titoli indispensabili (da *X-Men* a *I Fantastici Quattro: Gli Inizi*);
 - **Road to Endgame** (Thanos): la saga dell'Infinito;
 - **Road to Spiderverse** (Spider-Man): tutte le versioni dell'Uomo Ragno.
 
