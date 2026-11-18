@@ -46,11 +46,11 @@ public class AuthenticationService {
     // Senza mail di conferma si accettano solo i provider più diffusi, per evitare indirizzi inventati
     static final Set<String> TRUSTED_DOMAINS = Set.of(
             "gmail.com", "outlook.com", "outlook.it", "hotmail.com", "hotmail.it",
-            "alice.it", "tiscali.it", "fastwebnet.it");
+            "alice.it", "tiscali.it", "fastwebnet.it", "libero.it", "icloud.com");
 
     private static final String TRUSTED_DOMAINS_MESSAGE =
             "Inserisci un'email valida con uno di questi domini: gmail.com, outlook.com, outlook.it, hotmail.com, "
-                    + "hotmail.it, alice.it, tiscali.it, fastwebnet.it";
+                    + "hotmail.it, alice.it, tiscali.it, fastwebnet.it, libero.it, icloud.com";
 
     public record RegisterResult(String message, boolean active) {}
 
