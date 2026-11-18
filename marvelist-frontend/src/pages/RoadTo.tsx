@@ -17,10 +17,17 @@ interface Road {
   image: string; // personaggio su sfondo trasparente
   theme: { accent: string; accentText: string; accentRgb: string; glow: string };
   pick: (list: MediaItem[]) => MediaItem[];
-  essentials?: (list: MediaItem[]) => MediaItem[]; // versione ridotta, scelta con "Essenziali"
+  // Versioni del percorso tra cui scegliere sopra agli accordion (la prima della lista non è per forza quella iniziale)
+  scopes?: RoadScope[];
+  defaultScope?: string;
 }
 
-type Scope = 'all' | 'essential';
+interface RoadScope {
+  id: string;
+  label: string;
+  tagline?: string; // sottotitolo quando è scelta questa versione (altrimenti quello del percorso)
+  pick?: (list: MediaItem[]) => MediaItem[]; // senza pick: tutti i titoli del percorso
+}
 
 // Road to Doomsday "Essenziali": solo i titoli indispensabili, riconosciuti dall'id TMDB
 // (X-Men, X2, Il primo vendicatore, The Avengers, Infinity War, Endgame, Loki 1 e 2, Shang-Chi,
@@ -29,6 +36,17 @@ type Scope = 'all' | 'essential';
 const DOOMSDAY_ESSENTIALS = new Set([
   36657, 36658, 1771, 24428, 299536, 299534, 84958, 566525,
   634649, 453395, 505642, 533535, 822119, 986056, 617126,
+]);
+
+// Road to Spiderverse, riconosciuti dall'id TMDB.
+// MCU: la trilogia di Raimi, i due The Amazing Spider-Man, Homecoming, Far from Home, No Way Home e Brand New Day
+const SPIDER_MCU = new Set([557, 558, 559, 1930, 102382, 315635, 429617, 634649, 969681]);
+// New MCU: in più l'universo Sony, lo Spider-Verse animato, le serie e i titoli in arrivo
+// (Venom, Un nuovo universo, La furia di Carnage, Morbius, Across the Spider-Verse, Madame Web, The Last Dance,
+// Kraven, Your Friendly Neighborhood Spider-Man stagioni 1 e 2, Spider-Noir, Beyond the Spider-Verse)
+const SPIDER_NEW_MCU = new Set([
+  ...SPIDER_MCU,
+  335983, 324857, 580489, 526896, 569094, 634492, 912649, 539972, 138503, 220102, 911916,
 ]);
 
 const hasTag = (media: MediaItem, tag: string) => (media.tags ?? '').split(',').includes(tag);
@@ -43,7 +61,16 @@ const ROADS: Road[] = [
     theme: { accent: '#22c55e', accentText: '#86efac', accentRgb: '34, 197, 94', glow: '#052e16' },
     // Solo i titoli segnati "doomsday" nel marvel_data.json: la preparazione al film
     pick: list => list.filter(m => m.doomsday === true),
-    essentials: list => list.filter(m => m.doomsday === true && DOOMSDAY_ESSENTIALS.has(m.tmdbId)),
+    scopes: [
+      { id: 'all', label: 'Tutto' },
+      {
+        id: 'essential',
+        label: 'Essenziali',
+        tagline: 'Solo i titoli indispensabili per arrivare pronto al film',
+        pick: list => list.filter(m => DOOMSDAY_ESSENTIALS.has(m.tmdbId)),
+      },
+    ],
+    defaultScope: 'all',
   },
   {
     id: 'endgame',
@@ -68,6 +95,22 @@ const ROADS: Road[] = [
     theme: { accent: '#ef4444', accentText: '#fecaca', accentRgb: '239, 68, 68', glow: '#1e3a8a' },
     // Tutti i titoli con il tag "spiderverse" nel marvel_data.json
     pick: list => list.filter(m => hasTag(m, 'spiderverse')),
+    scopes: [
+      {
+        id: 'mcu',
+        label: 'MCU',
+        tagline: "Il punto di partenza: lo Spider-Man dei film, da Raimi a Brand New Day",
+        pick: list => list.filter(m => SPIDER_MCU.has(m.tmdbId)),
+      },
+      {
+        id: 'new-mcu',
+        label: 'New MCU',
+        tagline: "Lo Spider-Man dei film insieme all'universo Sony, allo Spider-Verse animato e ai titoli in arrivo",
+        pick: list => list.filter(m => SPIDER_NEW_MCU.has(m.tmdbId)),
+      },
+      { id: 'all', label: 'Tutto' },
+    ],
+    defaultScope: 'mcu',
   },
 ];
 
@@ -132,7 +175,7 @@ const RoadTo = () => {
   const watch = useWatchState();
   const { mediaList, seenItems, isLoading, error, isSkipped } = watch;
   const [selectedId, setSelectedId] = useState<RoadId | null>(null);
-  const [scope, setScope] = useState<Scope>('all');
+  const [scope, setScope] = useState('all');
   const listRef = useRef<HTMLDivElement>(null);
 
   const lists = useMemo(
@@ -142,14 +185,21 @@ const RoadTo = () => {
 
   const select = (id: RoadId) => {
     setSelectedId(prev => prev === id ? null : id);
-    setScope('all');
+    setScope(ROADS.find(r => r.id === id)?.defaultScope ?? 'all');
     // Dopo la selezione si scende agli accordion del percorso scelto
     window.setTimeout(() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
   };
 
   const selected = ROADS.find(r => r.id === selectedId) ?? null;
-  const essentials = useMemo(() => selected?.essentials?.(mediaList) ?? null, [selected, mediaList]);
-  const shownList = selected ? (scope === 'essential' && essentials ? essentials : lists[selected.id]) : [];
+  // Ogni versione del percorso con i suoi titoli (le versioni restringono la lista completa del percorso)
+  const scopeLists = useMemo(() => {
+    if (!selected?.scopes) return null;
+    const full = lists[selected.id] ?? [];
+    return selected.scopes.map(sc => ({ ...sc, items: sc.pick ? sc.pick(full) : full }));
+  }, [selected, lists]);
+  const activeScope = scopeLists?.find(sc => sc.id === scope) ?? null;
+  const shownList = selected ? (activeScope ? activeScope.items : lists[selected.id]) : [];
+  const scopeIndex = scopeLists ? Math.max(0, scopeLists.findIndex(sc => sc.id === scope)) : 0;
   // Un backend non aggiornato non invia i segni "doomsday" e i tag del JSON
   const missingRoadData = !isLoading && mediaList.length > 0 && mediaList.every(m => m.doomsday == null && m.tags == null);
 
@@ -196,22 +246,27 @@ const RoadTo = () => {
             <div className="road-list-header">
               <div className="road-list-heading">
                 <h2>{selected.title}</h2>
-                <p>{scope === 'essential' ? 'Solo i titoli indispensabili per arrivare pronto al film' : selected.tagline}</p>
+                <p>{activeScope?.tagline ?? selected.tagline}</p>
               </div>
-              {essentials && (
-                <div className={`road-scope ${scope === 'essential' ? 'is-essential' : ''}`} role="radiogroup" aria-label="Titoli da mostrare">
+              {scopeLists && (
+                <div
+                  className="road-scope"
+                  role="radiogroup"
+                  aria-label="Titoli da mostrare"
+                  style={{ '--n': scopeLists.length, '--i': scopeIndex } as React.CSSProperties}
+                >
                   <span className="road-scope-thumb" aria-hidden="true" />
-                  {([['all', 'Tutto', lists[selected.id].length], ['essential', 'Essenziali', essentials.length]] as const).map(([id, label, count]) => (
+                  {scopeLists.map(sc => (
                     <button
-                      key={id}
+                      key={sc.id}
                       type="button"
                       role="radio"
-                      aria-checked={scope === id}
-                      className={`road-scope-option ${scope === id ? 'active' : ''}`}
-                      onClick={() => setScope(id)}
+                      aria-checked={scope === sc.id}
+                      className={`road-scope-option ${scope === sc.id ? 'active' : ''}`}
+                      onClick={() => setScope(sc.id)}
                     >
-                      <span className="road-scope-label">{label}</span>
-                      <span className="road-scope-count">{count} titoli</span>
+                      <span className="road-scope-label">{sc.label}</span>
+                      <span className="road-scope-count">{sc.items.length} titoli</span>
                     </button>
                   ))}
                 </div>

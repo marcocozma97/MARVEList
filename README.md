@@ -164,7 +164,7 @@ Tre percorsi pronti, ognuno guidato da un personaggio con le sue animazioni e il
 
 - **Road to Doomsday** (Doctor Doom): tutto quello che serve prima di *Avengers: Doomsday*. Un selettore permette di passare da **Tutto** agli **Essenziali**, i 15 titoli indispensabili (da *X-Men* a *I Fantastici Quattro: Gli Inizi*);
 - **Road to Endgame** (Thanos): la saga dell'Infinito;
-- **Road to Spiderverse** (Spider-Man): tutte le versioni dell'Uomo Ragno.
+- **Road to Spiderverse** (Spider-Man): tutte le versioni dell'Uomo Ragno, in tre livelli. **MCU** (il punto di partenza: la trilogia di Raimi, i due *The Amazing Spider-Man* e lo Spider-Man dell'MCU fino a *Brand New Day*), **New MCU** (in più l'universo Sony, lo Spider-Verse animato, le serie e i titoli in arrivo) e **Tutto**.
 
 Selezionando una card compaiono gli accordion del percorso, con le stesse funzioni della Timeline.
 
