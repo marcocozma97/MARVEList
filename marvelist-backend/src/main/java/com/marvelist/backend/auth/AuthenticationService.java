@@ -4,6 +4,7 @@ import com.marvelist.backend.entities.Role;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.UserRepository;
 import com.marvelist.backend.security.JwtService;
+import com.marvelist.backend.services.EmailQuotaExceededException;
 import com.marvelist.backend.services.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.UUID;
@@ -35,9 +37,18 @@ public class AuthenticationService {
     @Value("${application.security.jwt.refresh-grace-days:30}")
     private long refreshGraceDays;
 
-    // Se l'invio della mail fallisce la transazione viene annullata: l'utente non resta "a metà"
+    // Tra due mail di conferma allo stesso indirizzo: chi clicca più volte "Crea account" non consuma gli invii di Gmail
+    static final Duration RESEND_COOLDOWN = Duration.ofMinutes(2);
+
+    private static final String QUOTA_MESSAGE =
+            "Oggi abbiamo raggiunto il limite di email di conferma: il tuo account è già attivo, puoi accedere subito";
+
+    public record RegisterResult(String message, boolean active) {}
+
+    // Se l'invio della mail fallisce la transazione viene annullata: l'utente non resta "a metà".
+    // Fa eccezione il limite giornaliero di Gmail: in quel caso l'account viene attivato senza conferma
     @Transactional
-    public String register(RegisterRequest request, String origin) {
+    public RegisterResult register(RegisterRequest request, String origin) {
         String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
 
         var existing = repository.findByEmailForLogin(email);
@@ -51,9 +62,17 @@ public class AuthenticationService {
             user.setName(request.getName().trim());
             user.setSurname(request.getSurname().trim());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
-            sendVerification(user, origin);
-            return "Questa email è già registrata ma non ancora confermata: ti abbiamo inviato un nuovo link a " + email
-                    + " (controlla anche la cartella spam)";
+
+            if (sentRecently(user)) {
+                repository.save(user);
+                return new RegisterResult("Ti abbiamo appena inviato una mail a " + email
+                        + ": aspetta qualche minuto prima di chiederne un'altra (controlla anche la cartella spam)", false);
+            }
+            if (!sendVerification(user, origin)) {
+                return new RegisterResult(QUOTA_MESSAGE, true);
+            }
+            return new RegisterResult("Questa email è già registrata ma non ancora confermata: ti abbiamo inviato un nuovo link a "
+                    + email + " (controlla anche la cartella spam)", false);
         }
 
         // Creazione del nuovo utente, disattivato finché non conferma la mail
@@ -66,8 +85,19 @@ public class AuthenticationService {
                 .enabled(false)
                 .build();
 
-        sendVerification(user, origin);
-        return "Ti abbiamo inviato una mail a " + email + ": clicca sul link per attivare l'account (controlla anche la cartella spam)";
+        if (!sendVerification(user, origin)) {
+            return new RegisterResult(QUOTA_MESSAGE, true);
+        }
+        return new RegisterResult("Ti abbiamo inviato una mail a " + email
+                + ": clicca sul link per attivare l'account (controlla anche la cartella spam)", false);
+    }
+
+    // La scadenza del link viene fissata a ogni invio: da lì si ricava quando è partita l'ultima mail
+    private boolean sentRecently(User user) {
+        LocalDateTime expiresAt = user.getVerificationTokenExpiresAt();
+        if (user.getVerificationToken() == null || expiresAt == null) return false;
+        LocalDateTime sentAt = expiresAt.minusHours(verificationExpirationHours);
+        return sentAt.isAfter(LocalDateTime.now().minus(RESEND_COOLDOWN));
     }
 
     // Conferma la registrazione dal link della mail. Il token non viene cancellato subito:
@@ -92,7 +122,8 @@ public class AuthenticationService {
 
     // Un link ancora valido viene riusato: chi si registra due volte può cliccare indifferentemente
     // la prima o la seconda mail (prima la seconda invalidava la prima, che spesso arriva per ultima)
-    private void sendVerification(User user, String origin) {
+    // Restituisce false se Gmail ha finito gli invii del giorno: l'account viene attivato subito
+    private boolean sendVerification(User user, String origin) {
         boolean stillValid = user.getVerificationToken() != null && user.getVerificationTokenExpiresAt() != null
                 && user.getVerificationTokenExpiresAt().isAfter(LocalDateTime.now());
         if (!stillValid) {
@@ -100,7 +131,15 @@ public class AuthenticationService {
         }
         user.setVerificationTokenExpiresAt(LocalDateTime.now().plusHours(verificationExpirationHours));
         repository.save(user);
-        emailService.sendVerificationEmail(user, origin);
+        try {
+            emailService.sendVerificationEmail(user, origin);
+            return true;
+        } catch (EmailQuotaExceededException e) {
+            user.setEnabled(true);
+            repository.save(user);
+            System.err.println("Account '" + user.getEmail() + "' attivato senza conferma: limite di email raggiunto");
+            return false;
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

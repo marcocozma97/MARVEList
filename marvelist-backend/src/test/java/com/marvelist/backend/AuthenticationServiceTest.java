@@ -5,6 +5,7 @@ import com.marvelist.backend.auth.RegisterRequest;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.UserRepository;
 import com.marvelist.backend.security.JwtService;
+import com.marvelist.backend.services.EmailQuotaExceededException;
 import com.marvelist.backend.services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,31 @@ class AuthenticationServiceTest {
         when(repo.findAllByEmailIgnoreCase("tony@stark.it")).thenReturn(java.util.List.of(pending, active));
 
         assertSame(active, repo.findByEmailForLogin(" tony@stark.it ").orElseThrow());
+    }
+
+    @Test
+    void unaSecondaRichiestaEntroDueMinutiNonInviaUnAltraMail() {
+        User pending = User.builder().email("tony@stark.it").enabled(false).verificationToken("valido")
+                .verificationTokenExpiresAt(LocalDateTime.now().plusHours(24).minusSeconds(30)).build();
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.of(pending));
+
+        var result = service.register(request("tony@stark.it"), ORIGIN);
+
+        assertFalse(result.active());
+        assertEquals("hash", pending.getPassword());
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void conIlLimiteDiEmailRaggiuntoLAccountVieneAttivatoSubito() {
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.empty());
+        doThrow(new EmailQuotaExceededException("Limite giornaliero di email raggiunto"))
+                .when(emailService).sendVerificationEmail(any(), any());
+
+        var result = service.register(request("tony@stark.it"), ORIGIN);
+
+        assertTrue(result.active());
+        verify(repository, atLeastOnce()).save(argThat(user -> user.getEnabled() && user.getEmail().equals("tony@stark.it")));
     }
 
     @Test

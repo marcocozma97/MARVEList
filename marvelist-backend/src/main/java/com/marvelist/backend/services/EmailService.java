@@ -76,6 +76,10 @@ public class EmailService {
             URI resultUrl = response.getHeaders().getLocation();
             Map<?, ?> result = resultUrl != null ? restTemplate.getForObject(resultUrl, Map.class) : null;
 
+            if (result != null && isQuotaError(String.valueOf(result.get("error")))) {
+                System.err.println("Limite giornaliero di Gmail raggiunto: mail di conferma non inviata a '" + user.getEmail() + "'");
+                throw new EmailQuotaExceededException(String.valueOf(result.get("error")));
+            }
             if (result == null || !Boolean.TRUE.equals(result.get("ok"))) {
                 throw new RestClientException("Invio non confermato dal relay: " + result);
             }
@@ -86,6 +90,11 @@ public class EmailService {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Non siamo riusciti a inviare la mail di conferma. Riprova tra qualche minuto.", e);
         }
+    }
+
+    // Messaggio del relay (docs/mail-relay.gs) o errore di Gmail quando gli invii del giorno sono finiti
+    static boolean isQuotaError(String error) {
+        return error != null && (error.contains("Limite giornaliero") || error.contains("too many times"));
     }
 
     // L'Origin arriva dal client e si può falsificare: lo usiamo solo se è tra quelle ammesse dal CORS,

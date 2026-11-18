@@ -25,8 +25,9 @@ export const authService = {
     return response.data;
   },
 
-  // Non restituisce il token: l'account va prima confermato dal link nella mail
-  register: async (userData: RegisterRequest): Promise<{ message: string }> => {
+  // Non restituisce il token: l'account va prima confermato dal link nella mail,
+  // tranne quando le mail del giorno sono finite (active: true)
+  register: async (userData: RegisterRequest): Promise<{ message: string; active?: boolean }> => {
     const response = await api.post('/auth/register', userData);
     return response.data;
   },

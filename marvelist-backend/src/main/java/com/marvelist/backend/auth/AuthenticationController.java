@@ -21,14 +21,14 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    // Crea l'account disattivato e invia la mail di conferma.
+    // Crea l'account disattivato e invia la mail di conferma ("active": true se è stato attivato senza mail).
     // L'Origin serve a far puntare il link allo stesso indirizzo da cui ci si è registrati (PC o smartphone)
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(
+    public ResponseEntity<AuthenticationService.RegisterResult> register(
             @Valid @RequestBody RegisterRequest request,
             @RequestHeader(value = HttpHeaders.ORIGIN, required = false) String origin
     ) {
-        return ResponseEntity.ok(Map.of("message", service.register(request, origin)));
+        return ResponseEntity.ok(service.register(request, origin));
     }
 
     // Chiamato dalla pagina del frontend aperta dal link nella mail

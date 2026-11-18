@@ -14,6 +14,7 @@ const Register = () => {
   const [submitted, setSubmitted] = useState(false); // dopo il primo invio i campi mostrano i propri errori
   const [loading, setLoading] = useState(false);
   const [sentMessage, setSentMessage] = useState(''); // registrazione riuscita: mail di conferma inviata
+  const [active, setActive] = useState(false); // account già attivo perché le mail del giorno sono finite
 
   const emailError = submitted && !isValidEmail(email) ? "Inserisci un'email valida (es. nome@dominio.it)" : '';
   const passwordError = submitted && !isValidPassword(password) ? PASSWORD_RULE : '';
@@ -29,6 +30,7 @@ const Register = () => {
       // Nessun accesso automatico: l'account si attiva dal link nella mail
       const data = await authService.register({ name: firstname, surname: lastname, email: email.trim(), password });
       setSentMessage(data.message);
+      setActive(!!data.active);
     } catch (err) {
       setError(errorMessage(err, 'Errore durante la registrazione. Controlla i dati.'));
       console.error(err);
@@ -42,9 +44,9 @@ const Register = () => {
       <div className="auth-page">
         <div className="auth-card">
           <Link to="/" className="auth-logo" aria-label="MARVEList, torna alla home"><Brand size="md" /></Link>
-          <h1 className="auth-title">Controlla la tua email</h1>
+          <h1 className="auth-title">{active ? 'Account attivo' : 'Controlla la tua email'}</h1>
           <div className="form-success" role="status">{sentMessage}</div>
-          <p className="auth-note">Dopo aver confermato potrai accedere. Non trovi la mail? Guarda anche nello spam.</p>
+          {!active && <p className="auth-note">Dopo aver confermato potrai accedere. Non trovi la mail? Guarda anche nello spam.</p>}
           <Link to="/login" className="btn-marvel">Vai al login</Link>
         </div>
       </div>
