@@ -13,6 +13,16 @@ const SEASON_RE = /\s+(Season|S\.)\s*(\d+)$/i;
 
 export interface TmdbCastMember { id: number; name: string; character?: string; profile_path: string | null }
 export interface TmdbVideo { type: string; site: string; key: string }
+export interface TmdbProvider { provider_id: number; provider_name: string; logo_path: string | null }
+// Piattaforme di un paese (dati JustWatch): abbonamento, gratis, con pubblicità, noleggio, acquisto
+export interface TmdbCountryProviders {
+  link?: string;
+  flatrate?: TmdbProvider[];
+  free?: TmdbProvider[];
+  ads?: TmdbProvider[];
+  rent?: TmdbProvider[];
+  buy?: TmdbProvider[];
+}
 
 // Campi di /movie/{id} e /tv/{id} (con credits e videos) usati dall'app
 export interface TmdbDetails {
@@ -29,6 +39,7 @@ export interface TmdbDetails {
   number_of_episodes?: number;
   credits?: { cast?: TmdbCastMember[] };
   videos?: { results?: TmdbVideo[] };
+  'watch/providers'?: { results?: Record<string, TmdbCountryProviders> };
 }
 
 export interface TmdbEpisode {
@@ -59,7 +70,7 @@ export const tmdbService = {
       params: {
         api_key: TMDB_API_KEY,
         language: 'it-IT',
-        append_to_response: 'credits,videos'
+        append_to_response: 'credits,videos,watch/providers'
       }
     });
     return response.data;

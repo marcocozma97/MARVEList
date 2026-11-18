@@ -16,6 +16,7 @@ import { readPageState, writePageState } from '../hooks/usePageMemory';
 import SlowLoader from '../components/SlowLoader';
 import { MissingOverview } from '../components/SnapGauntlet';
 import { NoTrailer } from '../components/WestviewTV';
+import WatchProviders from '../components/WatchProviders';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -341,6 +342,8 @@ const MediaDetail = () => {
               {hasOverview
                 ? <p className="detail-overview" title={overview}>{shortenOverview(overview)}</p>
                 : <MissingOverview />}
+
+              {!upcoming && tmdbData.id && <WatchProviders italy={tmdbData['watch/providers']?.results?.IT} />}
 
               {!isAuthenticated && (
                 <p className="detail-login-hint"><Link to="/login">Accedi</Link> per votare e tracciare cosa hai visto.</p>

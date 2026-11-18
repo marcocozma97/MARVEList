@@ -6300,3 +6300,35 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   .spoiler-gate.is-locked .spoiler-gate-cta { width: 100%; justify-content: center; }
   .gif-picker { left: -60px; }
 }
+
+// Dove vederlo in Italia (scheda di film e serie)
+.watch-provider-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.watch-provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-light);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  img { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; }
+  &:hover, &:focus-visible { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(var(--accent-rgb), 0.6); }
+}
+.watch-provider-kind { color: var(--text-muted); font-size: 0.85rem; margin: 12px 0 8px; }
+.watch-provider-source { color: var(--text-muted); font-size: 0.75rem; margin: 10px 0 0; opacity: 0.8; }
+.watch-unavailable {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(179, 18, 27, 0.12);
+  border: 1px solid rgba(179, 18, 27, 0.45);
+  color: #ffd6d6;
+  font-weight: 600;
+  .hydra-flag { width: 48px; height: 36px; flex-shrink: 0; }
+}
