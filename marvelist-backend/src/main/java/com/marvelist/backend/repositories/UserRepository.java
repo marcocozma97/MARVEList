@@ -53,4 +53,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     List<User> findByEmailIgnoreCaseIn(Collection<String> emails);
+
+    // Contatore dell'account ufficiale: attivi (enabled null = registrati prima della conferma via mail)
+    @Query("select count(u) from User u where u.enabled is null or u.enabled = true")
+    long countActive();
+
+    long countByEnabled(Boolean enabled);
+
+    // Attivi che hanno segnato almeno un titolo come visto
+    @Query("select count(distinct u) from User u join u.seenMedia m where u.enabled is null or u.enabled = true")
+    long countActiveWithSeenMedia();
 }

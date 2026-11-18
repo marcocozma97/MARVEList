@@ -5,7 +5,7 @@ import { setProfile } from '../store/authSlice';
 import { Navigate, Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { mediaService, type MediaItem, type MediaProgress } from '../services/mediaService';
-import { userService } from '../services/userService';
+import { userService, type UserStats } from '../services/userService';
 import { marathonService, type MarathonSummary } from '../services/marathonService';
 import { errorMessage, formatDay, dayLabel, getBackgroundUrl } from '../utils/marathon';
 import { getProgressPercent } from '../utils/progress';
@@ -78,6 +78,14 @@ const Profile = () => {
     };
     if (isAuthenticated) fetchProfileData();
   }, [isAuthenticated, dispatch]);
+
+  // Solo l'account ufficiale di MARVEList vede quanti sono gli utenti
+  const isOfficial = !!profile?.official;
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  useEffect(() => {
+    if (!isOfficial) return;
+    userService.getStats().then(setUserStats).catch(() => setUserStats(null));
+  }, [isOfficial]);
 
   const profileId = profile?.id;
 
@@ -297,6 +305,20 @@ const Profile = () => {
           </span><span className="stat-label">Ore di visione</span></div>
         <div className="stat-tile"><span className="stat-value">{averageRating}</span><span className="stat-label">Voto medio</span></div>
       </section>
+
+      {isOfficial && userStats && (
+        <section className="profile-section">
+          <div className="section-heading">
+            <h2 className="section-title">Utenti di MARVEList</h2>
+            <span className="section-hint">Visibile solo a questo account</span>
+          </div>
+          <div className="stats-grid stats-grid-3" aria-label="Utenti di MARVEList">
+            <div className="stat-tile"><span className="stat-value text-accent">{userStats.active}</span><span className="stat-label">Utenti attivi</span></div>
+            <div className="stat-tile"><span className="stat-value text-gold">{userStats.watching}</span><span className="stat-label">Hanno segnato almeno un titolo</span></div>
+            <div className="stat-tile"><span className="stat-value text-info-soft">{userStats.pending}</span><span className="stat-label">In attesa di conferma</span></div>
+          </div>
+        </section>
+      )}
 
       {/* MARATONE: all'inizio c'è solo la card per crearne una */}
       <section className="profile-section">

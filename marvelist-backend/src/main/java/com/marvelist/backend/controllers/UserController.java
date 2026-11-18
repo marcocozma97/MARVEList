@@ -21,6 +21,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getProfile(authentication.getName()));
     }
 
+    // Contatore degli utenti: solo per l'account ufficiale di MARVEList
+    @GetMapping("/me/stats")
+    public ResponseEntity<UserService.UserStats> getStats(Authentication authentication) {
+        return ResponseEntity.ok(userService.getStats(authentication.getName()));
+    }
+
     @GetMapping("/nickname-available")
     public ResponseEntity<java.util.Map<String, Boolean>> nicknameAvailable(@RequestParam String name, Authentication authentication) {
         return ResponseEntity.ok(java.util.Map.of("available", userService.isNicknameAvailable(authentication.getName(), name)));

@@ -12,6 +12,14 @@ export interface UserProfile {
   following: number;
   nicknameChosen: boolean;
   nicknameChangeableFrom: string | null;
+  official?: boolean;
+}
+
+// Contatore degli utenti, solo per l'account ufficiale
+export interface UserStats {
+  active: number;
+  pending: number;
+  watching: number;
 }
 
 export interface UserCard {
@@ -66,6 +74,8 @@ export const userService = {
     const response = await api.put('/users/me', data);
     return response.data;
   },
+
+  getStats: async (): Promise<UserStats> => (await api.get('/users/me/stats')).data,
 
   isNicknameAvailable: async (name: string): Promise<boolean> =>
     (await api.get('/users/nickname-available', { params: { name } })).data.available,

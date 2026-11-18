@@ -41,6 +41,18 @@ public class UserService {
         return OFFICIAL_EMAIL.equalsIgnoreCase(user.getEmail());
     }
 
+    public record UserStats(long active, long pending, long watching) {}
+
+    // Numeri sugli iscritti, visibili solo all'account ufficiale
+    @Transactional(readOnly = true)
+    public UserStats getStats(String email) {
+        if (!isOfficial(findUser(email))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Riservato all'account di MARVEList");
+        }
+        return new UserStats(userRepository.countActive(), userRepository.countByEnabled(false),
+                userRepository.countActiveWithSeenMedia());
+    }
+
     public static String nicknameKey(String nickname) {
         return nickname.strip().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
     }
@@ -110,6 +122,7 @@ public class UserService {
                 .following(followRepository.countByFollower(user))
                 .nicknameChosen(user.getNicknameChangedAt() != null)
                 .nicknameChangeableFrom(nextNicknameChange(user))
+                .official(isOfficial(user))
                 .build();
     }
 

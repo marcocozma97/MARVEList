@@ -22,4 +22,5 @@ public class UserProfileResponse {
     private long following;
     private boolean nicknameChosen;
     private Instant nicknameChangeableFrom;
+    private boolean official; // Account ufficiale di MARVEList: vede il contatore degli utenti
 }
