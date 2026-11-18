@@ -14,6 +14,8 @@ import { episodeAirDate, formatDay, isEpisodeOut, isFullyOut, isUpcoming, releas
 import { matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
 import { readPageState, writePageState } from '../hooks/usePageMemory';
 import SlowLoader from '../components/SlowLoader';
+import { MissingOverview } from '../components/SnapGauntlet';
+import { NoTrailer } from '../components/WestviewTV';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -336,7 +338,9 @@ const MediaDetail = () => {
                 {progress?.watchLater && <span className="chip chip-later">Guarda dopo</span>}
               </div>
 
-              <p className={`detail-overview ${hasOverview ? "" : "is-missing"}`} title={overview}>{shortenOverview(overview)}</p>
+              {hasOverview
+                ? <p className="detail-overview" title={overview}>{shortenOverview(overview)}</p>
+                : <MissingOverview />}
 
               {!isAuthenticated && (
                 <p className="detail-login-hint"><Link to="/login">Accedi</Link> per votare e tracciare cosa hai visto.</p>
@@ -481,7 +485,7 @@ const MediaDetail = () => {
                 ></iframe>
               </div>
             ) : (
-              <div className="empty-box">Trailer non disponibile</div>
+              <NoTrailer />
             )}
           </div>
         </div>

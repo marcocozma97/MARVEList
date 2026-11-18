@@ -2022,7 +2022,6 @@ $stop-dot: 14px;
     radial-gradient(ellipse at 85% 10%, rgba(56, 189, 248, 0.14), transparent 50%);
 }
 
-.detail-overview.is-missing { color: var(--text-muted); font-style: italic; }
 
 .detail-poster {
   width: 100%;
@@ -2324,6 +2323,173 @@ $stop-dot: 14px;
 }
 
 // --- Cast e trailer ---
+
+// --- Trama mancante: il Guanto dell'Infinito a 8 bit schiocca le dita ---
+$snap-cycle: 3.6s;
+.snap-missing {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 720px;
+  margin-top: 4px;
+  padding: 14px 18px 14px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  background:
+    radial-gradient(ellipse at 0% 50%, rgba(168, 85, 247, 0.24), transparent 60%),
+    rgba(255, 255, 255, 0.02);
+  animation: panel-in 0.4s var(--ease-spring);
+}
+.snap-missing-art {
+  flex: 0 0 120px;
+  display: grid;
+  place-items: center;
+  animation: snap-shake $snap-cycle steps(1) infinite;
+}
+.snap-gauntlet {
+  display: block;
+  width: 100%;
+  overflow: visible;
+  animation: snap-glow $snap-cycle ease-in infinite;
+}
+.snap-ready { animation: snap-ready $snap-cycle steps(1) infinite; }
+.snap-done { opacity: 0; animation: snap-done $snap-cycle steps(1) infinite; }
+.snap-gauntlet .gem { animation: snap-gem $snap-cycle steps(4) infinite; }
+.snap-dust rect {
+  opacity: 0;
+  animation: snap-dust $snap-cycle var(--delay) ease-out infinite;
+}
+@keyframes snap-ready { 0%, 54% { opacity: 1; } 55%, 95% { opacity: 0; } 96%, 100% { opacity: 1; } }
+@keyframes snap-done { 0%, 54% { opacity: 0; } 55%, 95% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes snap-gem { 0%, 20% { opacity: 0.7; } 50% { opacity: 1; } 56% { opacity: 1; } 70%, 100% { opacity: 0.7; } }
+@keyframes snap-glow {
+  0%, 15% { filter: drop-shadow(0 0 0 rgba(168, 85, 247, 0)); }
+  52% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.9)); }
+  56% { filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.95)); }
+  75%, 100% { filter: drop-shadow(0 0 0 rgba(168, 85, 247, 0)); }
+}
+@keyframes snap-shake { 0%, 54% { transform: none; } 55% { transform: translate(-2px, 1px); } 58% { transform: translate(2px, -1px); } 61%, 100% { transform: none; } }
+@keyframes snap-dust {
+  0%, 55% { opacity: 0; transform: translate(0, 0); }
+  58% { opacity: 1; }
+  92% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+  100% { opacity: 0; }
+}
+.snap-missing-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  strong {
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 400;
+    font-size: clamp(0.62rem, 1.6vw, 0.74rem);
+    line-height: 1.75;
+    color: #f3e8ff;
+    text-shadow: 2px 2px 0 rgba(88, 28, 135, 0.9);
+  }
+  span { font-size: 0.88rem; line-height: 1.45; color: var(--text-muted); }
+}
+@media (max-width: 575.98px) {
+  .snap-missing { gap: 12px; padding: 12px 14px 12px 8px; }
+  .snap-missing-art { flex-basis: 92px; }
+}
+
+// --- Trailer mancante: la "pubblicità" di Westview su una TV anni '50 a 8 bit ---
+.no-trailer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px 22px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background:
+    radial-gradient(ellipse at 50% 110%, rgba(243, 210, 122, 0.16), transparent 60%),
+    linear-gradient(180deg, #121212, #0b0b0b);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.no-trailer-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.no-trailer-line {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.56rem, 1.5vw, 0.66rem);
+  color: var(--text-muted);
+  white-space: nowrap;
+  // Scritta che compare a macchina da scrivere
+  clip-path: inset(0 100% 0 0);
+  animation: tv-type 1.6s steps(26) 0.2s forwards;
+}
+.no-trailer-ad {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1rem, 3.2vw, 1.3rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffd54a;
+  text-shadow: 3px 3px 0 #b3121b, 6px 6px 0 rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: scale(0.6);
+  animation: tv-ad-in 0.5s var(--ease-spring) 2s forwards, tv-ad-blink 2.4s steps(1) 2.6s infinite;
+}
+@keyframes tv-type { to { clip-path: inset(0 0 0 0); } }
+@keyframes tv-ad-in { to { opacity: 1; transform: scale(1); } }
+@keyframes tv-ad-blink { 0%, 80% { opacity: 1; } 81%, 88% { opacity: 0.35; } 89%, 100% { opacity: 1; } }
+
+.westview-tv-wrap {
+  position: relative;
+  width: min(100%, 380px);
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.6));
+}
+.westview-tv { display: block; width: 100%; height: auto; }
+// La magia di Wanda: per un attimo la sitcom in bianco e nero si colora
+.tv-screen-color { opacity: 0; animation: tv-color 7s steps(1) 3s infinite; }
+@keyframes tv-color {
+  0%, 84% { opacity: 0; }
+  85%, 89% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+.tv-actor { animation: tv-bob 1.1s steps(1) infinite; }
+.tv-vision { animation-delay: 0.55s; }
+@keyframes tv-bob { 0%, 49% { transform: translateY(0); } 50%, 100% { transform: translateY(-1px); } }
+.tv-knob { animation: tv-knob 7s steps(1) 3s infinite; }
+@keyframes tv-knob { 0%, 84% { fill: #d9b25a; } 85%, 89% { fill: #ff5a7a; } 90%, 100% { fill: #d9b25a; } }
+
+// Vetro del tubo catodico sopra lo schermo (in percentuale sul disegno 64x50)
+.tv-crt {
+  position: absolute;
+  left: calc(9 / 64 * 100%);
+  top: calc(14 / 50 * 100%);
+  width: calc(35 / 64 * 100%);
+  height: calc(26 / 50 * 100%);
+  border-radius: 5% / 7%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.12), transparent 65%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: tv-flicker 4s steps(1) infinite;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 18%;
+    top: -20%;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: tv-roll 5s linear infinite;
+  }
+}
+@keyframes tv-roll { to { top: 110%; } }
+@keyframes tv-flicker { 0%, 96% { opacity: 1; } 97% { opacity: 0.8; } 98%, 100% { opacity: 1; } }
 .detail-extras { margin-top: 36px; }
 
 .section-title {

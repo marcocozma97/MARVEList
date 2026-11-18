@@ -9,6 +9,7 @@ import Community from '../components/Community';
 import { episodeAirDate, formatDay, isEpisodeOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { seasonNumber, seriesTitle } from '../utils/community';
 import SlowLoader from '../components/SlowLoader';
+import { MissingOverview } from '../components/SnapGauntlet';
 
 const isEditable = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
@@ -181,7 +182,7 @@ const EpisodeDetail = () => {
               {isDetailsLoading ? (
                 <div className="episode-overview-skeleton" aria-busy="true"><span /><span /><span /></div>
               ) : (
-                <p className={`detail-overview ${overview ? '' : 'is-missing'}`}>{overview || 'Sinossi non disponibile per questo episodio.'}</p>
+                overview ? <p className="detail-overview">{overview}</p> : <MissingOverview />
               )}
 
               {!isAuthenticated && (
