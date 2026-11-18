@@ -2329,10 +2329,10 @@ $snap-cycle: 3.6s;
 .snap-missing {
   display: flex;
   align-items: center;
-  gap: 16px;
-  max-width: 720px;
+  gap: 10px;
+  max-width: 520px;
   margin-top: 4px;
-  padding: 14px 18px 14px 12px;
+  padding: 8px 14px 8px 8px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(168, 85, 247, 0.35);
   background:
@@ -2341,7 +2341,7 @@ $snap-cycle: 3.6s;
   animation: panel-in 0.4s var(--ease-spring);
 }
 .snap-missing-art {
-  flex: 0 0 120px;
+  flex: 0 0 64px;
   display: grid;
   place-items: center;
   animation: snap-shake $snap-cycle steps(1) infinite;
@@ -2378,31 +2378,31 @@ $snap-cycle: 3.6s;
 .snap-missing-text {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   min-width: 0;
   strong {
     font-family: 'Press Start 2P', monospace;
     font-weight: 400;
-    font-size: clamp(0.62rem, 1.6vw, 0.74rem);
-    line-height: 1.75;
+    font-size: 0.58rem;
+    line-height: 1.7;
     color: #f3e8ff;
     text-shadow: 2px 2px 0 rgba(88, 28, 135, 0.9);
   }
-  span { font-size: 0.88rem; line-height: 1.45; color: var(--text-muted); }
+  span { font-size: 0.78rem; line-height: 1.4; color: var(--text-muted); }
 }
 @media (max-width: 575.98px) {
-  .snap-missing { gap: 12px; padding: 12px 14px 12px 8px; }
-  .snap-missing-art { flex-basis: 92px; }
+  .snap-missing-art { flex-basis: 56px; }
 }
 
 // --- Trailer mancante: la "pubblicità" di Westview su una TV anni '50 a 8 bit ---
 .no-trailer {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 18px 16px 22px;
+  justify-content: center;
+  gap: 18px;
+  height: 234px; // come una card del cast (locandina 2:3 da 116 px + nome e personaggio)
+  padding: 14px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background:
@@ -2414,13 +2414,13 @@ $snap-cycle: 3.6s;
 .no-trailer-caption {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  text-align: center;
+  order: 2;
 }
 .no-trailer-line {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(0.56rem, 1.5vw, 0.66rem);
+  font-size: 0.5rem;
   color: var(--text-muted);
   white-space: nowrap;
   // Scritta che compare a macchina da scrivere
@@ -2429,8 +2429,8 @@ $snap-cycle: 3.6s;
 }
 .no-trailer-ad {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(1rem, 3.2vw, 1.3rem);
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #ffd54a;
   text-shadow: 3px 3px 0 #b3121b, 6px 6px 0 rgba(0, 0, 0, 0.55);
@@ -2444,10 +2444,28 @@ $snap-cycle: 3.6s;
 
 .westview-tv-wrap {
   position: relative;
-  width: min(100%, 380px);
+  flex: 0 1 auto;
+  height: 100%;
+  aspect-ratio: 64 / 50;
+  min-width: 0;
   filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.6));
 }
-.westview-tv { display: block; width: 100%; height: auto; }
+.westview-tv { display: block; width: 100%; height: 100%; }
+// Cast e trailer affiancati: la TV si allunga fino all'altezza esatta della riga del cast
+@media (min-width: 992px) {
+  .detail-extras > [class*='col-']:has(> .no-trailer) { display: flex; flex-direction: column; }
+  .detail-extras .no-trailer { flex: 1 1 auto; height: auto; min-height: 200px; margin-bottom: 10px; }
+  .detail-extras .no-trailer { gap: 14px; padding: 12px 14px; }
+  .detail-extras .westview-tv-wrap { flex: 0 1 260px; height: auto; max-height: 100%; }
+  .detail-extras .no-trailer-caption { flex: 0 0 auto; max-width: 9.5rem; }
+  .detail-extras .no-trailer-line { white-space: normal; line-height: 1.7; clip-path: none; animation: tv-ad-in 0.6s ease 0.2s backwards; }
+}
+// Telefono: scritta sopra e TV sotto, sempre entro la stessa altezza
+@media (max-width: 575.98px) {
+  .no-trailer { flex-direction: column; gap: 8px; padding: 12px; }
+  .no-trailer-caption { order: 0; align-items: center; gap: 6px; }
+  .westview-tv-wrap { flex: 1 1 0; min-height: 0; height: auto; }
+}
 // La magia di Wanda: per un attimo la sitcom in bianco e nero si colora
 .tv-screen-color { opacity: 0; animation: tv-color 7s steps(1) 3s infinite; }
 @keyframes tv-color {
