@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,19 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
+
+    List<User> findAllByEmailIgnoreCase(String email);
+
+    // Login e registrazione ignorano le maiuscole (gli smartphone scrivono "Mario@..." da soli).
+    // Se esistono vecchi account che differiscono solo per le maiuscole vince quello attivo, poi quello scritto uguale.
+    default Optional<User> findByEmailForLogin(String email) {
+        if (email == null) return Optional.empty();
+        String typed = email.trim();
+        return findAllByEmailIgnoreCase(typed).stream()
+                .sorted(Comparator.comparing((User u) -> !u.isEnabled())
+                        .thenComparing(u -> !u.getEmail().equals(typed)))
+                .findFirst();
+    }
     // Utente a cui appartiene il link di conferma della registrazione
     Optional<User> findByVerificationToken(String token);
 

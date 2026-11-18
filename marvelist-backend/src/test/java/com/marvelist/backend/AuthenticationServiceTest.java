@@ -46,7 +46,7 @@ class AuthenticationServiceTest {
 
     @Test
     void laRegistrazioneCreaUnAccountDisattivatoEInviaLaMail() {
-        when(repository.findByEmail("tony@stark.it")).thenReturn(Optional.empty());
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.empty());
 
         service.register(request(" tony@stark.it "), ORIGIN);
 
@@ -62,7 +62,7 @@ class AuthenticationServiceTest {
     @Test
     void unaEmailGiaAttivaNonSiPuoRiregistrare() {
         User active = User.builder().email("tony@stark.it").enabled(true).build();
-        when(repository.findByEmail("tony@stark.it")).thenReturn(Optional.of(active));
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.of(active));
 
         var error = assertThrows(ResponseStatusException.class, () -> service.register(request("tony@stark.it"), ORIGIN));
         assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
@@ -72,12 +72,46 @@ class AuthenticationServiceTest {
     @Test
     void unaEmailNonConfermataRiceveUnNuovoLink() {
         User pending = User.builder().email("tony@stark.it").enabled(false).verificationToken("vecchio").build();
-        when(repository.findByEmail("tony@stark.it")).thenReturn(Optional.of(pending));
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.of(pending));
 
         service.register(request("tony@stark.it"), ORIGIN);
 
         assertNotEquals("vecchio", pending.getVerificationToken());
         verify(emailService).sendVerificationEmail(pending, ORIGIN);
+    }
+
+    @Test
+    void unLinkAncoraValidoVieneRiusatoEValgonoIDatiDellUltimaRegistrazione() {
+        User pending = User.builder().email("tony@stark.it").enabled(false).password("vecchia")
+                .verificationToken("valido").verificationTokenExpiresAt(LocalDateTime.now().plusHours(5)).build();
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.of(pending));
+
+        service.register(request("tony@stark.it"), ORIGIN);
+
+        assertEquals("valido", pending.getVerificationToken());
+        assertTrue(pending.getVerificationTokenExpiresAt().isAfter(LocalDateTime.now().plusHours(23)));
+        assertEquals("hash", pending.getPassword());
+        assertEquals("Tony", pending.getName());
+    }
+
+    @Test
+    void lEmailVieneSalvataInMinuscolo() {
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.empty());
+
+        service.register(request(" Tony@Stark.IT "), ORIGIN);
+
+        verify(emailService).sendVerificationEmail(argThat(user -> user.getEmail().equals("tony@stark.it")), eq(ORIGIN));
+    }
+
+    @Test
+    void ilLoginIgnoraLeMaiuscolePreferendoLAccountAttivo() {
+        UserRepository repo = mock(UserRepository.class);
+        when(repo.findByEmailForLogin(any())).thenCallRealMethod();
+        User pending = User.builder().email("tony@stark.it").enabled(false).build();
+        User active = User.builder().email("Tony@stark.it").enabled(true).build();
+        when(repo.findAllByEmailIgnoreCase("tony@stark.it")).thenReturn(java.util.List.of(pending, active));
+
+        assertSame(active, repo.findByEmailForLogin(" tony@stark.it ").orElseThrow());
     }
 
     @Test

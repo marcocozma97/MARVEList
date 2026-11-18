@@ -33,7 +33,8 @@ public class ApiExceptionHandler {
     // Login di un account che non ha ancora confermato la mail
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Map<String, Object>> handle(DisabledException e) {
-        return body(HttpStatus.FORBIDDEN, "Account non ancora attivo: conferma la registrazione dal link che ti abbiamo inviato per email");
+        return body(HttpStatus.FORBIDDEN, "Account non ancora attivo: conferma la registrazione dal link che ti abbiamo inviato per email. "
+                + "Non la trovi (nemmeno nello spam)? Registrati di nuovo con la stessa email per riceverne un'altra.");
     }
 
     @ExceptionHandler(BadCredentialsException.class)

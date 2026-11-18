@@ -72,7 +72,7 @@ const Register = () => {
           </div>
           <label className="field">
             <span className="field-label">Email</span>
-            <input type="email" className={`field-input ${emailError ? 'is-invalid' : ''}`} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" aria-invalid={!!emailError} required />
+            <input type="email" className={`field-input ${emailError ? 'is-invalid' : ''}`} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} aria-invalid={!!emailError} required />
             {emailError && <span className="field-error">{emailError}</span>}
           </label>
           <label className="field">

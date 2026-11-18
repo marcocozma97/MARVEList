@@ -22,7 +22,7 @@ const Login = () => {
     setError('');
 
     try {
-      const data = await authService.login({ email, password });
+      const data = await authService.login({ email: email.trim(), password });
 
       localStorage.setItem('marvelist_token', data.token);
 
@@ -57,6 +57,9 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
             />
           </label>

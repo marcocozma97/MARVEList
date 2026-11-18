@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -37,17 +38,22 @@ public class AuthenticationService {
     // Se l'invio della mail fallisce la transazione viene annullata: l'utente non resta "a metà"
     @Transactional
     public String register(RegisterRequest request, String origin) {
-        String email = request.getEmail().trim();
+        String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
 
-        var existing = repository.findByEmail(email);
+        var existing = repository.findByEmailForLogin(email);
         if (existing.isPresent()) {
             User user = existing.get();
             if (user.isEnabled()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già in uso");
             }
-            // Registrato ma mai confermato: nuovo link, i dati della prima registrazione restano quelli
+            // Registrato ma mai confermato: valgono i dati dell'ultima registrazione,
+            // altrimenti dopo la conferma la nuova password verrebbe rifiutata
+            user.setName(request.getName().trim());
+            user.setSurname(request.getSurname().trim());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
             sendVerification(user, origin);
-            return "Questa email è già registrata ma non ancora confermata: ti abbiamo inviato un nuovo link a " + email;
+            return "Questa email è già registrata ma non ancora confermata: ti abbiamo inviato un nuovo link a " + email
+                    + " (controlla anche la cartella spam)";
         }
 
         // Creazione del nuovo utente, disattivato finché non conferma la mail
@@ -61,7 +67,7 @@ public class AuthenticationService {
                 .build();
 
         sendVerification(user, origin);
-        return "Ti abbiamo inviato una mail a " + email + ": clicca sul link per attivare l'account";
+        return "Ti abbiamo inviato una mail a " + email + ": clicca sul link per attivare l'account (controlla anche la cartella spam)";
     }
 
     // Conferma la registrazione dal link della mail. Il token non viene cancellato subito:
@@ -84,24 +90,29 @@ public class AuthenticationService {
         return "Registrazione confermata! Il tuo account è attivo: ora puoi accedere";
     }
 
+    // Un link ancora valido viene riusato: chi si registra due volte può cliccare indifferentemente
+    // la prima o la seconda mail (prima la seconda invalidava la prima, che spesso arriva per ultima)
     private void sendVerification(User user, String origin) {
-        user.setVerificationToken(UUID.randomUUID().toString());
+        boolean stillValid = user.getVerificationToken() != null && user.getVerificationTokenExpiresAt() != null
+                && user.getVerificationTokenExpiresAt().isAfter(LocalDateTime.now());
+        if (!stillValid) {
+            user.setVerificationToken(UUID.randomUUID().toString());
+        }
         user.setVerificationTokenExpiresAt(LocalDateTime.now().plusHours(verificationExpirationHours));
         repository.save(user);
         emailService.sendVerificationEmail(user, origin);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        String email = request.getEmail() == null ? "" : request.getEmail().trim();
+
         // Verifica delle credenziali in automatico (account non confermato -> DisabledException)
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, request.getPassword())
         );
 
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(); // Non dovrebbe mai succedere se l'autenticazione passa
+        // L'utente è quello trovato dal login, con l'email salvata (che può avere maiuscole diverse da quella digitata)
+        var user = (User) authentication.getPrincipal();
 
         var jwtToken = jwtService.generateToken(user);
 
