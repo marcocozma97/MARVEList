@@ -6420,20 +6420,45 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 // Top 10 in riga a scorrimento, con la posizione in grande sulla locandina
 .top-row-list { list-style: none; margin: 0; padding: 0 0 8px; grid-auto-columns: 150px; > li { display: flex; } }
 .top-card { width: 100%; }
-.top-card-poster { position: relative; display: block; }
+// La locandina ritaglia il numero: niente sborda, e il riquadro intero si solleva al passaggio
+.top-card-poster {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  transition: transform 0.25s var(--ease-out), border-color 0.25s;
+  // Velo scuro in basso a destra: il numero si legge anche sulle locandine chiare
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 70% at 100% 100%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 70%);
+    pointer-events: none;
+  }
+  .cm-poster-img { border: 0; border-radius: 0; display: block; }
+}
+.top-card:hover .top-card-poster, .top-card:focus-visible .top-card-poster { transform: translateY(-3px); border-color: rgba(var(--accent-rgb), 0.6); }
+.top-card:hover .cm-poster-img, .top-card:focus-visible .cm-poster-img { transform: none; }
+
+// Numero della posizione: grande, in basso a destra, pieno in alto e sfumato verso il basso
 .top-card-rank {
   position: absolute;
-  left: 6px;
-  bottom: -6px;
+  z-index: 1;
+  right: 8px;
+  bottom: -0.12em;
   font-family: 'Anton', sans-serif;
-  font-size: 4.2rem;
+  font-size: 5.2rem;
   line-height: 1;
-  color: #fff;
-  -webkit-text-stroke: 2px #000;
-  paint-order: stroke fill;
-  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, #fff 0%, #fff 38%, rgba(255, 255, 255, 0.55) 68%, rgba(255, 255, 255, 0) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
   pointer-events: none;
-  &.is-podium { color: var(--gold); }
+  &.is-podium { background-image: linear-gradient(180deg, #ffe680 0%, #f1c40f 40%, rgba(241, 196, 15, 0.55) 68%, rgba(241, 196, 15, 0) 100%); }
 }
 .top-detail { color: var(--text-muted); font-size: 0.8rem; }
 .top-vote { color: var(--gold); }
