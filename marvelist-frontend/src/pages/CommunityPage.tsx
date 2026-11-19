@@ -93,18 +93,19 @@ const ReleaseRow = ({ items, empty }: { items: Release[]; empty: string }) => (
   )
 );
 
-const TopList = ({ items, empty }: { items: { media: MediaItem; detail: React.ReactNode }[]; empty: string }) => (
+// Classifica in riga a scorrimento: la posizione è scritta in grande sulla locandina, in giallo solo il podio
+const TopList = ({ items, empty, label }: { items: { media: MediaItem; detail: React.ReactNode }[]; empty: string; label: string }) => (
   items.length === 0 ? <div className="empty-box">{empty}</div> : (
-    <ol className="top-list">
+    <ol className="release-row top-row-list" aria-label={label}>
       {items.map(({ media, detail }, i) => (
         <li key={media.id}>
-          <Link to={`/media/${media.id}`} className="top-row">
-            <span className={`top-rank ${i < 3 ? 'is-podium' : ''}`}>{i + 1}</span>
-            <span className="top-poster"><Poster media={media} size="w154" /></span>
-            <span className="top-info">
-              <span className="top-title">{media.title}</span>
-              <span className="top-detail">{detail}</span>
+          <Link to={`/media/${media.id}`} className="release-card top-card" aria-label={`${i + 1}° posto: ${media.title}`}>
+            <span className="top-card-poster">
+              <Poster media={media} />
+              <span className={`top-card-rank ${i < 3 ? 'is-podium' : ''}`} aria-hidden="true">{i + 1}</span>
             </span>
+            <span className="release-title">{media.title}</span>
+            <span className="top-detail">{detail}</span>
           </Link>
         </li>
       ))}
@@ -140,7 +141,7 @@ const CommunityPage = () => {
   const byId = new Map(media.map(m => [m.id, m]));
   const watchedItems = rankings.topWatched.flatMap(t => {
     const m = byId.get(t.mediaId);
-    return m ? [{ media: m, detail: t.users === 1 ? '1 utente questa settimana' : `${t.users} utenti questa settimana` }] : [];
+    return m ? [{ media: m, detail: t.users === 1 ? '1 persona' : `${t.users} persone` }] : [];
   });
   const ratedItems = rankings.topRated.flatMap(t => {
     const m = byId.get(t.mediaId);
@@ -173,23 +174,21 @@ const CommunityPage = () => {
       <p className="rankings-updated">
         Classifiche aggiornate ogni ora{rankings.updatedAt ? ` · ultimo aggiornamento alle ${new Date(rankings.updatedAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}` : ''}
       </p>
-      <div className="top-grid">
-        <section className="profile-section">
-          <div className="section-heading">
-            <h2 className="section-title">Top 10 visti della settimana</h2>
-            <span className="section-hint">Persone che negli ultimi 7 giorni hanno segnato il titolo come visto</span>
-          </div>
-          <TopList items={watchedItems} empty="Ancora nessuna visione questa settimana: segna qualcosa come visto e apri la classifica!" />
-        </section>
+      <section className="profile-section">
+        <div className="section-heading">
+          <h2 className="section-title">Top 10 visti della settimana</h2>
+          <span className="section-hint">Persone che negli ultimi 7 giorni hanno segnato il titolo come visto</span>
+        </div>
+        <TopList items={watchedItems} label="Top 10 visti della settimana" empty="Ancora nessuna visione questa settimana: segna qualcosa come visto e apri la classifica!" />
+      </section>
 
-        <section className="profile-section">
-          <div className="section-heading">
-            <h2 className="section-title">Top 10 più votati</h2>
-            <span className="section-hint">Voto MARVEList di ogni titolo, solo con almeno 5 voti</span>
-          </div>
-          <TopList items={ratedItems} empty="Ancora nessun titolo con almeno 5 voti: vota con gli scudi i titoli che hai visto!" />
-        </section>
-      </div>
+      <section className="profile-section">
+        <div className="section-heading">
+          <h2 className="section-title">Top 10 più votati</h2>
+          <span className="section-hint">Voto MARVEList di ogni titolo, solo con almeno 5 voti</span>
+        </div>
+        <TopList items={ratedItems} label="Top 10 più votati" empty="Ancora nessun titolo con almeno 5 voti: vota con gli scudi i titoli che hai visto!" />
+      </section>
     </div>
   );
 };

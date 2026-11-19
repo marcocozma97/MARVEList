@@ -6402,32 +6402,26 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 }
 .release-title { font-weight: 700; font-size: 0.88rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .release-label { align-self: flex-start; padding: 3px 9px; border-radius: var(--radius-pill); background: rgba(var(--accent-rgb), 0.16); border: 1px solid rgba(var(--accent-rgb), 0.45); color: #ffd6d6; font-size: 0.74rem; font-weight: 600; }
-.top-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-@media (max-width: 991.98px) { .top-grid { grid-template-columns: 1fr; gap: 0; } }
-.top-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.top-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 8px 12px 8px 8px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-light);
-  text-decoration: none;
-  transition: border-color 0.2s, background 0.2s;
-  &:hover, &:focus-visible { border-color: rgba(var(--accent-rgb), 0.55); background: rgba(var(--accent-rgb), 0.08); color: #fff; }
+// Top 10 in riga a scorrimento, con la posizione in grande sulla locandina
+.top-row-list { list-style: none; margin: 0; padding: 0 0 8px; grid-auto-columns: 150px; > li { display: flex; } }
+.top-card { width: 100%; }
+.top-card-poster { position: relative; display: block; }
+.top-card-rank {
+  position: absolute;
+  left: 6px;
+  bottom: -6px;
+  font-family: 'Anton', sans-serif;
+  font-size: 4.2rem;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 2px #000;
+  paint-order: stroke fill;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  &.is-podium { color: var(--gold); }
 }
-.top-rank { flex: 0 0 34px; text-align: center; font-family: 'Anton', sans-serif; font-size: 1.5rem; color: var(--text-muted); &.is-podium { color: var(--gold); } }
-.top-poster { flex: 0 0 44px; .cm-poster-img { width: 44px; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 6px; display: block; } }
-.top-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.top-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.top-detail { color: var(--text-muted); font-size: 0.82rem; }
+.top-detail { color: var(--text-muted); font-size: 0.8rem; }
 .top-vote { color: var(--gold); }
-// Le due classifiche: colonne che non si allargano con i titoli lunghi e intestazioni allineate
-.top-grid > section { min-width: 0; }
-.top-grid .section-heading { flex-direction: column; align-items: flex-start; gap: 0; .section-title { padding-bottom: 4px; } }
-.top-row { min-width: 0; }
 // Schede di "Modifica profilo" su due righe sui telefoni, così sono tutte visibili
 @media (max-width: 520px) {
   .edit-profile-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
