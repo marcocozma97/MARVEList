@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 public class MarathonService {
 
     static final Set<String> VISION_ORDERS = Set.of("MCU", "FAN", "GOD");
-    static final int MAX_BACKGROUND_LENGTH = 3_000_000; // ~2MB di immagine in base64
+    // Lo sfondo è la locandina di un titolo (percorso TMDB o indirizzo): le immagini caricate non sono più ammesse,
+    // perché pesavano MB nel database e venivano rilette a ogni aggiornamento dei progressi
+    static final int MAX_BACKGROUND_LENGTH = 500;
     private static final DateTimeFormatter IT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final MarathonRepository marathonRepository;
@@ -368,10 +370,13 @@ public class MarathonService {
         if (r.maxEpisodesPerDay() < 0 || r.maxEpisodesPerDay() > 50) bad("Gli episodi al giorno devono essere tra 0 e 50");
         if (r.mediaIds() == null || r.mediaIds().isEmpty()) bad("Aggiungi almeno un titolo alla maratona");
         String bg = r.background();
-        if (bg != null && (bg.length() > MAX_BACKGROUND_LENGTH
-                || !(bg.startsWith("data:image/") || bg.startsWith("/") || bg.startsWith("https://")))) {
-            bad("Immagine di sfondo non valida o troppo pesante");
+        if (bg != null && !isPosterBackground(bg)) {
+            bad("Come sfondo scegli la locandina di uno dei titoli della maratona");
         }
+    }
+
+    static boolean isPosterBackground(String bg) {
+        return bg.length() <= MAX_BACKGROUND_LENGTH && (bg.startsWith("/") || bg.startsWith("https://"));
     }
 
     private static void bad(String message) {

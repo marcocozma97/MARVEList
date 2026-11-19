@@ -273,8 +273,7 @@ public class AccountDataService {
     }
 
     private static String validBackground(String bg) {
-        if (bg == null || bg.length() > MarathonService.MAX_BACKGROUND_LENGTH) return null;
-        return bg.startsWith("data:image/") || bg.startsWith("/") || bg.startsWith("https://") ? bg : null;
+        return bg != null && MarathonService.isPosterBackground(bg) ? bg : null;
     }
 
     private static boolean isValidRating(Double rating) {

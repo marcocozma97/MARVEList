@@ -36,26 +36,3 @@ export const dayLabel = (iso: string) => {
 // Messaggio d'errore del backend (server.error.include-message=always) o un testo di riserva
 export const errorMessage = (error: unknown, fallback: string) =>
   (isAxiosError(error) && typeof error.response?.data?.message === 'string' && error.response.data.message) || fallback;
-
-// Ridimensiona e comprime l'immagine caricata: lo sfondo resta leggero nel database
-export const compressImage = (file: File, maxWidth = 1600, quality = 0.82): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Impossibile leggere il file'));
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Il file non è un\'immagine valida'));
-      img.onload = () => {
-        const scale = Math.min(1, maxWidth / img.width);
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return reject(new Error('Canvas non disponibile'));
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  });

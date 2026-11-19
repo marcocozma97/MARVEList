@@ -3153,8 +3153,6 @@ input:focus-visible + .check-box { outline: 2px solid var(--accent-text); outlin
   &:hover { transform: translateY(-3px); }
   &.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.3); }
 }
-.upload-box { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.upload-button { cursor: pointer; }
 
 // Esito della pianificazione
 .plan-box { min-height: 24px; }

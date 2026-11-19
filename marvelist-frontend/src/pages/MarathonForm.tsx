@@ -5,14 +5,13 @@ import type { RootState } from '../store/store';
 import { mediaService, type MediaItem } from '../services/mediaService';
 import { marathonService, type MarathonPlan, type MarathonRequest } from '../services/marathonService';
 import { groupByPhase, matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
-import { addDays, compressImage, errorMessage, formatDay, getBackgroundUrl, toIsoDay } from '../utils/marathon';
+import { addDays, errorMessage, formatDay, getBackgroundUrl, toIsoDay } from '../utils/marathon';
 import { getPosterUrl } from '../utils/poster';
 import PosterFallback from '../components/PosterFallback';
 import { availableFrom, isUpcoming, releaseLabel } from '../utils/upcoming';
 import SlowLoader from '../components/SlowLoader';
 
 const LEVELS: VisionOrder[] = ['MCU', 'FAN', 'GOD'];
-const MAX_BACKGROUND_LENGTH = 2_900_000;
 
 const MarathonForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +30,8 @@ const MarathonForm = () => {
   const [hideSeen, setHideSeen] = useState(false);
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
   const [background, setBackground] = useState<string | null>(null);
-  const [backgroundTab, setBackgroundTab] = useState<'titles' | 'upload'>('titles');
+  // Le immagini caricate non si possono più usare: lo sfondo è sempre la locandina di un titolo
+  const [hadUploadedBackground, setHadUploadedBackground] = useState(false);
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(addDays(today, 60));
   const [mixedDays, setMixedDays] = useState(true);
@@ -44,7 +44,6 @@ const MarathonForm = () => {
   const [isPlanning, setIsPlanning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
   const planRequest = useRef(0);
 
   // Catalogo, visti e (in modifica) la maratona esistente
@@ -64,8 +63,9 @@ const MarathonForm = () => {
           setName(marathon.name);
           setVisionOrder(marathon.visionOrder);
           setHideSeen(marathon.hideSeen);
-          setBackground(marathon.background);
-          setBackgroundTab(marathon.background?.startsWith('data:') ? 'upload' : 'titles');
+          const uploaded = !!marathon.background?.startsWith('data:');
+          setBackground(uploaded ? null : marathon.background);
+          setHadUploadedBackground(uploaded);
           setStartDate(marathon.startDate);
           setEndDate(marathon.endDate < today ? today : marathon.endDate);
           setMixedDays(marathon.mixedDays);
@@ -150,20 +150,8 @@ const MarathonForm = () => {
     return () => window.clearTimeout(timer);
   }, [isLoading, mediaKey, visionOrder, startDate, endDate, hideSeen, mixedDays, maxFilmsPerWeek, maxEpisodesPerDay]);
 
-  // Sfondo: locandina di un titolo inserito oppure immagine caricata
+  // Sfondo: la locandina di uno dei titoli inseriti
   const posterChoices = useMemo(() => included.filter(m => m.posterPath).slice(0, 36), [included]);
-
-  const handleUpload = async (file: File | undefined) => {
-    if (!file) return;
-    setUploadError(null);
-    try {
-      const dataUrl = await compressImage(file);
-      if (dataUrl.length > MAX_BACKGROUND_LENGTH) throw new Error("L'immagine è troppo pesante anche dopo la compressione.");
-      setBackground(dataUrl);
-    } catch (e) {
-      setUploadError(e instanceof Error ? e.message : 'Caricamento non riuscito.');
-    }
-  };
 
   const canSave = name.trim().length > 0 && mediaIds.length > 0 && plan?.feasible === true && !isPlanning && !planError;
 
@@ -295,38 +283,27 @@ const MarathonForm = () => {
 
         <section className="form-card">
           <h2 className="form-card-title">2 · Sfondo</h2>
-          <div className="segmented" role="tablist" aria-label="Tipo di sfondo">
-            <button type="button" role="tab" aria-selected={backgroundTab === 'titles'} className={`segmented-option ${backgroundTab === 'titles' ? 'active' : ''}`} onClick={() => setBackgroundTab('titles')}>Dai titoli inseriti</button>
-            <button type="button" role="tab" aria-selected={backgroundTab === 'upload'} className={`segmented-option ${backgroundTab === 'upload' ? 'active' : ''}`} onClick={() => setBackgroundTab('upload')}>Carica un'immagine</button>
-          </div>
-
-          {backgroundTab === 'titles' ? (
-            posterChoices.length ? (
-              <div className="poster-picker">
-                {posterChoices.map(m => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={`poster-option ${background === m.posterPath ? 'selected' : ''}`}
-                    onClick={() => setBackground(m.posterPath)}
-                    aria-pressed={background === m.posterPath}
-                    title={m.title}
-                  >
-                    <img src={getPosterUrl(m.posterPath, 'w185') ?? ''} alt={m.title} loading="lazy" />
-                  </button>
-                ))}
-              </div>
-            ) : <p className="form-hint">Nessuna locandina disponibile tra i titoli scelti.</p>
-          ) : (
-            <div className="upload-box">
-              <label className="btn-ghost upload-button">
-                <input type="file" accept="image/*" onChange={(e) => handleUpload(e.target.files?.[0])} hidden />
-                Scegli un'immagine
-              </label>
-              <span className="form-hint">JPG o PNG: viene ridimensionata automaticamente.</span>
-              {uploadError && <p className="form-error" role="alert">{uploadError}</p>}
-            </div>
+          <p className="form-hint">Scegli la locandina di uno dei titoli della maratona.</p>
+          {hadUploadedBackground && !background && (
+            <p className="form-hint">Le immagini caricate non sono più disponibili come sfondo: scegli una locandina qui sotto.</p>
           )}
+
+          {posterChoices.length ? (
+            <div className="poster-picker">
+              {posterChoices.map(m => (
+                <button
+                  key={m.id}
+                  type="button"
+                  className={`poster-option ${background === m.posterPath ? 'selected' : ''}`}
+                  onClick={() => setBackground(m.posterPath)}
+                  aria-pressed={background === m.posterPath}
+                  title={m.title}
+                >
+                  <img src={getPosterUrl(m.posterPath, 'w185') ?? ''} alt={m.title} loading="lazy" />
+                </button>
+              ))}
+            </div>
+          ) : <p className="form-hint">Nessuna locandina disponibile tra i titoli scelti.</p>}
           {background && <button type="button" className="btn-chip mt-2" onClick={() => setBackground(null)}>Rimuovi sfondo</button>}
         </section>
 
