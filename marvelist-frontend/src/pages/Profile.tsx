@@ -311,11 +311,12 @@ const Profile = () => {
       <section className="profile-section">
         <div className="section-heading">
           <h2 className="section-title">I tuoi preferiti</h2>
+          {favorites.length > 0 && <span className="section-hint">{favorites.length === 1 ? '1 titolo' : `${favorites.length} titoli`}</span>}
         </div>
         {favorites.length === 0 ? (
           <div className="empty-box">Non hai ancora aggiunto preferiti. Tocca il ♥ su una locandina.</div>
         ) : (
-          <div className="media-grid">
+          <div className="media-grid media-row" aria-label="I tuoi preferiti">
             {favorites.map(item => (
               <MediaCard
                 key={item.id}
