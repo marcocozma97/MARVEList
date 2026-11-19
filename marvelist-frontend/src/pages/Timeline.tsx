@@ -198,7 +198,7 @@ const Timeline = () => {
               </button>
             </div>
             {chronological && (
-              <p className="timeline-order-note">Segue gli eventi narrati, dal più lontano nel tempo al più recente. I titoli di altri universi sono raggruppati in fondo.</p>
+              <p className="timeline-order-note">Segue gli eventi narrati, dal più lontano nel tempo al più recente.<br />I titoli di altri universi sono raggruppati in fondo.</p>
             )}
           </div>
         )}

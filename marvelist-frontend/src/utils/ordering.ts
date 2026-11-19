@@ -27,7 +27,7 @@ export const sortByViewingOrder = (list: MediaItem[]) =>
 // Ordine della Timeline MCU: di uscita (per fasi) o cronologico (per epoca della storia)
 export type TimelineOrder = 'release' | 'chrono';
 
-// Ordine cronologico: posizione nella raccolta Disney+ "in ordine cronologico", raggruppata per epoca.
+// Ordine cronologico: posizione negli eventi narrati (chronoOrder del catalogo), raggruppata per epoca.
 // I titoli senza posizione finiscono in fondo, nell'ordine di uscita
 export const groupByChrono = (list: MediaItem[]) => {
   const groups = new Map<string, MediaItem[]>();

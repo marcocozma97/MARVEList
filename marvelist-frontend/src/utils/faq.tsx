@@ -57,7 +57,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item("Posso segnare come vista un'intera fase?",
         <>Sì: ogni fase ha un cerchio accanto alla freccia. Cliccandolo segni visti tutti i titoli della fase; cliccandolo di nuovo tornano tutti non visti e i progressi in corso vengono azzerati. Voti e preferiti restano.</>),
       item('In che ordine sono i titoli?',
-        <>Nell'ordine di uscita dentro ogni fase, con i One-Shot subito dopo il film a cui sono legati. Nella Timeline <strong>MCU</strong> puoi passare all'<strong>ordine cronologico</strong>: i titoli seguono gli eventi narrati, come nella raccolta Disney+ in ordine cronologico, divisi per epoca della storia (da "Le origini" alla "Saga del Multiverso"). I titoli ambientati in altri universi, come X-Men '97 o Marvel Zombies, sono raggruppati in fondo.</>),
+        <>Nell'ordine di uscita dentro ogni fase, con i One-Shot subito dopo il film a cui sono legati. Nella Timeline <strong>MCU</strong> puoi passare all'<strong>ordine cronologico</strong>: i titoli seguono gli eventi narrati, dal più lontano nel tempo al più recente, divisi per epoca della storia (da "Le origini" alla "Saga del Multiverso"). I titoli ambientati in altri universi, come X-Men '97 o Marvel Zombies, sono raggruppati in fondo.</>),
     ],
   },
   {
