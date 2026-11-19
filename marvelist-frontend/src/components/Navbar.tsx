@@ -76,6 +76,19 @@ const Navbar = () => {
 
         <div className="site-nav-quick">
           {isAuthenticated && bell('is-quick')}
+          {/* Cerchio del profilo tra campanella e hamburger: si apre il profilo senza passare dal menu */}
+          {isAuthenticated && (
+            <Link
+              to="/profile"
+              className={`site-nav-avatar ${isProfileArea ? 'active' : ''}`}
+              aria-label="Profilo"
+              title="Profilo"
+              aria-current={location.pathname === '/profile' ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              <Avatar avatarId={profile?.avatar} name={profile?.nickname ?? ''} size={36} />
+            </Link>
+          )}
           <button
             className="site-nav-toggle"
             type="button"
