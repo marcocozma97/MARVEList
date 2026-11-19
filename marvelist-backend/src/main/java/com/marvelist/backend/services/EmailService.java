@@ -28,6 +28,7 @@ import java.util.Map;
 public class EmailService {
 
     private static final ClassPathResource VERIFICATION_TEMPLATE = new ClassPathResource("templates/email/verification.html");
+    private static final ClassPathResource RESET_TEMPLATE = new ClassPathResource("templates/email/password-reset.html");
     private static final ClassPathResource LOGO = new ClassPathResource("static/email/marvelist-logo.png");
 
     private final RestTemplate restTemplate;
@@ -47,16 +48,32 @@ public class EmailService {
     @Value("${application.verification.expiration-hours}")
     private long verificationExpirationHours;
 
-    public void sendVerificationEmail(User user, String origin) {
-        try {
-            // Il link apre la pagina /verify del frontend, che chiama GET /api/v1/auth/verify?token=...
-            String verifyLink = frontendBase(origin) + "/verify?token=" + user.getVerificationToken();
+    // Gli ultimi invii del giorno restano per il recupero password: chi si registra con un dominio noto
+    // in quel caso viene attivato senza mail, chi ha dimenticato la password invece non ha alternative
+    @Value("${mail.relay.verification-reserve:10}")
+    private int verificationReserve;
 
+    public void sendVerificationEmail(User user, String origin) {
+        // Il link apre la pagina /verify del frontend, che chiama GET /api/v1/auth/verify?token=...
+        String verifyLink = frontendBase(origin) + "/verify?token=" + user.getVerificationToken();
+        send(user, "Protocollo MARVEList: Verifica Identità", VERIFICATION_TEMPLATE, verifyLink,
+                String.valueOf(verificationExpirationHours), verificationReserve, "di conferma");
+    }
+
+    public void sendPasswordResetEmail(User user, String token, String origin, long minutes) {
+        // Il link apre la pagina /reset-password del frontend, dove si sceglie la nuova password
+        String resetLink = frontendBase(origin) + "/reset-password?token=" + token;
+        send(user, "Protocollo MARVEList: Nuova Password", RESET_TEMPLATE, resetLink, String.valueOf(minutes), 0, "di recupero password");
+    }
+
+    private void send(User user, String subject, ClassPathResource template, String link, String validity, int reserve, String kind) {
+        try {
             // Template HTML in stile J.A.I.R.V.I.S. con i colori Marvel (resources/templates/email)
-            String htmlContent = VERIFICATION_TEMPLATE.getContentAsString(StandardCharsets.UTF_8)
+            String htmlContent = template.getContentAsString(StandardCharsets.UTF_8)
                     .replace("{{name}}", HtmlUtils.htmlEscape(user.getName()))
-                    .replace("{{link}}", HtmlUtils.htmlEscape(verifyLink))
-                    .replace("{{hours}}", String.valueOf(verificationExpirationHours));
+                    .replace("{{link}}", HtmlUtils.htmlEscape(link))
+                    .replace("{{hours}}", validity)
+                    .replace("{{minutes}}", validity);
 
             // Logo allegato inline: i client email non mostrano gli SVG, quindi usiamo il PNG
             String logo = Base64.getEncoder().encodeToString(LOGO.getContentAsByteArray());
@@ -64,9 +81,10 @@ public class EmailService {
             Map<String, Object> body = Map.of(
                     "secret", relaySecret,
                     "to", user.getEmail(),
-                    "subject", "Protocollo MARVEList: Verifica Identità",
+                    "subject", subject,
                     "html", htmlContent,
-                    "logo", logo
+                    "logo", logo,
+                    "reserve", reserve
             );
 
             HttpHeaders headers = new HttpHeaders();
@@ -77,7 +95,7 @@ public class EmailService {
             Map<?, ?> result = resultUrl != null ? restTemplate.getForObject(resultUrl, Map.class) : null;
 
             if (result != null && isQuotaError(String.valueOf(result.get("error")))) {
-                System.err.println("Limite giornaliero di Gmail raggiunto: mail di conferma non inviata a '" + user.getEmail() + "'");
+                System.err.println("Limite giornaliero di Gmail raggiunto: mail " + kind + " non inviata a '" + user.getEmail() + "'");
                 throw new EmailQuotaExceededException(String.valueOf(result.get("error")));
             }
             if (result == null || !Boolean.TRUE.equals(result.get("ok"))) {
@@ -85,10 +103,10 @@ public class EmailService {
             }
 
         } catch (RestClientException | IOException e) {
-            // Relay irraggiungibile, chiave errata, limite di Gmail raggiunto, ecc.: la registrazione viene annullata
-            System.err.println("Invio della mail di conferma fallito per '" + user.getEmail() + "': " + e.getMessage());
+            // Relay irraggiungibile, chiave errata, ecc.: l'operazione viene annullata
+            System.err.println("Invio della mail " + kind + " fallito per '" + user.getEmail() + "': " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "Non siamo riusciti a inviare la mail di conferma. Riprova tra qualche minuto.", e);
+                    "Non siamo riusciti a inviare la mail. Riprova tra qualche minuto.", e);
         }
     }
 

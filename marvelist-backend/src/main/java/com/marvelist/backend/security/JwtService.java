@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.marvelist.backend.entities.User;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +37,15 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    // Istante dell'ultimo cambio password (in millisecondi) a cui appartiene il token
+    private static final String PASSWORD_CLAIM = "pwc";
+
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof User user && user.getPasswordChangedAt() != null) {
+            claims.put(PASSWORD_CLAIM, user.getPasswordChangedAt().toEpochMilli());
+        }
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -53,7 +62,27 @@ public class JwtService {
     // Controlla se il token è valido per l'utente specifico
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token)
+                && matchesCurrentPassword(extractAllClaims(token), userDetails);
+    }
+
+    // Dopo un cambio o un recupero della password le sessioni aperte prima vengono chiuse:
+    // il token vale solo se è stato emesso dopo l'ultimo cambio (stesso istante salvato nel token)
+    private boolean matchesCurrentPassword(Claims claims, UserDetails userDetails) {
+        if (!(userDetails instanceof User user) || user.getPasswordChangedAt() == null) return true;
+        return claims.get(PASSWORD_CLAIM) instanceof Number changedAt
+                && changedAt.longValue() == user.getPasswordChangedAt().toEpochMilli();
+    }
+
+    // Come sopra, per il rinnovo della sessione: il token può essere già scaduto
+    public boolean matchesCurrentPasswordForRefresh(String token, UserDetails userDetails) {
+        try {
+            return matchesCurrentPassword(extractAllClaims(token), userDetails);
+        } catch (ExpiredJwtException e) {
+            return matchesCurrentPassword(e.getClaims(), userDetails);
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {

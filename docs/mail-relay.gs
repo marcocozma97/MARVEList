@@ -6,8 +6,10 @@ function doPost(e) {
       return jsonResponse({ ok: false, error: 'Chiave non valida' });
     }
 
-    // Gmail ha un limite giornaliero di destinatari: superato quello, il backend deve saperlo
-    if (MailApp.getRemainingDailyQuota() < 1) {
+    // Gmail ha un limite giornaliero di destinatari: superato quello, il backend deve saperlo.
+    // "reserve" tiene da parte gli ultimi invii (le mail di conferma ne lasciano 10 al recupero password)
+    const reserve = Math.max(0, Number(data.reserve) || 0);
+    if (MailApp.getRemainingDailyQuota() <= reserve) {
       return jsonResponse({ ok: false, error: 'Limite giornaliero di email raggiunto' });
     }
 

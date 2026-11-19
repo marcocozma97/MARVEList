@@ -74,6 +74,7 @@ const Login = () => {
               required
             />
           </label>
+          <Link to="/forgot-password" className="auth-forgot">Password dimenticata?</Link>
           <button type="submit" className="btn-marvel">Login</button>
         </form>
         <p className="auth-switch">Non hai un account? <Link to="/register">Registrati</Link></p>

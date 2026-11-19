@@ -38,6 +38,14 @@ export const authService = {
     return response.data.message;
   },
 
+  // "Password dimenticata?": la risposta è la stessa che l'email sia registrata o no
+  forgotPassword: async (email: string): Promise<string> =>
+    (await api.post('/auth/forgot-password', { email })).data.message,
+
+  // Nuova password dalla pagina aperta dal link nella mail
+  resetPassword: async (token: string, password: string): Promise<string> =>
+    (await api.post('/auth/reset-password', { token, password })).data.message,
+
   logout: () => {
     localStorage.removeItem('marvelist_token');
     clearIntroPending();

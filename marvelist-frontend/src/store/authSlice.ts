@@ -39,9 +39,13 @@ const authSlice = createSlice({
     },
     setProfile: (state, action: PayloadAction<UserProfile>) => {
       state.profile = action.payload;
+    },
+    // Nuovo token dopo il cambio password: si resta dentro senza ricaricare il profilo
+    tokenRenewed: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
     }
   }
 });
 
-export const { loginSuccess, logoutSuccess, sessionExpired, setProfile } = authSlice.actions;
+export const { loginSuccess, logoutSuccess, sessionExpired, setProfile, tokenRenewed } = authSlice.actions;
 export default authSlice.reducer;

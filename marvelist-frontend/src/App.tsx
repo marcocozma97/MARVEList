@@ -8,6 +8,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import FAQ from './pages/Faq';
 import News from './pages/News';
 import Timeline from './pages/Timeline';
@@ -35,7 +37,7 @@ const Shell = () => {
 
   // Intro delle Gemme: decide sessionStorage, lo stato serve solo a ridisegnare quando finisce
   const [, setIntroFinished] = useState(0);
-  const isAuthPage = ['/login', '/register', '/verify'].includes(location.pathname);
+  const isAuthPage = ['/login', '/register', '/verify', '/forgot-password', '/reset-password'].includes(location.pathname);
   const showGate = sessionExpired && !isAuthPage;
   const showIntro = !isAuthPage && !showGate && shouldShowIntro(location.pathname);
   const finishIntro = useCallback(() => {
@@ -53,6 +55,8 @@ const Shell = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/road-to" element={<RoadTo />} />
           <Route path="/faq" element={<FAQ />} />

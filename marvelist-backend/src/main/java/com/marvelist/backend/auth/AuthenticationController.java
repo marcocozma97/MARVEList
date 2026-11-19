@@ -37,6 +37,21 @@ public class AuthenticationController {
         return ResponseEntity.ok(Map.of("message", service.verify(token)));
     }
 
+    // "Password dimenticata?": manda il link per sceglierne una nuova (stessa risposta che l'email esista o no)
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody PasswordRequests.Forgot request,
+            @RequestHeader(value = HttpHeaders.ORIGIN, required = false) String origin
+    ) {
+        return ResponseEntity.ok(Map.of("message", service.forgotPassword(request.email(), origin)));
+    }
+
+    // Nuova password dalla pagina aperta dal link nella mail
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@Valid @RequestBody PasswordRequests.Reset request) {
+        return ResponseEntity.ok(Map.of("message", service.resetPassword(request.token(), request.password())));
+    }
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request

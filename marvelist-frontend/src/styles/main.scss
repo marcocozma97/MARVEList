@@ -6332,3 +6332,9 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   font-weight: 600;
   .hydra-flag { width: 48px; height: 36px; flex-shrink: 0; }
 }
+
+// Recupero e cambio password
+.auth-forgot { align-self: flex-end; margin-top: -8px; color: var(--accent-text); font-size: 0.85rem; text-decoration: none; &:hover { text-decoration: underline; } }
+.password-card { padding: 20px; max-width: 520px; }
+.password-form { gap: 14px; }
+.password-actions { display: flex; gap: 10px; flex-wrap: wrap; .btn-marvel { width: auto; flex: 1 1 220px; } .btn-ghost { flex: 0 1 auto; } }

@@ -18,6 +18,7 @@ import { AVATARS, AVATAR_GROUPS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 import { useNicknameCheck } from '../hooks/useNicknameCheck';
 import SlowLoader from '../components/SlowLoader';
+import ChangePasswordSection from '../components/ChangePasswordSection';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -403,6 +404,8 @@ const Profile = () => {
           </div>
         )}
       </section>
+
+      <ChangePasswordSection />
 
       {peopleTab && profileId && (
         <PeopleModal

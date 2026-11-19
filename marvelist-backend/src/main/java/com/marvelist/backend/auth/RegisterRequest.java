@@ -27,8 +27,7 @@ public class RegisterRequest {
 
     // Almeno 6 caratteri, di cui almeno uno speciale (né lettera, né numero, né spazio)
     @NotBlank(message = "La password è obbligatoria")
-    @Pattern(regexp = "^(?=.*[^A-Za-z0-9\\s]).{6,}$",
-            message = "La password deve avere almeno 6 caratteri, di cui almeno uno speciale")
+    @Pattern(regexp = PasswordRules.REGEX, message = PasswordRules.MESSAGE)
     private String password;
 
 }

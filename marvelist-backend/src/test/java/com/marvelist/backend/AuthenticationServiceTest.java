@@ -29,15 +29,18 @@ class AuthenticationServiceTest {
 
     private UserRepository repository;
     private EmailService emailService;
+    private PasswordEncoder encoder;
+    private JwtService jwtService;
     private AuthenticationService service;
 
     @BeforeEach
     void setUp() {
         repository = mock(UserRepository.class);
         emailService = mock(EmailService.class);
-        PasswordEncoder encoder = mock(PasswordEncoder.class);
+        encoder = mock(PasswordEncoder.class);
+        jwtService = mock(JwtService.class);
         when(encoder.encode(any())).thenReturn("hash");
-        service = new AuthenticationService(repository, encoder, mock(JwtService.class), mock(AuthenticationManager.class), emailService);
+        service = new AuthenticationService(repository, encoder, jwtService, mock(AuthenticationManager.class), emailService);
         ReflectionTestUtils.setField(service, "verificationExpirationHours", 24L);
     }
 
@@ -151,6 +154,91 @@ class AuthenticationServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
         assertTrue(error.getReason().contains("gmail.com"));
         verify(repository, never()).save(argThat(user -> Boolean.TRUE.equals(user.getEnabled())));
+    }
+
+    @Test
+    void ilRecuperoInviaUnLinkESalvaSoloLImpronta() {
+        User user = User.builder().email("tony@gmail.com").name("Tony").enabled(true).build();
+        when(repository.findByEmailForLogin("tony@gmail.com")).thenReturn(Optional.of(user));
+
+        String message = service.forgotPassword("tony@gmail.com", ORIGIN);
+
+        var token = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(emailService).sendPasswordResetEmail(eq(user), token.capture(), eq(ORIGIN), eq(60L));
+        assertEquals(AuthenticationService.sha256(token.getValue()), user.getPasswordResetTokenHash());
+        assertNotEquals(token.getValue(), user.getPasswordResetTokenHash());
+        assertEquals(AuthenticationService.FORGOT_MESSAGE, message);
+    }
+
+    @Test
+    void ilRecuperoRispondeUgualeSeLEmailNonEsiste() {
+        when(repository.findByEmailForLogin("nessuno@gmail.com")).thenReturn(Optional.empty());
+
+        assertEquals(AuthenticationService.FORGOT_MESSAGE, service.forgotPassword("nessuno@gmail.com", ORIGIN));
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void unaSecondaRichiestaDiRecuperoEntroDueMinutiNonInviaAltreMail() {
+        User user = User.builder().email("tony@gmail.com").enabled(true).passwordResetTokenHash("h")
+                .passwordResetExpiresAt(LocalDateTime.now().plusMinutes(59)).build();
+        when(repository.findByEmailForLogin("tony@gmail.com")).thenReturn(Optional.of(user));
+
+        service.forgotPassword("tony@gmail.com", ORIGIN);
+
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void ilLinkDiRecuperoCambiaLaPasswordUnaVoltaSola() {
+        User user = User.builder().email("tony@gmail.com").enabled(true)
+                .passwordResetTokenHash(AuthenticationService.sha256("tok"))
+                .passwordResetExpiresAt(LocalDateTime.now().plusMinutes(30)).build();
+        when(repository.findByPasswordResetTokenHash(AuthenticationService.sha256("tok"))).thenReturn(Optional.of(user));
+
+        service.resetPassword("tok", "nuova!");
+
+        assertEquals("hash", user.getPassword());
+        assertNotNull(user.getPasswordChangedAt());
+        assertNull(user.getPasswordResetTokenHash());
+    }
+
+    @Test
+    void unLinkDiRecuperoScadutoVieneRifiutato() {
+        User user = User.builder().email("tony@gmail.com").enabled(true).password("vecchia")
+                .passwordResetTokenHash(AuthenticationService.sha256("tok"))
+                .passwordResetExpiresAt(LocalDateTime.now().minusMinutes(1)).build();
+        when(repository.findByPasswordResetTokenHash(AuthenticationService.sha256("tok"))).thenReturn(Optional.of(user));
+
+        var error = assertThrows(ResponseStatusException.class, () -> service.resetPassword("tok", "nuova!"));
+        assertEquals(HttpStatus.GONE, error.getStatusCode());
+        assertEquals("vecchia", user.getPassword());
+    }
+
+    @Test
+    void ilCambioPasswordRichiedeQuellaAttuale() {
+        User user = User.builder().email("tony@gmail.com").enabled(true).password("hash-vecchia").build();
+        when(repository.findByEmail("tony@gmail.com")).thenReturn(Optional.of(user));
+        when(encoder.matches("sbagliata", "hash-vecchia")).thenReturn(false);
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> service.changePassword("tony@gmail.com", "sbagliata", "nuova!"));
+        assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertNull(user.getPasswordChangedAt());
+    }
+
+    @Test
+    void ilCambioPasswordChiudeLeVecchieSessioniEDaUnNuovoToken() {
+        User user = User.builder().email("tony@gmail.com").enabled(true).password("hash-vecchia").build();
+        when(repository.findByEmail("tony@gmail.com")).thenReturn(Optional.of(user));
+        when(encoder.matches("vecchia!", "hash-vecchia")).thenReturn(true);
+        when(jwtService.generateToken(user)).thenReturn("nuovo-token");
+
+        var response = service.changePassword("tony@gmail.com", "vecchia!", "nuova!");
+
+        assertEquals("nuovo-token", response.getToken());
+        assertEquals("hash", user.getPassword());
+        assertNotNull(user.getPasswordChangedAt());
     }
 
     @Test

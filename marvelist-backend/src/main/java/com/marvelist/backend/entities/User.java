@@ -60,6 +60,15 @@ public class User implements UserDetails {
 
     private LocalDateTime verificationTokenExpiresAt;
 
+    // Recupero password: si salva solo l'impronta SHA-256 del token inviato per mail
+    @Column(unique = true)
+    private String passwordResetTokenHash;
+
+    private LocalDateTime passwordResetExpiresAt;
+
+    // Le sessioni (JWT) emesse prima di questo istante non valgono più
+    private Instant passwordChangedAt;
+
     // Film visti dall'utente
     @Builder.Default
     @ManyToMany

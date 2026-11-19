@@ -16,8 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -174,12 +180,92 @@ public class AuthenticationService {
                 .build();
     }
 
+    // Validità del link di recupero e attesa minima tra due richieste per la stessa email
+    static final Duration RESET_VALIDITY = Duration.ofMinutes(60);
+
+    public static final String FORGOT_MESSAGE = "Se l'email è registrata, ti abbiamo inviato un link per scegliere una nuova password "
+            + "(controlla anche la cartella spam)";
+
+    // Stessa risposta che l'email esista o no: la pagina non rivela chi è iscritto a MARVEList
+    @Transactional
+    public String forgotPassword(String rawEmail, String origin) {
+        var user = repository.findByEmailForLogin(rawEmail).filter(User::isEnabled).orElse(null);
+        if (user == null) return FORGOT_MESSAGE;
+
+        LocalDateTime expiresAt = user.getPasswordResetExpiresAt();
+        boolean requestedRecently = user.getPasswordResetTokenHash() != null && expiresAt != null
+                && expiresAt.minus(RESET_VALIDITY).isAfter(LocalDateTime.now().minus(RESEND_COOLDOWN));
+        if (requestedRecently) return FORGOT_MESSAGE;
+
+        // Il token viaggia solo nella mail: nel database resta la sua impronta
+        String token = UUID.randomUUID() + "-" + UUID.randomUUID();
+        user.setPasswordResetTokenHash(sha256(token));
+        user.setPasswordResetExpiresAt(LocalDateTime.now().plus(RESET_VALIDITY));
+        repository.save(user);
+        try {
+            emailService.sendPasswordResetEmail(user, token, origin, RESET_VALIDITY.toMinutes());
+        } catch (EmailQuotaExceededException e) {
+            // Anche la scorta è finita: il token viene annullato con il rollback
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "In questo momento non riusciamo a inviare email: riprova tra qualche ora");
+        }
+        return FORGOT_MESSAGE;
+    }
+
+    @Transactional
+    public String resetPassword(String token, String newPassword) {
+        User user = repository.findByPasswordResetTokenHash(sha256(token))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Link non valido o già usato: richiedine uno nuovo da \"Password dimenticata?\""));
+        if (user.getPasswordResetExpiresAt() == null || user.getPasswordResetExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.GONE,
+                    "Il link è scaduto: richiedine uno nuovo da \"Password dimenticata?\"");
+        }
+        setNewPassword(user, newPassword);
+        return "Password aggiornata! Ora puoi accedere con la nuova password";
+    }
+
+    // Cambio dal profilo: chiude le altre sessioni e restituisce un nuovo token per restare dentro
+    @Transactional
+    public AuthenticationResponse changePassword(String email, String currentPassword, String newPassword) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato"));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password attuale non è corretta");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La nuova password deve essere diversa da quella attuale");
+        }
+        setNewPassword(user, newPassword);
+        return AuthenticationResponse.builder().token(jwtService.generateToken(user)).build();
+    }
+
+    private void setNewPassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        // Al millisecondo: è il valore salvato nei token, deve restare identico dopo il salvataggio nel database
+        user.setPasswordChangedAt(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+        user.setPasswordResetTokenHash(null);
+        user.setPasswordResetExpiresAt(null);
+        repository.save(user);
+    }
+
+    public static String sha256(String value) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     // Rinnovo della sessione dal minigioco: un token scaduto ma autentico diventa un nuovo token da 24 ore
     public AuthenticationResponse refresh(String expiredToken) {
         String email = expiredToken == null ? null
                 : jwtService.extractUsernameForRefresh(expiredToken, java.time.Duration.ofDays(refreshGraceDays));
         var user = email == null ? null : repository.findByEmail(email).orElse(null);
-        if (user == null || !user.isEnabled()) {
+        // Una sessione aperta prima di un cambio di password non si può rinnovare
+        if (user == null || !user.isEnabled()
+                || !jwtService.matchesCurrentPasswordForRefresh(expiredToken, user)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sessione scaduta da troppo tempo: accedi di nuovo.");
         }
         return AuthenticationResponse.builder()

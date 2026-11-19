@@ -34,6 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     }
     // Utente a cui appartiene il link di conferma della registrazione
     Optional<User> findByVerificationToken(String token);
+    // Utente a cui appartiene il link di recupero password (si cerca per impronta, il token non è salvato)
+    Optional<User> findByPasswordResetTokenHash(String tokenHash);
 
     @Query("select u from User u where (u.enabled is null or u.enabled = true) and u.id <> :excludeId and "
             + "lower(coalesce(nullif(trim(u.nickname), ''), u.name)) like lower(concat('%', :query, '%')) "

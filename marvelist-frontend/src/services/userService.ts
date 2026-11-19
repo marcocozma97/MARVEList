@@ -75,6 +75,10 @@ export const userService = {
     return response.data;
   },
 
+  // Restituisce un nuovo token: le sessioni aperte prima del cambio vengono chiuse
+  changePassword: async (currentPassword: string, newPassword: string): Promise<string> =>
+    (await api.put('/users/me/password', { currentPassword, newPassword })).data.token,
+
   getStats: async (): Promise<UserStats> => (await api.get('/users/me/stats')).data,
 
   isNicknameAvailable: async (name: string): Promise<boolean> =>
