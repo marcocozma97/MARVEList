@@ -110,7 +110,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
           <strong>Usciti da poco:</strong> i titoli dell'ultimo mese e i nuovi episodi delle ultime due settimane.<br />
           <strong>Top 10 visti della settimana:</strong> i titoli che negli ultimi 7 giorni sono stati segnati come visti dal maggior numero di persone (per le serie contano anche i nuovi episodi visti; segnare un'intera fase come vista non conta).<br />
           <strong>Top 10 più votati:</strong> i titoli con il voto MARVEList più alto, tra quelli con almeno 5 voti; a parità di voto passa sopra chi ha ricevuto più voti.<br />
-          Le due classifiche si aggiornano ogni ora.</>),
+          Le due classifiche si aggiornano ogni 24 ore.</>),
       item('Come seguo un altro utente?',
         <>Tocca il nome o l'avatar di chi ha scritto un commento, oppure usa <strong>Trova utenti</strong> nel tuo profilo, e premi <strong>Segui</strong>. Da quel momento nel suo profilo vedi il grado, tutte le sue maratone, i titoli che sta guardando (senza sapere a che punto è) e i preferiti. Chi segui e chi ti segue lo vede solo il proprietario del profilo.</>),
       item('Posso mettere mi piace e rispondere ai commenti?',

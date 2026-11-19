@@ -38,7 +38,7 @@ public class CommunityService {
 
     public record TopRated(Long mediaId, double average, long count) {}
 
-    // Classifiche ricalcolate ogni ora: tutti vedono la stessa versione fino al prossimo aggiornamento
+    // Classifiche ricalcolate ogni 24 ore: tutti vedono la stessa versione fino al prossimo aggiornamento
     public record Rankings(List<TopWatched> topWatched, List<TopRated> topRated, Instant updatedAt) {}
 
     private volatile Rankings rankings = new Rankings(List.of(), List.of(), null);
@@ -53,8 +53,8 @@ public class CommunityService {
         return new MediaRatings(new Rating(round(row[0]), row[1] == null ? 0 : ((Number) row[1]).longValue()), episodes);
     }
 
-    // Le classifiche si ricalcolano quando qualcuno apre la Community e sono passati almeno 60 minuti dall'ultimo
-    // calcolo: per chi guarda restano "aggiornate ogni ora", ma il database (Neon, a consumo) non viene svegliato
+    // Le classifiche si ricalcolano quando qualcuno apre la Community e sono passate almeno 24 ore dall'ultimo
+    // calcolo: per chi guarda restano "aggiornate ogni 24 ore", ma il database (Neon, a consumo) non viene svegliato
     // 24 volte al giorno quando nessuno usa l'app
     public Rankings rankings() {
         Rankings current = rankings;
@@ -66,9 +66,9 @@ public class CommunityService {
         return rankings;
     }
 
-    static final Duration REFRESH_EVERY = Duration.ofHours(1);
+    static final Duration REFRESH_EVERY = Duration.ofHours(24);
 
-    // All'avvio del backend (il database è già acceso) e poi su richiesta, al massimo una volta l'ora
+    // All'avvio del backend (il database è già acceso) e poi su richiesta, al massimo una volta ogni 24 ore
     @EventListener(ApplicationReadyEvent.class)
     public void refreshRankings() {
         try {

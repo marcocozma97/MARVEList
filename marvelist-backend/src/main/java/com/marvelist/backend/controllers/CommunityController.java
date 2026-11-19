@@ -21,7 +21,7 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.ratings(mediaId));
     }
 
-    // Top 10 visti della settimana e Top 10 più votati, aggiornate ogni ora
+    // Top 10 visti della settimana e Top 10 più votati, aggiornate ogni 24 ore
     @GetMapping("/rankings")
     public ResponseEntity<CommunityService.Rankings> rankings() {
         return ResponseEntity.ok(communityService.rankings());

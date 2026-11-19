@@ -172,7 +172,7 @@ const CommunityPage = () => {
       </section>
 
       <p className="rankings-updated">
-        Classifiche aggiornate ogni ora{rankings.updatedAt ? ` · ultimo aggiornamento alle ${new Date(rankings.updatedAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}` : ''}
+        Classifiche aggiornate ogni 24 ore{rankings.updatedAt ? ` · ultimo aggiornamento il ${new Date(rankings.updatedAt).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}` : ''}
       </p>
       <section className="profile-section">
         <div className="section-heading">

@@ -11,7 +11,7 @@ export interface MediaRatings {
 export interface TopWatched { mediaId: number; users: number }
 export interface TopRated { mediaId: number; average: number; count: number }
 
-// Classifiche ricalcolate dal server ogni ora
+// Classifiche ricalcolate dal server ogni 24 ore
 export interface Rankings { topWatched: TopWatched[]; topRated: TopRated[]; updatedAt: string | null }
 
 export const communityService = {
