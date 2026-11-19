@@ -13,6 +13,7 @@ export interface UserProfile {
   nicknameChosen: boolean;
   nicknameChangeableFrom: string | null;
   official?: boolean;
+  privacyAccepted?: boolean; // ha accettato la versione attuale dell'informativa sulla privacy
 }
 
 // Contatore degli utenti, solo per l'account ufficiale
@@ -74,6 +75,9 @@ export const userService = {
     const response = await api.put('/users/me', data);
     return response.data;
   },
+
+  // Accetta la versione attuale dell'informativa sulla privacy
+  acceptPrivacy: async (): Promise<UserProfile> => (await api.post('/users/me/privacy')).data,
 
   // Restituisce un nuovo token: le sessioni aperte prima del cambio vengono chiuse
   changePassword: async (currentPassword: string, newPassword: string): Promise<string> =>

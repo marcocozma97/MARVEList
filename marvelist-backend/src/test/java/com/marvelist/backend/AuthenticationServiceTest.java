@@ -1,6 +1,7 @@
 package com.marvelist.backend;
 
 import com.marvelist.backend.auth.AuthenticationService;
+import com.marvelist.backend.auth.PrivacyPolicy;
 import com.marvelist.backend.auth.RegisterRequest;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.repositories.UserRepository;
@@ -60,6 +61,19 @@ class AuthenticationServiceTest {
                         && user.getEmail().equals("tony@stark.it")
                         && user.getVerificationToken() != null
                         && user.getVerificationTokenExpiresAt().isAfter(LocalDateTime.now().plusHours(23))
+        ), eq(ORIGIN));
+    }
+
+    @Test
+    void lInformativaAccettataInRegistrazioneVieneSalvata() {
+        when(repository.findByEmailForLogin("tony@stark.it")).thenReturn(Optional.empty());
+        RegisterRequest request = request("tony@stark.it");
+        request.setAcceptPrivacy(true);
+
+        service.register(request, ORIGIN);
+
+        verify(emailService).sendVerificationEmail(argThat(user ->
+                PrivacyPolicy.CURRENT_VERSION.equals(user.getPrivacyAcceptedVersion()) && user.getPrivacyAcceptedAt() != null
         ), eq(ORIGIN));
     }
 

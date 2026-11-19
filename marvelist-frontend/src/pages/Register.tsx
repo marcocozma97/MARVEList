@@ -20,17 +20,19 @@ const Register = () => {
 
   const emailError = submitted && !isValidEmail(email) ? "Inserisci un'email valida (es. nome@dominio.it)" : '';
   const passwordError = submitted && !isValidPassword(password) ? PASSWORD_RULE : '';
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+  const privacyError = submitted && !acceptPrivacy ? "Per registrarti devi accettare l'informativa sulla privacy" : '';
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSubmitted(true);
-    if (!isValidEmail(email) || !isValidPassword(password)) return;
+    if (!isValidEmail(email) || !isValidPassword(password) || !acceptPrivacy) return;
 
     setLoading(true);
     try {
       // Nessun accesso automatico: l'account si attiva dal link nella mail
-      const data = await authService.register({ name: firstname, surname: lastname, email: email.trim(), password });
+      const data = await authService.register({ name: firstname, surname: lastname, email: email.trim(), password, acceptPrivacy });
       setSentMessage(data.message);
       setActive(!!data.active);
     } catch (err) {
@@ -87,6 +89,13 @@ const Register = () => {
             <input type="password" className={`field-input ${passwordError ? 'is-invalid' : ''}`} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" aria-invalid={!!passwordError} required />
             <span className={passwordError ? 'field-error' : 'field-hint'}>{PASSWORD_RULE}</span>
           </label>
+          <label className={`privacy-consent ${privacyError ? 'is-invalid' : ''}`}>
+            <input type="checkbox" checked={acceptPrivacy} onChange={(e) => setAcceptPrivacy(e.target.checked)} aria-invalid={!!privacyError} />
+            <span>
+              Ho letto e accetto l'<Link to="/privacy" target="_blank" rel="noopener noreferrer">informativa sulla privacy</Link>
+            </span>
+          </label>
+          {privacyError && <span className="field-error privacy-consent-error">{privacyError}</span>}
           <button type="submit" className="btn-marvel" disabled={loading}>{loading ? 'Invio in corso...' : 'Crea account'}</button>
         </form>
         <p className="auth-switch">Hai già un account? <Link to="/login">Accedi</Link></p>

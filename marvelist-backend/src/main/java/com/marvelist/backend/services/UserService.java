@@ -1,5 +1,6 @@
 package com.marvelist.backend.services;
 
+import com.marvelist.backend.auth.PrivacyPolicy;
 import com.marvelist.backend.dto.UserProfileRequest;
 import com.marvelist.backend.dto.UserProfileResponse;
 import com.marvelist.backend.entities.NicknameClaim;
@@ -32,6 +33,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final NicknameClaimRepository claimRepository;
+
+    // Accettazione dell'informativa sulla privacy dalla finestra mostrata dopo l'accesso
+    @Transactional
+    public UserProfileResponse acceptPrivacy(String email) {
+        User user = findUser(email);
+        user.setPrivacyAcceptedVersion(PrivacyPolicy.CURRENT_VERSION);
+        user.setPrivacyAcceptedAt(Instant.now());
+        return toResponse(userRepository.save(user));
+    }
 
     public UserProfileResponse getProfile(String email) {
         return toResponse(findUser(email));
@@ -123,6 +133,7 @@ public class UserService {
                 .nicknameChosen(user.getNicknameChangedAt() != null)
                 .nicknameChangeableFrom(nextNicknameChange(user))
                 .official(isOfficial(user))
+                .privacyAccepted(PrivacyPolicy.CURRENT_VERSION.equals(user.getPrivacyAcceptedVersion()))
                 .build();
     }
 

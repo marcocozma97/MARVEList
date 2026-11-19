@@ -26,6 +26,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getProfile(authentication.getName()));
     }
 
+    // Accetta la versione attuale dell'informativa sulla privacy
+    @PostMapping("/me/privacy")
+    public ResponseEntity<UserProfileResponse> acceptPrivacy(Authentication authentication) {
+        return ResponseEntity.ok(userService.acceptPrivacy(authentication.getName()));
+    }
+
     // Contatore degli utenti: solo per l'account ufficiale di MARVEList
     @GetMapping("/me/stats")
     public ResponseEntity<UserService.UserStats> getStats(Authentication authentication) {

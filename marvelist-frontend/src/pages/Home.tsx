@@ -51,6 +51,7 @@ const Home = () => {
           Dati e immagini dei titoli forniti da{' '}
           <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDB</a>.
         </p>
+        <p><Link to="/privacy">Informativa sulla privacy</Link></p>
       </footer>
     </div>
   );

@@ -23,4 +23,5 @@ public class UserProfileResponse {
     private boolean nicknameChosen;
     private Instant nicknameChangeableFrom;
     private boolean official; // Account ufficiale di MARVEList: vede il contatore degli utenti
+    private boolean privacyAccepted; // Ha accettato la versione attuale dell'informativa sulla privacy
 }

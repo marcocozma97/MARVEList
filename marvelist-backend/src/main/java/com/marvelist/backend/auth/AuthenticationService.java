@@ -44,6 +44,13 @@ public class AuthenticationService {
     @Value("${application.security.jwt.refresh-grace-days:30}")
     private long refreshGraceDays;
 
+    // L'informativa accettata nel modulo di registrazione: al primo accesso non viene chiesta di nuovo
+    private static void acceptPrivacy(User user, RegisterRequest request) {
+        if (!Boolean.TRUE.equals(request.getAcceptPrivacy())) return;
+        user.setPrivacyAcceptedVersion(PrivacyPolicy.CURRENT_VERSION);
+        user.setPrivacyAcceptedAt(Instant.now());
+    }
+
     // Tra due mail di conferma allo stesso indirizzo: chi clicca più volte "Crea account" non consuma gli invii di Gmail
     static final Duration RESEND_COOLDOWN = Duration.ofMinutes(2);
 
@@ -77,6 +84,7 @@ public class AuthenticationService {
             user.setName(request.getName().trim());
             user.setSurname(request.getSurname().trim());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            acceptPrivacy(user, request);
 
             if (sentRecently(user)) {
                 repository.save(user);
@@ -99,6 +107,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .enabled(false)
                 .build();
+        acceptPrivacy(user, request);
 
         if (!sendVerification(user, origin)) {
             return new RegisterResult(QUOTA_MESSAGE, true);

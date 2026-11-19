@@ -11,6 +11,7 @@ export interface RegisterRequest {
   surname: string;
   email: string;
   password: string;
+  acceptPrivacy: boolean; // informativa sulla privacy accettata nel modulo
 }
 
 export const authService = {

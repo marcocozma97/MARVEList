@@ -69,6 +69,11 @@ public class User implements UserDetails {
     // Le sessioni (JWT) emesse prima di questo istante non valgono più
     private Instant passwordChangedAt;
 
+    // Informativa sulla privacy accettata: versione e momento dell'accettazione
+    private String privacyAcceptedVersion;
+
+    private Instant privacyAcceptedAt;
+
     // Film visti dall'utente
     @Builder.Default
     @ManyToMany

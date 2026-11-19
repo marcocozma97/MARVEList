@@ -1,7 +1,9 @@
 package com.marvelist.backend.auth;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +31,10 @@ public class RegisterRequest {
     @NotBlank(message = "La password è obbligatoria")
     @Pattern(regexp = PasswordRules.REGEX, message = PasswordRules.MESSAGE)
     private String password;
+
+    // Accettazione dell'informativa sulla privacy: senza non ci si registra (anche se il campo manca del tutto)
+    @NotNull(message = "Per registrarti devi accettare l'informativa sulla privacy")
+    @AssertTrue(message = "Per registrarti devi accettare l'informativa sulla privacy")
+    private Boolean acceptPrivacy;
 
 }

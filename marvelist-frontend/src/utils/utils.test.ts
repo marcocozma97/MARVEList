@@ -35,7 +35,14 @@ describe('formatWatchTime', () => {
     expect(formatWatchTime(24 * 60)).toBe('24h');
   });
   it('oltre le 24 ore passa ai giorni', () => {
-    expect(formatWatchTime(25 * 60)).toBe('1g 1h');
+    expect(formatWatchTime(25 * 60)).toBe('1d 1h');
+  });
+  it('esattamente 30 giorni restano giorni', () => {
+    expect(formatWatchTime(30 * 24 * 60)).toBe('30d');
+  });
+  it('oltre i 30 giorni passa ai mesi', () => {
+    expect(formatWatchTime(2 * 30 * 24 * 60 + 3 * 24 * 60 + 4 * 60 + 5)).toBe('2mth 3d 4h 5m');
+    expect(speakWatchTime(31 * 24 * 60)).toBe('1 mese 1 giorno');
   });
   it('zero minuti', () => {
     expect(formatWatchTime(0)).toBe('0m');

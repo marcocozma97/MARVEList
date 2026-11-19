@@ -11,6 +11,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import FAQ from './pages/Faq';
+import Privacy from './pages/Privacy';
 import News from './pages/News';
 import Timeline from './pages/Timeline';
 import RoadTo from './pages/RoadTo';
@@ -27,6 +28,7 @@ import Notifications from './pages/Notifications';
 import InfinityIntro from './components/InfinityIntro';
 import { markIntroSeen, shouldShowIntro } from './utils/intro';
 import NicknameOnboarding from './components/NicknameOnboarding';
+import PrivacyGate from './components/PrivacyGate';
 import SessionGate from './components/SessionGate';
 import InstallPrompt from './components/InstallPrompt';
 
@@ -63,6 +65,7 @@ const Shell = () => {
           <Route path="/road-to" element={<RoadTo />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/news" element={<News />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/users/:id" element={<UserProfile />} />
@@ -81,7 +84,10 @@ const Shell = () => {
       {/* Invito a installare l'app sul telefono (non sopra intro, minigioco e pagine di accesso) */}
       {!showIntro && !showGate && !isAuthPage && <InstallPrompt />}
 
-      {isAuthenticated && hasNavbar && !showIntro && !showGate && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
+      {/* Informativa sulla privacy da accettare dopo l'accesso (nella sua pagina la si legge e si accetta lì) */}
+      {isAuthenticated && !showIntro && !showGate && !isAuthPage && profile?.privacyAccepted === false && location.pathname !== '/privacy' && <PrivacyGate />}
+
+      {isAuthenticated && hasNavbar && !showIntro && !showGate && profile?.privacyAccepted !== false && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
 
       {/* Intro iniziale: copre tutto, la Timeline intanto si carica sotto */}
       {showIntro && <InfinityIntro onDone={finishIntro} />}
