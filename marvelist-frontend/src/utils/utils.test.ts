@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { MediaItem } from '../services/mediaService';
 import { formatWatchTime, speakWatchTime } from './watchTime';
 import { isValidEmail, isValidPassword } from './validation';
-import { groupByPhase, matchesVisionOrder, phaseRank } from './ordering';
+import { groupByChrono, groupByPhase, matchesVisionOrder, phaseRank } from './ordering';
 import { computeRank } from './rank';
 import { getProgressPercent, shortenOverview } from './progress';
 import { availableFrom, isEpisodeOut, isFullyOut, isUpcoming } from './upcoming';
@@ -160,5 +160,18 @@ describe('episodi in uscita', () => {
   it('senza date note tutti gli episodi di una stagione uscita sono disponibili', () => {
     expect(isEpisodeOut(season(null), 4, today)).toBe(true);
     expect(isEpisodeOut(season('2026-11-01,2026-11-15,', 3), 3, today)).toBe(false);
+  });
+});
+
+describe('ordine cronologico della Timeline MCU', () => {
+  it('ordina per posizione cronologica e raggruppa per epoca, con i titoli senza posizione in fondo', () => {
+    const groups = groupByChrono([
+      media({ title: 'Iron Man', phase: 'Fase 1', sortOrder: 1, chronoOrder: 3, chronoEra: "L'ascesa degli Avengers" }),
+      media({ title: 'Captain Marvel', phase: 'Fase 3', sortOrder: 20, chronoOrder: 2, chronoEra: 'Le origini' }),
+      media({ title: 'Senza posizione', phase: 'Fase 6', sortOrder: 50 }),
+      media({ title: 'Captain America', phase: 'Fase 1', sortOrder: 5, chronoOrder: 1, chronoEra: 'Le origini' }),
+    ]);
+    expect([...groups.keys()]).toEqual(['Le origini', "L'ascesa degli Avengers", 'Altri universi']);
+    expect(groups.get('Le origini')!.map(m => m.title)).toEqual(['Captain America', 'Captain Marvel']);
   });
 });

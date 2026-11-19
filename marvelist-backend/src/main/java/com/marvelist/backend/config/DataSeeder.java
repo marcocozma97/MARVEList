@@ -85,6 +85,8 @@ public class DataSeeder implements CommandLineRunner {
                     media.setPhase(phaseStr);
                     media.setVisionOrder(visionOrder);
                     media.setSortOrder(index);
+                    media.setChronoOrder(item.getChrono());
+                    media.setChronoEra(item.getChronoEra());
                     media.setEpisodes(item.getEpisodes());
                     media.setUpcoming(nowUpcoming);
                     media.setDoomsday(Boolean.TRUE.equals(item.getDoomsday()));

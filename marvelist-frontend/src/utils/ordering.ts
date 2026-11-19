@@ -24,6 +24,23 @@ export const sortByViewingOrder = (list: MediaItem[]) =>
     a.id - b.id
   );
 
+// Ordine della Timeline MCU: di uscita (per fasi) o cronologico (per epoca della storia)
+export type TimelineOrder = 'release' | 'chrono';
+
+// Ordine cronologico: posizione nella raccolta Disney+ "in ordine cronologico", raggruppata per epoca.
+// I titoli senza posizione finiscono in fondo, nell'ordine di uscita
+export const groupByChrono = (list: MediaItem[]) => {
+  const groups = new Map<string, MediaItem[]>();
+  [...sortByViewingOrder(list)]
+    .sort((a, b) => (a.chronoOrder ?? Infinity) - (b.chronoOrder ?? Infinity))
+    .forEach(media => {
+      const era = media.chronoEra || 'Altri universi';
+      if (!groups.has(era)) groups.set(era, []);
+      groups.get(era)!.push(media);
+    });
+  return groups;
+};
+
 // Raggruppa per fase mantenendo l'ordine (le fasi escono già ordinate)
 export const groupByPhase = (list: MediaItem[]) => {
   const groups = new Map<string, MediaItem[]>();

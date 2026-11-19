@@ -36,6 +36,10 @@ public class Media {
 
     private Integer sortOrder; // Posizione nel marvel_data.json: è l'ordine di visione della Timeline
 
+    private Integer chronoOrder; // Ordine cronologico degli eventi (raccolta Disney+ "in ordine cronologico"), solo MCU
+
+    private String chronoEra; // Epoca della storia usata come gruppo nell'ordine cronologico
+
     private Integer episodes; // Numero di episodi (solo SERIE_TV)
 
     private Integer runtime; // Durata in minuti (solo FILM, arriva da TMDB)

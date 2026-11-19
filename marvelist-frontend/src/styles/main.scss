@@ -6469,3 +6469,8 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 }
 .delete-tip-text { margin: 0; }
 .rankings-updated { margin: 8px 0 14px; color: var(--text-muted); font-size: 0.82rem; }
+
+// Timeline MCU: scelta tra ordine di uscita e ordine cronologico
+.timeline-order { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 0 22px; text-align: center; }
+.timeline-order-note { margin: 0; max-width: 560px; color: var(--text-muted); font-size: 0.82rem; }
+@media (max-width: 400px) { .timeline-order .segmented-option { padding: 8px 12px; font-size: 0.82rem; } }

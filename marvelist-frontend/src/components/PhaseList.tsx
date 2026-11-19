@@ -67,8 +67,8 @@ const PhaseList = ({ groups, watch, forceOpen = false, emptyText = 'Nessun titol
                   onClick={() => toggleSeenPhase(phase, released)}
                   disabled={bulkPhase === phase}
                   aria-pressed={allSeen}
-                  aria-label={allSeen ? `Segna tutta la ${phase} come non vista` : `Segna tutta la ${phase} come vista`}
-                  title={allSeen ? 'Segna tutta la fase come non vista' : 'Segna tutta la fase come vista'}
+                  aria-label={allSeen ? `Segna tutti i titoli di "${phase}" come non visti` : `Segna tutti i titoli di "${phase}" come visti`}
+                  title={allSeen ? 'Segna tutti i titoli del gruppo come non visti' : 'Segna tutti i titoli del gruppo come visti'}
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path className="phase-watch-check" d="M6 12.5l4 4 8-9" />

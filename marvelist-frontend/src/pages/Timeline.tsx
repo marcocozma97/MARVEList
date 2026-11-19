@@ -9,13 +9,15 @@ import mcuBg from '../assets/mcu.jpg';
 import marvelFanBg from '../assets/MARVEL FAN.jpg';
 import marvelGodBg from '../assets/MARVEL GOD.jpg';
 
-import { groupByPhase, matchesVisionOrder, type VisionOrder } from '../utils/ordering';
+import { groupByChrono, groupByPhase, matchesVisionOrder, type TimelineOrder, type VisionOrder } from '../utils/ordering';
 import SlowLoader from '../components/SlowLoader';
 
 const Timeline = () => {
   // Filtro e ricerca restano salvati quando si apre un titolo e si torna indietro
   const [activeFilter, setActiveFilter] = usePageState<VisionOrder>('timeline_filter', 'MCU');
   const [searchQuery, setSearchQuery] = usePageState('timeline_search', '');
+  // Solo per l'MCU: ordine di uscita (predefinito) o cronologico degli eventi
+  const [mcuOrder, setMcuOrder] = usePageState<TimelineOrder>('timeline_mcu_order', 'release');
 
   const watch = useWatchState();
   const { mediaList, isLoading, error } = watch;
@@ -93,8 +95,10 @@ const Timeline = () => {
   const filteredMedia = mediaList.filter(media =>
     matchesVisionOrder(media, activeFilter) && media.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  // Ordine di visione esplicito (fase, poi posizione nel JSON): non ci fidiamo dell'ordine del backend
-  const groups = groupByPhase(filteredMedia);
+  // Ordine di visione esplicito (fase, poi posizione nel JSON): non ci fidiamo dell'ordine del backend.
+  // Con l'MCU si può passare all'ordine cronologico, raggruppato per epoca della storia
+  const chronological = activeFilter === 'MCU' && mcuOrder === 'chrono';
+  const groups = chronological ? groupByChrono(filteredMedia) : groupByPhase(filteredMedia);
 
   const getThemeConfig = () => {
     switch (activeFilter) {
@@ -183,8 +187,31 @@ const Timeline = () => {
           </div>
         )}
 
+        {!isLoading && !error && activeFilter === 'MCU' && (
+          <div className="timeline-order">
+            <div className="segmented" role="radiogroup" aria-label="Ordine della Timeline MCU">
+              <button type="button" role="radio" aria-checked={!chronological} className={`segmented-option ${!chronological ? 'active' : ''}`} onClick={() => setMcuOrder('release')}>
+                Ordine di uscita
+              </button>
+              <button type="button" role="radio" aria-checked={chronological} className={`segmented-option ${chronological ? 'active' : ''}`} onClick={() => setMcuOrder('chrono')}>
+                Ordine cronologico
+              </button>
+            </div>
+            {chronological && (
+              <p className="timeline-order-note">Segue gli eventi narrati, come la raccolta Disney+ in ordine cronologico. I titoli di altri universi sono raggruppati in fondo.</p>
+            )}
+          </div>
+        )}
+
         {!isLoading && !error && (
-          <PhaseList groups={groups} watch={watch} memoryKey="timeline_phases" forceOpen={!!searchQuery} emptyText="Nessun titolo trovato per questo livello di visione." />
+          <PhaseList
+            key={chronological ? 'chrono' : 'release'}
+            groups={groups}
+            watch={watch}
+            memoryKey={chronological ? 'timeline_chrono_eras' : 'timeline_phases'}
+            forceOpen={!!searchQuery}
+            emptyText="Nessun titolo trovato per questo livello di visione."
+          />
         )}
 
       </div>

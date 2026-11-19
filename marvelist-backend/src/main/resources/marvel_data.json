@@ -997,6 +997,8 @@
     "title": "Iron Man",
     "year": 2008,
     "phase": 1,
+    "chrono": 4,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1011,6 +1013,8 @@
     "title": "L'Incredibile Hulk",
     "year": 2008,
     "phase": 1,
+    "chrono": 6,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1098,6 +1102,8 @@
     "title": "Iron Man 2",
     "year": 2010,
     "phase": 1,
+    "chrono": 5,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1171,6 +1177,8 @@
     "title": "Thor",
     "year": 2011,
     "phase": 1,
+    "chrono": 7,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1185,6 +1193,8 @@
     "title": "Captain America: Il primo vendicatore",
     "year": 2011,
     "phase": 1,
+    "chrono": 2,
+    "chronoEra": "Le origini",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1281,6 +1291,8 @@
     "title": "The Avengers",
     "year": 2012,
     "phase": 1,
+    "chrono": 8,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1331,6 +1343,8 @@
     "title": "Iron Man 3",
     "year": 2013,
     "phase": 2,
+    "chrono": 10,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1416,6 +1430,8 @@
     "title": "Thor: The Dark World",
     "year": 2013,
     "phase": 2,
+    "chrono": 9,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1464,6 +1480,8 @@
     "title": "Captain America: The Winter Soldier",
     "year": 2014,
     "phase": 2,
+    "chrono": 11,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1502,6 +1520,8 @@
     "title": "Guardiani della Galassia Vol. 1",
     "year": 2014,
     "phase": 2,
+    "chrono": 12,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "mcu",
@@ -1587,6 +1607,8 @@
     "title": "Avengers: Age of Ultron",
     "year": 2015,
     "phase": 2,
+    "chrono": 14,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1601,6 +1623,8 @@
     "title": "Ant-Man",
     "year": 2015,
     "phase": 2,
+    "chrono": 15,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1695,6 +1719,8 @@
     "title": "Deadpool",
     "year": 2016,
     "phase": 2,
+    "chrono": 50,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
@@ -1722,6 +1748,8 @@
     "title": "Captain America: Civil War",
     "year": 2016,
     "phase": 3,
+    "chrono": 16,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "avengers",
@@ -1796,6 +1824,8 @@
     "title": "Doctor Strange",
     "year": 2016,
     "phase": 3,
+    "chrono": 20,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "mcu",
@@ -1916,6 +1946,8 @@
     "title": "Guardiani della Galassia Vol. 2",
     "year": 2017,
     "phase": 3,
+    "chrono": 13,
+    "chronoEra": "L'ascesa degli Avengers",
     "type": "movie",
     "tags": [
       "mcu",
@@ -1929,6 +1961,8 @@
     "title": "Spider-Man: Homecoming",
     "year": 2017,
     "phase": 3,
+    "chrono": 19,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "spiderverse",
@@ -1980,6 +2014,8 @@
     "title": "Thor: Ragnarok",
     "year": 2017,
     "phase": 3,
+    "chrono": 21,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "avengers",
@@ -2090,6 +2126,8 @@
     "title": "Black Panther",
     "year": 2018,
     "phase": 3,
+    "chrono": 18,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2128,6 +2166,8 @@
     "title": "Avengers: Infinity War",
     "year": 2018,
     "phase": 3,
+    "chrono": 23,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "avengers",
@@ -2142,6 +2182,8 @@
     "title": "Deadpool 2",
     "year": 2018,
     "phase": 3,
+    "chrono": 51,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
@@ -2179,6 +2221,8 @@
     "title": "Ant-Man and the Wasp",
     "year": 2018,
     "phase": 3,
+    "chrono": 22,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2326,6 +2370,8 @@
     "title": "Captain Marvel",
     "year": 2019,
     "phase": 3,
+    "chrono": 3,
+    "chronoEra": "Le origini",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2351,6 +2397,8 @@
     "title": "Avengers: Endgame",
     "year": 2019,
     "phase": 3,
+    "chrono": 24,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "avengers",
@@ -2414,6 +2462,8 @@
     "title": "Spider-Man: Far from Home",
     "year": 2019,
     "phase": 3,
+    "chrono": 33,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "spiderverse",
@@ -2532,6 +2582,8 @@
     "title": "WandaVision",
     "year": 2021,
     "phase": 4,
+    "chrono": 31,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -2558,6 +2610,8 @@
     "title": "The Falcon and the Winter Soldier",
     "year": 2021,
     "phase": 4,
+    "chrono": 32,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2584,6 +2638,8 @@
     "title": "Loki Season 1",
     "year": 2021,
     "phase": 4,
+    "chrono": 26,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2609,6 +2665,8 @@
     "title": "Black Widow",
     "year": 2021,
     "phase": 4,
+    "chrono": 17,
+    "chronoEra": "Da Ultron a Infinity War",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2643,6 +2701,8 @@
     "title": "What If...? Season 1",
     "year": 2021,
     "phase": 4,
+    "chrono": 28,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -2658,6 +2718,8 @@
     "title": "Shang-Chi e la leggenda dei Dieci Anelli",
     "year": 2021,
     "phase": 4,
+    "chrono": 34,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2683,6 +2745,8 @@
     "title": "Eternals",
     "year": 2021,
     "phase": 4,
+    "chrono": 35,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2708,6 +2772,8 @@
     "title": "Hawkeye",
     "year": 2021,
     "phase": 4,
+    "chrono": 38,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2721,6 +2787,8 @@
     "title": "Spider-Man: No Way Home",
     "year": 2021,
     "phase": 4,
+    "chrono": 36,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "spiderverse",
@@ -2748,6 +2816,8 @@
     "title": "Moon Knight",
     "year": 2022,
     "phase": 4,
+    "chrono": 39,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2773,6 +2843,8 @@
     "title": "Doctor Strange nel Multiverso della Follia",
     "year": 2022,
     "phase": 4,
+    "chrono": 37,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2786,6 +2858,8 @@
     "title": "Ms. Marvel",
     "year": 2022,
     "phase": 4,
+    "chrono": 43,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2800,6 +2874,8 @@
     "title": "Thor: Love and Thunder",
     "year": 2022,
     "phase": 4,
+    "chrono": 44,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2824,6 +2900,8 @@
     "title": "She-Hulk: Attorney at Law",
     "year": 2022,
     "phase": 4,
+    "chrono": 42,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -2849,6 +2927,8 @@
     "title": "Black Panther: Wakanda Forever",
     "year": 2022,
     "phase": 4,
+    "chrono": 40,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2873,6 +2953,8 @@
     "title": "Ant-Man and the Wasp: Quantumania",
     "year": 2023,
     "phase": 5,
+    "chrono": 46,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2886,6 +2968,8 @@
     "title": "Guardiani della Galassia Vol. 3",
     "year": 2023,
     "phase": 5,
+    "chrono": 47,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2912,6 +2996,8 @@
     "title": "Secret Invasion",
     "year": 2023,
     "phase": 5,
+    "chrono": 48,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2938,6 +3024,8 @@
     "title": "Loki Season 2",
     "year": 2023,
     "phase": 5,
+    "chrono": 27,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -2952,6 +3040,8 @@
     "title": "The Marvels",
     "year": 2023,
     "phase": 5,
+    "chrono": 49,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -2965,6 +3055,8 @@
     "title": "What If...? Season 2",
     "year": 2023,
     "phase": 5,
+    "chrono": 29,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -3014,6 +3106,8 @@
     "title": "Echo",
     "year": 2024,
     "phase": 5,
+    "chrono": 41,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 5,
     "tags": [
@@ -3027,6 +3121,8 @@
     "title": "X-Men '97 Season 1",
     "year": 2024,
     "phase": 5,
+    "chrono": 69,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 10,
     "tags": [
@@ -3066,6 +3162,8 @@
     "title": "Deadpool & Wolverine",
     "year": 2024,
     "phase": 5,
+    "chrono": 52,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
@@ -3080,6 +3178,8 @@
     "title": "Agatha All Along",
     "year": 2024,
     "phase": 5,
+    "chrono": 53,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -3117,6 +3217,8 @@
     "title": "What If...? Season 3",
     "year": 2024,
     "phase": 5,
+    "chrono": 30,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3131,6 +3233,8 @@
     "title": "Your Friendly Neighborhood Spider-Man",
     "year": 2025,
     "phase": 5,
+    "chrono": 72,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 10,
     "tags": [
@@ -3146,6 +3250,8 @@
     "title": "Captain America: Brave New World",
     "year": 2025,
     "phase": 5,
+    "chrono": 55,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3159,6 +3265,8 @@
     "title": "Daredevil: Born Again Season 1",
     "year": 2025,
     "phase": 5,
+    "chrono": 54,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -3173,6 +3281,8 @@
     "title": "Thunderbolts*",
     "year": 2025,
     "phase": 5,
+    "chrono": 56,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3186,6 +3296,8 @@
     "title": "Ironheart",
     "year": 2025,
     "phase": 5,
+    "chrono": 45,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "tv",
     "episodes": 6,
     "tags": [
@@ -3199,6 +3311,8 @@
     "title": "The Fantastic Four: First Steps",
     "year": 2025,
     "phase": 6,
+    "chrono": 57,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3212,6 +3326,8 @@
     "title": "Eyes of Wakanda Season 1",
     "year": 2025,
     "phase": 6,
+    "chrono": 1,
+    "chronoEra": "Le origini",
     "type": "tv",
     "episodes": 4,
     "tags": [
@@ -3226,6 +3342,8 @@
     "title": "Marvel Zombies Season 1",
     "year": 2025,
     "phase": 6,
+    "chrono": 74,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 4,
     "tags": [
@@ -3240,6 +3358,8 @@
     "title": "Wonder Man Season 1",
     "year": 2025,
     "phase": 6,
+    "chrono": 58,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3277,6 +3397,8 @@
     "title": "Daredevil: Born Again Season 2",
     "year": 2026,
     "phase": 6,
+    "chrono": 59,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3315,6 +3437,8 @@
     "title": "X-Men '97 Season 2",
     "year": 2026,
     "phase": 6,
+    "chrono": 70,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -3330,6 +3454,8 @@
     "title": "Spider-Man: Brand New Day",
     "year": 2026,
     "phase": 6,
+    "chrono": 61,
+    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "spiderverse",
@@ -3344,6 +3470,8 @@
     "title": "Avengers: Endgame - Encore",
     "year": 2026,
     "phase": 6,
+    "chrono": 25,
+    "chronoEra": "Endgame e il ritorno dal Blip",
     "type": "movie",
     "tags": [
       "avengers",
@@ -3357,6 +3485,8 @@
     "title": "VisionQuest",
     "year": 2026,
     "phase": 6,
+    "chrono": 60,
+    "chronoEra": "La Saga del Multiverso",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3370,6 +3500,8 @@
     "title": "Avengers: Doomsday",
     "year": 2026,
     "phase": 6,
+    "chrono": 62,
+    "chronoEra": "In arrivo",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3383,6 +3515,8 @@
     "title": "Your Friendly Neighborhood Spider-Man S.2",
     "year": 2027,
     "phase": 6,
+    "chrono": 73,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 10,
     "tags": [
@@ -3399,6 +3533,8 @@
     "title": "Daredevil: Born Again Season 3",
     "year": 2027,
     "phase": 6,
+    "chrono": 63,
+    "chronoEra": "In arrivo",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3428,6 +3564,8 @@
     "title": "X-Men '97 Season 3",
     "year": 2027,
     "phase": 6,
+    "chrono": 71,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 9,
     "tags": [
@@ -3444,6 +3582,8 @@
     "title": "Marvel Zombies - The Winter Soldier",
     "year": 2027,
     "phase": 6,
+    "chrono": 75,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 4,
     "tags": [
@@ -3458,6 +3598,8 @@
     "title": "Avengers: Secret Wars",
     "year": 2027,
     "phase": 6,
+    "chrono": 64,
+    "chronoEra": "In arrivo",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3471,6 +3613,8 @@
     "title": "X-Men",
     "year": 2028,
     "phase": 7,
+    "chrono": 65,
+    "chronoEra": "In arrivo",
     "type": "movie",
     "tags": [
       "xmen",
@@ -3485,6 +3629,8 @@
     "title": "Ghost Rider",
     "year": 2028,
     "phase": 7,
+    "chrono": 66,
+    "chronoEra": "In arrivo",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3498,6 +3644,8 @@
     "title": "Zodiac",
     "year": 2028,
     "phase": 7,
+    "chrono": 67,
+    "chronoEra": "In arrivo",
     "type": "tv",
     "episodes": 8,
     "tags": [
@@ -3511,6 +3659,8 @@
     "title": "Marvel Zombies - The Fist of Khonshu",
     "year": 2028,
     "phase": 7,
+    "chrono": 76,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 4,
     "tags": [
@@ -3525,6 +3675,8 @@
     "title": "Black Panther 3",
     "year": 2028,
     "phase": 7,
+    "chrono": 68,
+    "chronoEra": "In arrivo",
     "type": "movie",
     "tags": [
       "mcu",
@@ -3538,6 +3690,8 @@
     "title": "Marvel Zombies - The Last Guardian",
     "year": 2029,
     "phase": 7,
+    "chrono": 77,
+    "chronoEra": "Altri universi",
     "type": "tv",
     "episodes": 4,
     "tags": [

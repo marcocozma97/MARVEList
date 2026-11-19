@@ -17,6 +17,8 @@ export interface MediaItem {
   posterPath: string;
   releaseYear: number;
   sortOrder: number | null;
+  chronoOrder?: number | null; // ordine cronologico della storia (solo MCU)
+  chronoEra?: string | null;   // epoca della storia, gruppo dell'ordine cronologico
   episodes: number | null; // solo SERIE_TV
   runtime: number | null;  // solo FILM, in minuti
   upcoming: boolean | null; // "In arrivo" nel JSON (inArrivo = true)
