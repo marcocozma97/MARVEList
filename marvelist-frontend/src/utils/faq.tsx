@@ -24,6 +24,11 @@ export const FAQ_SECTIONS: FaqSection[] = [
         <>È il tuo diario dell'Universo Marvel: segui l'ordine di visione di film e serie TV, segna cosa hai visto, vota i titoli, organizza maratone e chiedi consigli a J.A.I.R.V.I.S.</>),
       item('Devo pagare per usare MARVEList?',
         <>Assolutamente no! Stark Industries finanzia interamente questo progetto.</>),
+      item("Posso installare MARVEList sul telefono come un'app?",
+        <>Sì, su Android e su iPhone, gratis e senza passare dagli store.<br />
+          <strong>Android:</strong> apri il sito con Chrome e tocca <strong>Installa</strong> nell'avviso in basso (oppure ⋮ → <strong>Installa app</strong>).<br />
+          <strong>iPhone e iPad:</strong> apri il sito, tocca <strong>Condividi</strong> (il quadrato con la freccia in su) e poi <strong>Aggiungi alla schermata Home</strong>.<br />
+          L'app si apre a schermo intero dalla schermata Home e si aggiorna da sola: non devi scaricare niente quando escono novità.</>),
       item('Serve un account?',
         <>Sì: Timeline, Road To, Community, maratone e J.A.I.R.V.I.S. sono legati al tuo profilo, così ritrovi visti, voti e progressi su qualsiasi dispositivo. <Link to="/register">Registrati</Link> in pochi secondi: è gratis.</>),
       item("Come posso segnalare un problema o proporre un'idea?",

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import heroImage from '../assets/marvel-bg-home.jpg';
 import Brand from '../components/Brand';
+import IosInstallGuide from '../components/IosInstallGuide';
 
 const features = [
   { n: '01', title: 'Traccia i tuoi progressi', text: "Segna minuti ed episodi visti e vota ogni titolo da 1 a 10 scudi." },
@@ -25,6 +26,7 @@ const Home = () => {
             {/* Senza accesso si passa prima dal login (che porta anche alla registrazione) */}
             <Link to={isAuthenticated ? '/timeline' : '/login'} className="btn-marvel btn-inline btn-lg-pill">Esplora la Timeline</Link>
           </div>
+          <IosInstallGuide />
         </div>
       </section>
 

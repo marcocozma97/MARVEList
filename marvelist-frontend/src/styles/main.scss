@@ -6485,3 +6485,82 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
   > * { scroll-snap-align: start; }
   @media (max-width: 575.98px) { grid-auto-columns: 140px; gap: 12px; }
 }
+
+// Invito a installare l'app (PWA): su telefono a tutta larghezza, sopra il pulsante "torna su"
+.install-prompt {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 60px);
+  z-index: 1045;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 480px;
+  padding: 12px 12px 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(20, 20, 22, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
+  animation: install-in 0.3s var(--ease-out);
+  @media (min-width: 768px) { left: 50%; right: auto; bottom: max(20px, env(safe-area-inset-bottom)); width: 460px; transform: translateX(-50%); animation: none; }
+}
+@keyframes install-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.install-prompt-icon { flex-shrink: 0; border-radius: 10px; }
+.install-prompt-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  > strong { color: #fff; font-size: 0.92rem; }
+  span strong { color: var(--text-light); font-weight: 600; }
+}
+.install-prompt-btn { flex-shrink: 0; padding: 8px 14px; font-size: 0.9rem; }
+.install-prompt-close {
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  &:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+}
+
+// Guida per installare l'app su iPhone, nella home sotto "Esplora la Timeline"
+.ios-install-guide {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 420px;
+  margin: 24px auto 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(12, 12, 14, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-align: left;
+}
+.ios-install-icon { flex-shrink: 0; border-radius: 10px; }
+.ios-install-text {
+  min-width: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  > strong { display: block; margin-bottom: 4px; color: #fff; font-size: 0.95rem; }
+  ol { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+  li strong { color: var(--text-light); font-weight: 600; }
+}
+.ios-install-share svg { width: 15px; height: 15px; vertical-align: -2px; fill: none; stroke: #38bdf8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+

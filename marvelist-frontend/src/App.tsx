@@ -28,6 +28,7 @@ import InfinityIntro from './components/InfinityIntro';
 import { markIntroSeen, shouldShowIntro } from './utils/intro';
 import NicknameOnboarding from './components/NicknameOnboarding';
 import SessionGate from './components/SessionGate';
+import InstallPrompt from './components/InstallPrompt';
 
 const Shell = () => {
   const location = useLocation();
@@ -76,6 +77,9 @@ const Shell = () => {
       </main>
 
       {!showIntro && <ScrollTopButton />}
+
+      {/* Invito a installare l'app sul telefono (non sopra intro, minigioco e pagine di accesso) */}
+      {!showIntro && !showGate && !isAuthPage && <InstallPrompt />}
 
       {isAuthenticated && hasNavbar && !showIntro && !showGate && profile?.nicknameChosen === false && <NicknameOnboarding key={profile.id} />}
 
