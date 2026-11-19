@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,13 +53,23 @@ public class CommunityService {
         return new MediaRatings(new Rating(round(row[0]), row[1] == null ? 0 : ((Number) row[1]).longValue()), episodes);
     }
 
+    // Le classifiche si ricalcolano quando qualcuno apre la Community e sono passati almeno 60 minuti dall'ultimo
+    // calcolo: per chi guarda restano "aggiornate ogni ora", ma il database (Neon, a consumo) non viene svegliato
+    // 24 volte al giorno quando nessuno usa l'app
     public Rankings rankings() {
+        Rankings current = rankings;
+        if (current.updatedAt() == null || current.updatedAt().isBefore(Instant.now().minus(REFRESH_EVERY))) {
+            synchronized (this) {
+                if (rankings == current) refreshRankings();
+            }
+        }
         return rankings;
     }
 
-    // All'avvio del backend e poi allo scoccare di ogni ora (ora italiana)
+    static final Duration REFRESH_EVERY = Duration.ofHours(1);
+
+    // All'avvio del backend (il database è già acceso) e poi su richiesta, al massimo una volta l'ora
     @EventListener(ApplicationReadyEvent.class)
-    @Scheduled(cron = "0 0 * * * *", zone = "Europe/Rome")
     public void refreshRankings() {
         try {
             rankings = new Rankings(topWatchedThisWeek(), topRated(), Instant.now());
