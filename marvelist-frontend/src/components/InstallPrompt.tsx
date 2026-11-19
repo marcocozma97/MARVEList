@@ -1,11 +1,6 @@
-import { useEffect, useState } from 'react';
-import { isStandalone } from '../utils/install';
-
-// Evento di Chrome/Edge/Samsung Internet che permette di aprire la finestra "Installa app"
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 const DISMISS_KEY = 'marvelist:install-dismissed';
 const DISMISS_DAYS = 30;
@@ -19,40 +14,19 @@ const recentlyDismissed = () => {
   }
 };
 
-// Invito a installare l'app con il pulsante "Installa" (Android e browser che lo supportano).
-// Su iPhone non esiste un pulsante automatico: la guida è nella home, sotto "Esplora la Timeline"
+// Avviso flottante con il pulsante "Installa", quando il browser lo permette (Chrome su Android).
+// Nella home non compare: lì c'è già la guida sotto "Esplora la Timeline"
 const InstallPrompt = () => {
-  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [hidden, setHidden] = useState(() => isStandalone() || recentlyDismissed());
+  const { canInstall, installed, install } = useInstallPrompt();
+  const { pathname } = useLocation();
+  const [dismissed, setDismissed] = useState(recentlyDismissed);
 
-  useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setInstallEvent(e as BeforeInstallPromptEvent);
-    };
-    const onInstalled = () => setHidden(true);
-    window.addEventListener('beforeinstallprompt', onPrompt);
-    window.addEventListener('appinstalled', onInstalled);
-    return () => {
-      window.removeEventListener('beforeinstallprompt', onPrompt);
-      window.removeEventListener('appinstalled', onInstalled);
-    };
-  }, []);
+  if (!canInstall || installed || dismissed || pathname === '/') return null;
 
   const dismiss = () => {
     try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch { /* memoria non disponibile */ }
-    setHidden(true);
+    setDismissed(true);
   };
-
-  const install = async () => {
-    if (!installEvent) return;
-    await installEvent.prompt();
-    const { outcome } = await installEvent.userChoice;
-    setInstallEvent(null);
-    if (outcome === 'accepted') setHidden(true);
-  };
-
-  if (hidden || !installEvent) return null;
 
   return (
     <div className="install-prompt" role="dialog" aria-label="Installa MARVEList">

@@ -26,8 +26,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
         <>Assolutamente no! Stark Industries finanzia interamente questo progetto.</>),
       item("Posso installare MARVEList sul telefono come un'app?",
         <>Sì, su Android e su iPhone, gratis e senza passare dagli store.<br />
-          <strong>Android:</strong> apri il sito con Chrome e tocca <strong>Installa</strong> nell'avviso in basso (oppure ⋮ → <strong>Installa app</strong>).<br />
-          <strong>iPhone e iPad:</strong> apri il sito, tocca <strong>Condividi</strong> (il quadrato con la freccia in su) e poi <strong>Aggiungi alla schermata Home</strong>.<br />
+          <strong>Android:</strong> apri il sito con Chrome e, nella home sotto <strong>Esplora la Timeline</strong>, tocca <strong>Installa MARVEList</strong>; se il pulsante non c'è ancora, tocca ⋮ in alto a destra → <strong>Installa app</strong>.<br />
+          <strong>iPhone e iPad:</strong> apri il sito con Safari (trovi la guida anche nella home, sotto <strong>Esplora la Timeline</strong>), tocca <strong>Condividi</strong> (il quadrato con la freccia in su) e poi <strong>Aggiungi alla schermata Home</strong>.<br />
           L'app si apre a schermo intero dalla schermata Home e si aggiorna da sola: non devi scaricare niente quando escono novità.</>),
       item('Serve un account?',
         <>Sì: Timeline, Road To, Community, maratone e J.A.I.R.V.I.S. sono legati al tuo profilo, così ritrovi visti, voti e progressi su qualsiasi dispositivo. <Link to="/register">Registrati</Link> in pochi secondi: è gratis.</>),
