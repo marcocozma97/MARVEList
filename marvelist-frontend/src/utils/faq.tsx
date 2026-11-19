@@ -46,6 +46,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
   },
   {
     id: 'progressi', title: 'Schede e progressi', items: [
+      item("Cos'è il voto MARVEList?",
+        <>È la media dei voti dati con gli scudi da tutti gli utenti di MARVEList, da 0,5 a 10. Lo trovi nelle schede di film e serie e nei singoli episodi, accanto al voto TMDB, con il numero di voti tra parentesi. Quando voti, la media si aggiorna subito.</>),
       item('Come segno quanto ho visto di un film?',
         <>Nella scheda del film sposta lo slider (o scrivi i minuti) e premi <strong>Salva</strong>. Il film compare in "Continua a guardare" nel profilo; quando arrivi alla durata completa diventa visto da solo.</>),
       item('E per le serie TV?',
@@ -104,6 +106,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
   },
   {
     id: 'extra', title: 'Road To, News e J.A.I.R.V.I.S.', items: [
+      item('Cosa trovo nella pagina Community?',
+        <>Nella <Link to="/community">Community</Link> ci sono le <strong>prossime uscite</strong> (film, serie e nuovi episodi in arrivo), i titoli <strong>usciti da poco</strong>, la <strong>Top 10 visti della settimana</strong> (i titoli segnati come visti da più utenti negli ultimi 7 giorni; segnare un'intera fase come vista non conta) e la <strong>Top 10 più votati</strong>, in base alla media dei voti di tutti gli utenti.</>),
       item('Da dove arrivano le notizie del Daily Bugle?',
         <>Le <Link to="/news">News</Link> raccolgono gli articoli italiani sul mondo Marvel degli ultimi 14 giorni, tramite Google News. Ogni titolo apre l'articolo sul sito della testata; se la notizia parla di un film o di una serie del catalogo trovi anche il link alla sua scheda.</>),
       item('Cosa sono le Road To?',

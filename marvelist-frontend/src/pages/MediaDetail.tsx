@@ -17,6 +17,8 @@ import SlowLoader from '../components/SlowLoader';
 import { MissingOverview } from '../components/SnapGauntlet';
 import { NoTrailer } from '../components/WestviewTV';
 import WatchProviders from '../components/WatchProviders';
+import MarvelistVote from '../components/MarvelistVote';
+import { useMarvelistRatings } from '../hooks/useMarvelistRatings';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -30,6 +32,8 @@ const MediaDetail = () => {
   const [dbMedia, setDbMedia] = useState<MediaItem | null>(null);
   const [tmdbData, setTmdbData] = useState<Partial<TmdbDetails>>({});
   const [progress, setProgress] = useState<MediaProgress | null>(null);
+  // Voto MARVEList: si ricarica quando cambia il tuo voto
+  const marvelist = useMarvelistRatings(dbMedia?.id, progress?.rating);
   const [minutes, setMinutes] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const minutesTimer = useRef<number | undefined>(undefined);
@@ -334,6 +338,7 @@ const MediaDetail = () => {
                 {!isFilm && totalEpisodes > 0 ? <span className="chip">{totalEpisodes} episodi</span> : null}
                 <span className="chip">{dbMedia.visionOrder}</span>
                 {tmdbVote && <span className="chip chip-gold">★ {tmdbVote} TMDB</span>}
+                {!upcoming && <MarvelistVote rating={marvelist?.rating} />}
                 {progress?.seen && <span className="chip chip-success">✔ Visto</span>}
                 {progress?.inWatchlist && <span className="chip chip-info">In corso</span>}
                 {progress?.watchLater && <span className="chip chip-later">Guarda dopo</span>}

@@ -69,7 +69,7 @@ const DeleteAccountFlow = ({ nickname, onCancel }: { nickname: string; onCancel:
             <li>Non si può tornare indietro: nemmeno noi potremo recuperare i tuoi dati.</li>
           </ul>
           <div className="delete-tip">
-            <strong>Consiglio:</strong> prima scarica i tuoi dati. Con il file potrai ricaricare tutto su un nuovo profilo.
+            <p className="delete-tip-text"><strong>Consiglio:</strong> prima scarica i tuoi dati. Con il file potrai ricaricare tutto su un nuovo profilo.</p>
             <button type="button" className="btn-ghost" onClick={download}>{downloaded ? '✓ File scaricato' : 'Scarica i miei dati (JSON)'}</button>
           </div>
           <div className="delete-actions">

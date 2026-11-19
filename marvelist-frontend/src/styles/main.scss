@@ -6388,3 +6388,53 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 .delete-tip { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid rgba(241, 196, 15, 0.45); background: rgba(241, 196, 15, 0.08); color: #fff3c4; font-size: 0.88rem; .btn-ghost { width: 100%; } }
 .delete-check { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9rem; line-height: 1.45; cursor: pointer; input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: #ed1d24; } }
 .delete-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px; .btn-ghost, .btn-danger { flex: 1 1 140px; } }
+
+// Voto MARVEList accanto a quello TMDB
+.chip-marvelist { background: rgba(var(--accent-rgb), 0.16); border-color: rgba(var(--accent-rgb), 0.5); color: #ffd6d6; small { opacity: 0.75; font-size: 0.72rem; } &.is-empty { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12); color: var(--text-muted); } }
+
+// Pagina Community
+.release-row { display: grid; grid-auto-flow: column; grid-auto-columns: 140px; gap: 14px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
+.release-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-light);
+  text-decoration: none;
+  scroll-snap-align: start;
+  .cm-poster-img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); transition: transform 0.25s var(--ease-out), border-color 0.25s; }
+  &:hover .cm-poster-img, &:focus-visible .cm-poster-img { transform: translateY(-3px); border-color: rgba(var(--accent-rgb), 0.6); }
+}
+.release-title { font-weight: 700; font-size: 0.88rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.release-label { align-self: flex-start; padding: 3px 9px; border-radius: var(--radius-pill); background: rgba(var(--accent-rgb), 0.16); border: 1px solid rgba(var(--accent-rgb), 0.45); color: #ffd6d6; font-size: 0.74rem; font-weight: 600; }
+.top-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+@media (max-width: 991.98px) { .top-grid { grid-template-columns: 1fr; gap: 0; } }
+.top-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px 8px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-light);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+  &:hover, &:focus-visible { border-color: rgba(var(--accent-rgb), 0.55); background: rgba(var(--accent-rgb), 0.08); color: #fff; }
+}
+.top-rank { flex: 0 0 34px; text-align: center; font-family: 'Anton', sans-serif; font-size: 1.5rem; color: var(--text-muted); &.is-podium { color: var(--gold); } }
+.top-poster { flex: 0 0 44px; .cm-poster-img { width: 44px; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 6px; display: block; } }
+.top-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.top-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-detail { color: var(--text-muted); font-size: 0.82rem; }
+.top-vote { color: var(--gold); }
+// Le due classifiche: colonne che non si allargano con i titoli lunghi e intestazioni allineate
+.top-grid > section { min-width: 0; }
+.top-grid .section-heading { flex-direction: column; align-items: flex-start; gap: 0; .section-title { padding-bottom: 4px; } }
+.top-row { min-width: 0; }
+// Schede di "Modifica profilo" su due righe sui telefoni, così sono tutte visibili
+@media (max-width: 520px) {
+  .edit-profile-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+  .edit-profile-tab { text-align: center; }
+}
+.delete-tip-text { margin: 0; }

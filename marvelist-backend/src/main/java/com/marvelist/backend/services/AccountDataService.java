@@ -335,6 +335,7 @@ public class AccountDataService {
         delete("comments", "delete from comments where parent_id in (" + ownComments + ")", id);
         delete("comments", "delete from comments where user_id = ?", id);
         delete("episode_ratings", "delete from episode_ratings where user_id = ?", id);
+        delete("watch_events", "delete from watch_events where user_id = ?", id);
         delete("user_progress_episodes", "delete from user_progress_episodes where progress_id in (select id from user_progress where user_id = ?)", id);
         delete("user_progress", "delete from user_progress where user_id = ?", id);
         String items = "select i.id from marathon_items i join marathons m on m.id = i.marathon_id where m.user_id = ?";

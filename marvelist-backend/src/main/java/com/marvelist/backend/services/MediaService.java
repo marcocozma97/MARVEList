@@ -8,17 +8,20 @@ import com.marvelist.backend.entities.MarathonItem;
 import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.User;
 import com.marvelist.backend.entities.UserProgress;
+import com.marvelist.backend.entities.WatchEvent;
 import com.marvelist.backend.repositories.EpisodeRatingRepository;
 import com.marvelist.backend.repositories.MarathonRepository;
 import com.marvelist.backend.repositories.MediaRepository;
 import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.UserRepository;
+import com.marvelist.backend.repositories.WatchEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ public class MediaService {
     private final UserProgressRepository progressRepository;
     private final EpisodeRatingRepository episodeRatingRepository;
     private final MarathonRepository marathonRepository;
+    private final WatchEventRepository watchEventRepository;
 
     public List<Media> getAllMedia() {
         return mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc();
@@ -74,6 +78,7 @@ public class MediaService {
         userRepository.save(user);
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
+        recordWatch(user, media, wasSeen, before, progress);
         return toResponse(user, media, progress);
     }
 
@@ -187,6 +192,7 @@ public class MediaService {
         userRepository.save(user);
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
+        recordWatch(user, media, wasSeen, before, progress);
         return toResponse(user, media, progress);
     }
 
@@ -256,6 +262,7 @@ public class MediaService {
         userRepository.save(user);
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
+        recordWatch(user, media, wasSeen, before, progress);
     }
 
     @Transactional
@@ -324,6 +331,16 @@ public class MediaService {
                 .minutesWatched(progress.getMinutesWatched() == null ? 0 : progress.getMinutesWatched())
                 .watchedEpisodes(progress.getWatchedEpisodes().stream().sorted().toList())
                 .build();
+    }
+
+    // Per la "Top 10 visti della settimana": film appena segnato come visto o nuovi episodi visti.
+    // La presa visione di un'intera fase non conta: è un recupero dell'arretrato, non una visione di questi giorni
+    private void recordWatch(User user, Media media, boolean wasSeen, Set<Integer> before, UserProgress progress) {
+        boolean newlySeen = !wasSeen && user.getSeenMedia().contains(media);
+        boolean newEpisodes = progress.getWatchedEpisodes().stream().anyMatch(ep -> !before.contains(ep));
+        if (newlySeen || newEpisodes) {
+            watchEventRepository.save(WatchEvent.builder().user(user).media(media).watchedAt(Instant.now()).build());
+        }
     }
 
     private void syncMarathons(User user, Media media, boolean wasSeen, Set<Integer> before, UserProgress progress) {

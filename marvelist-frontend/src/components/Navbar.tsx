@@ -92,6 +92,7 @@ const Navbar = () => {
         <div className="site-nav-menu" id="site-nav-menu" onClick={() => setMenuOpen(false)}>
           <NavLink className={linkClass} to="/timeline">Timeline</NavLink>
           <NavLink className={linkClass} to="/road-to">Road To</NavLink>
+          <NavLink className={linkClass} to="/community">Community</NavLink>
           <NavLink className={linkClass} to="/news">News</NavLink>
           <NavLink className={linkClass} to="/faq">FAQ</NavLink>
           <NavLink className={({ isActive }) => `site-nav-jairvis ${isActive ? 'active' : ''}`} to="/jairvis">J.A.I.R.V.I.S.</NavLink>

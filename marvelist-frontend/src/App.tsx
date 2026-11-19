@@ -14,6 +14,7 @@ import FAQ from './pages/Faq';
 import News from './pages/News';
 import Timeline from './pages/Timeline';
 import RoadTo from './pages/RoadTo';
+import CommunityPage from './pages/CommunityPage';
 import Profile from './pages/Profile';
 import ScrollTopButton from './components/ScrollTopButton';
 import Jairvis from './pages/Jairvis';
@@ -59,6 +60,7 @@ const Shell = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/road-to" element={<RoadTo />} />
+          <Route path="/community" element={<CommunityPage />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/news" element={<News />} />
           <Route path="/profile" element={<Profile />} />

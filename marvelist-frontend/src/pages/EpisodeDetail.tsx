@@ -10,6 +10,8 @@ import { episodeAirDate, formatDay, isEpisodeOut, isUpcoming, releaseLabel } fro
 import { seasonNumber, seriesTitle } from '../utils/community';
 import SlowLoader from '../components/SlowLoader';
 import { MissingOverview } from '../components/SnapGauntlet';
+import MarvelistVote from '../components/MarvelistVote';
+import { useMarvelistRatings } from '../hooks/useMarvelistRatings';
 
 const isEditable = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
@@ -25,6 +27,8 @@ const EpisodeDetail = () => {
   const [loaded, setLoaded] = useState<{ episode: number; data: TmdbEpisode | null } | null>(null);
   const [progress, setProgress] = useState<MediaProgress | null>(null);
   const [ratings, setRatings] = useState<Record<number, number>>({});
+  // Voto MARVEList dell'episodio: si ricarica quando cambia il tuo voto
+  const marvelist = useMarvelistRatings(media?.id, ratings[episode]);
   const [isLoading, setIsLoading] = useState(true);
   const progressRequest = useRef(0);
 
@@ -175,6 +179,7 @@ const EpisodeDetail = () => {
                 {!upcoming && !episodeOut && <span className="chip chip-upcoming">In arrivo{plannedDate ? ` · ${formatDay(plannedDate)}` : ''}</span>}
                 {details?.runtime ? <span className="chip">{details.runtime} min</span> : null}
                 {tmdbVote && <span className="chip chip-gold">★ {tmdbVote} TMDB</span>}
+                {episodeOut && <MarvelistVote rating={marvelist ? (marvelist.episodes[episode] ?? { average: null, count: 0 }) : null} />}
                 {watched && <span className="chip chip-success">✔ Visto</span>}
                 {rating !== null && <span className="chip">Il tuo voto: {String(rating).replace('.', ',')}</span>}
               </div>
