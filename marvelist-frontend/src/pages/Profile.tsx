@@ -179,9 +179,6 @@ const Profile = () => {
               </div>
             )}
             {profile?.email && <span className="profile-email">{profile.email}</span>}
-            <button type="button" className="btn-ghost profile-edit-btn" onClick={() => setShowEditProfile(true)} disabled={!profile}>
-              <span aria-hidden="true">✎</span> Modifica profilo
-            </button>
             <div className="social-counts">
               <button type="button" className="social-count" onClick={() => setPeopleTab('followers')} disabled={!profileId}>
                 <strong>{social?.followers ?? 0}</strong><span>Follower</span>
@@ -191,6 +188,9 @@ const Profile = () => {
               </button>
               <button type="button" className="social-find" onClick={() => setPeopleTab('search')} disabled={!profileId}>
                 <span aria-hidden="true">⌕</span> Trova utenti
+              </button>
+              <button type="button" className="social-find profile-edit-btn" onClick={() => setShowEditProfile(true)} disabled={!profile}>
+                <span aria-hidden="true">✎</span> Modifica profilo
               </button>
             </div>
           </div>
