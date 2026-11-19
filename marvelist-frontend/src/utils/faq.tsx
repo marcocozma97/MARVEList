@@ -107,7 +107,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     id: 'extra', title: 'Road To, News e J.A.I.R.V.I.S.', items: [
       item('Cosa trovo nella pagina Community?',
-        <>Nella <Link to="/community">Community</Link> ci sono le <strong>prossime uscite</strong> (film, serie e nuovi episodi in arrivo), i titoli <strong>usciti da poco</strong>, la <strong>Top 10 visti della settimana</strong> (i titoli segnati come visti da più utenti negli ultimi 7 giorni; segnare un'intera fase come vista non conta) e la <strong>Top 10 più votati</strong>, in base alla media dei voti di tutti gli utenti.</>),
+        <>Nella <Link to="/community">Community</Link> ci sono le <strong>prossime uscite</strong> (film, serie e nuovi episodi in arrivo), i titoli <strong>usciti da poco</strong>, la <strong>Top 10 visti della settimana</strong> (i titoli segnati come visti da più utenti negli ultimi 7 giorni; segnare un'intera fase come vista non conta) e la <strong>Top 10 più votati</strong>, in base alla media dei voti di tutti gli utenti (entrano solo i titoli con almeno 5 voti).</>),
       item('Da dove arrivano le notizie del Daily Bugle?',
         <>Le <Link to="/news">News</Link> raccolgono gli articoli italiani sul mondo Marvel degli ultimi 14 giorni, tramite Google News. Ogni titolo apre l'articolo sul sito della testata; se la notizia parla di un film o di una serie del catalogo trovi anche il link alla sua scheda.</>),
       item('Cosa sono le Road To?',

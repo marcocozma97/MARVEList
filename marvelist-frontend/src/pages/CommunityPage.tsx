@@ -185,9 +185,9 @@ const CommunityPage = () => {
         <section className="profile-section">
           <div className="section-heading">
             <h2 className="section-title">Top 10 più votati</h2>
-            <span className="section-hint">Media dei voti di tutti gli utenti di MARVEList</span>
+            <span className="section-hint">Media dei voti di tutti gli utenti, solo titoli con almeno 5 voti</span>
           </div>
-          <TopList items={ratedItems} empty="Ancora nessun voto: vota i titoli che hai visto con gli scudi." />
+          <TopList items={ratedItems} empty="Ancora nessun titolo con almeno 5 voti: vota con gli scudi i titoli che hai visto!" />
         </section>
       </div>
     </div>

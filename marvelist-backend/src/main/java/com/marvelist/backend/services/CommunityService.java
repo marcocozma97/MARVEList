@@ -21,6 +21,7 @@ public class CommunityService {
 
     static final int TOP_SIZE = 10;
     static final Duration WEEK = Duration.ofDays(7);
+    static final long MIN_VOTES = 5; // voti minimi per entrare nella Top 10 più votati
 
     private final UserProgressRepository progressRepository;
     private final EpisodeRatingRepository episodeRatingRepository;
@@ -52,10 +53,11 @@ public class CommunityService {
                 .toList();
     }
 
-    // Media di tutti i voti degli utenti su ogni titolo, dalla più alta (a parità vince chi ha più voti)
+    // Media di tutti i voti degli utenti su ogni titolo, dalla più alta (a parità vince chi ha più voti).
+    // Entrano solo i titoli con almeno MIN_VOTES voti, così un singolo 10 non scavalca titoli votati da tanti
     @Transactional(readOnly = true)
     public List<TopRated> topRated() {
-        return progressRepository.topRated(PageRequest.of(0, TOP_SIZE)).stream()
+        return progressRepository.topRated(MIN_VOTES, PageRequest.of(0, TOP_SIZE)).stream()
                 .map(r -> new TopRated((Long) r[0], round(r[1]), ((Number) r[2]).longValue()))
                 .toList();
     }

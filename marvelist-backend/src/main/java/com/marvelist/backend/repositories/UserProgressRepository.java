@@ -23,9 +23,10 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Long
     @Query("select avg(p.rating), count(p.rating) from UserProgress p where p.media.id = :mediaId and p.rating is not null")
     List<Object[]> averageRating(@Param("mediaId") Long mediaId);
 
-    // Classifica dei titoli più votati: [mediaId, media, numero di voti]
+    // Classifica dei titoli più votati, solo con almeno minVotes voti: [mediaId, media, numero di voti]
     @Query("select p.media.id, avg(p.rating), count(p.rating) from UserProgress p "
             + "where p.rating is not null and p.media.sortOrder is not null "
-            + "group by p.media.id order by avg(p.rating) desc, count(p.rating) desc")
-    List<Object[]> topRated(Pageable pageable);
+            + "group by p.media.id having count(p.rating) >= :minVotes "
+            + "order by avg(p.rating) desc, count(p.rating) desc")
+    List<Object[]> topRated(@Param("minVotes") long minVotes, Pageable pageable);
 }
