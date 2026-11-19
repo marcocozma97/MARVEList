@@ -300,7 +300,7 @@ const Profile = () => {
             Nessun titolo in corso. Apri un film o una serie dalla <Link to="/timeline">Timeline</Link> e segna i minuti o gli episodi visti.
           </div>
         ) : (
-          <div className="media-grid">
+          <div className="media-grid media-row" aria-label="Continua a guardare">
             {watchlist.map(item => (
               <MediaCard key={item.id} media={item} watchLater={watchLaterIds.includes(item.id)} rating={progressById[item.id]?.rating} progress={getProgressPercent(item, progressById[item.id])} />
             ))}

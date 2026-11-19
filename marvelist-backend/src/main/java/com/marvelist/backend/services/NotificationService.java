@@ -12,6 +12,8 @@ import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,20 @@ public class NotificationService {
                 .episodeNumber(comment != null ? comment.getEpisodeNumber() : null)
                 .createdAt(Instant.now())
                 .build());
+    }
+
+    // Annuncio dell'app installabile: una sola volta, a tutti gli utenti già registrati con l'account attivo.
+    // Se esiste già una notifica di questo tipo l'annuncio è stato fatto: i riavvii successivi non lo ripetono
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void announceAppOnce() {
+        if (notificationRepository.existsByType(APP_AVAILABLE)) return;
+        List<Notification> created = userRepository.findAll().stream()
+                .filter(User::isEnabled)
+                .map(user -> system(user, APP_AVAILABLE, null, null))
+                .toList();
+        notificationRepository.saveAll(created);
+        System.out.println("--- ANNUNCIO DELL'APP INSTALLABILE INVIATO A " + created.size() + " UTENTI ---");
     }
 
     @Transactional
