@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface EpisodeRatingRepository extends JpaRepository<EpisodeRating, Long> {
 
     List<EpisodeRating> findAllByUserAndMedia(User user, Media media);
+    List<EpisodeRating> findAllByUser(User user);
 
     Optional<EpisodeRating> findByUserAndMediaAndEpisodeNumber(User user, Media media, Integer episodeNumber);
 }

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { errorMessage } from '../utils/marathon';
 import { isValidEmail, isValidPassword, PASSWORD_RULE } from '../utils/validation';
 import Brand from '../components/Brand';
 
 const Register = () => {
+  // Arrivo dall'eliminazione dell'account
+  const accountDeleted = !!(useLocation().state as { accountDeleted?: boolean } | null)?.accountDeleted;
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -58,6 +60,9 @@ const Register = () => {
       <div className="auth-card">
         <Link to="/" className="auth-logo" aria-label="MARVEList, torna alla home"><Brand size="md" /></Link>
         <h1 className="auth-title">Registrati</h1>
+        {accountDeleted && !error && (
+          <div className="form-success" role="status">Il tuo account è stato eliminato. Se hai scaricato i tuoi dati, dopo la registrazione puoi caricarli da "Modifica profilo".</div>
+        )}
 
         {error && <div className="form-error" role="alert">{error}</div>}
 

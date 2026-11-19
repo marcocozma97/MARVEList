@@ -16,9 +16,8 @@ import { computeRank } from '../utils/rank';
 import { speakWatchTime, splitWatchTime } from '../utils/watchTime';
 import { AVATARS, AVATAR_GROUPS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
-import { useNicknameCheck } from '../hooks/useNicknameCheck';
 import SlowLoader from '../components/SlowLoader';
-import ChangePasswordSection from '../components/ChangePasswordSection';
+import EditProfileModal from '../components/EditProfileModal';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -34,10 +33,8 @@ const Profile = () => {
   const [marathons, setMarathons] = useState<MarathonSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [confirmNickname, setConfirmNickname] = useState(false);
-  const [nicknameDraft, setNicknameDraft] = useState('');
-  const nicknameStatus = useNicknameCheck(isEditingName ? nicknameDraft : '', profile?.nickname);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // dopo l'importazione di un salvataggio si ricaricano i dati
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -78,7 +75,7 @@ const Profile = () => {
       }
     };
     if (isAuthenticated) fetchProfileData();
-  }, [isAuthenticated, dispatch]);
+  }, [isAuthenticated, dispatch, reloadKey]);
 
   // Solo l'account ufficiale di MARVEList vede quanti sono gli utenti
   const isOfficial = !!profile?.official;
@@ -105,47 +102,6 @@ const Profile = () => {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const nicknameLockedUntil = profile?.nicknameChangeableFrom
-    ? new Date(profile.nicknameChangeableFrom).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })
-    : null;
-
-  const startEditName = () => {
-    if (nicknameLockedUntil) return;
-    setNicknameDraft(profile?.nickname ?? '');
-    setProfileError(null);
-    setConfirmNickname(false);
-    setIsEditingName(true);
-  };
-
-  const cancelEditName = () => {
-    setIsEditingName(false);
-    setConfirmNickname(false);
-  };
-
-  const submitNickname = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const nickname = nicknameDraft.trim();
-    if (nickname.length < 2 || nickname.length > 30) {
-      setProfileError('Il nickname deve avere tra 2 e 30 caratteri.');
-      return;
-    }
-    if (nicknameStatus === 'taken') {
-      setProfileError('Questo nickname è già usato da un altro utente.');
-      return;
-    }
-    if (nickname === profile?.nickname) {
-      cancelEditName();
-      return;
-    }
-    if (!confirmNickname) {
-      setProfileError(null);
-      setConfirmNickname(true);
-      return;
-    }
-    if (await saveProfile({ nickname })) cancelEditName();
-    else setConfirmNickname(false);
   };
 
   const chooseAvatar = async (avatar: string) => {
@@ -211,43 +167,11 @@ const Profile = () => {
           </button>
 
           <div className="profile-name-block">
-            {isEditingName ? (
-              <form className="nickname-form" onSubmit={submitNickname}>
-                <input
-                  className="field-input"
-                  value={nicknameDraft}
-                  onChange={(e) => { setNicknameDraft(e.target.value); setConfirmNickname(false); }}
-                  maxLength={30}
-                  autoFocus
-                  aria-label="Nuovo nickname"
-                />
-                <button type="submit" className="btn-marvel btn-inline" disabled={isSaving || nicknameStatus === 'taken' || nicknameStatus === 'checking'}>{confirmNickname ? 'Sì, cambia' : 'Salva'}</button>
-                <button type="button" className="btn-ghost" onClick={cancelEditName}>Annulla</button>
-                {nicknameStatus === 'ok' && <p className="nickname-check is-ok nickname-warning-inline">✓ Disponibile</p>}
-                {nicknameStatus === 'taken' && <p className="nickname-check is-taken nickname-warning-inline">✗ Già usato da un altro utente</p>}
-                {confirmNickname && (
-                  <p className="nickname-warning nickname-warning-inline" role="alert">
-                    <span aria-hidden="true">⚠</span>
-                    <span>Dopo il cambio potrai modificare di nuovo il nickname <strong>solo tra 30 giorni</strong>.</span>
-                  </p>
-                )}
-              </form>
-            ) : (
-              <div className="profile-name-row">
-                <h1 className="profile-name">{nickname}</h1>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={startEditName}
-                  disabled={!!nicknameLockedUntil}
-                  aria-label={nicknameLockedUntil ? `Potrai cambiare il nickname dal ${nicknameLockedUntil}` : 'Modifica nickname'}
-                  title={nicknameLockedUntil ? `Potrai cambiare il nickname dal ${nicknameLockedUntil}` : 'Modifica nickname (una volta ogni 30 giorni)'}
-                >✎</button>
-                {/* Il grado sta a destra del nickname */}
-                <RankBadge rank={rank} />
-              </div>
-            )}
-            {isEditingName && <RankBadge rank={rank} />}
+            <div className="profile-name-row">
+              <h1 className="profile-name">{nickname}</h1>
+              {/* Il grado sta a destra del nickname */}
+              <RankBadge rank={rank} />
+            </div>
             {rank.next && (
               <div className="rank-next">
                 <span className="rank-next-bar"><span style={{ width: `${Math.round(rank.next.progress * 100)}%` }} /></span>
@@ -255,6 +179,9 @@ const Profile = () => {
               </div>
             )}
             {profile?.email && <span className="profile-email">{profile.email}</span>}
+            <button type="button" className="btn-ghost profile-edit-btn" onClick={() => setShowEditProfile(true)} disabled={!profile}>
+              <span aria-hidden="true">✎</span> Modifica profilo
+            </button>
             <div className="social-counts">
               <button type="button" className="social-count" onClick={() => setPeopleTab('followers')} disabled={!profileId}>
                 <strong>{social?.followers ?? 0}</strong><span>Follower</span>
@@ -405,7 +332,13 @@ const Profile = () => {
         )}
       </section>
 
-      <ChangePasswordSection />
+      {showEditProfile && profile && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setShowEditProfile(false)}
+          onDataChanged={() => setReloadKey(k => k + 1)}
+        />
+      )}
 
       {peopleTab && profileId && (
         <PeopleModal

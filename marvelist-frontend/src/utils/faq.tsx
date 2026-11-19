@@ -64,6 +64,12 @@ export const FAQ_SECTIONS: FaqSection[] = [
   },
   {
     id: 'gradi', title: 'Profilo e gradi', items: [
+      item('Come cambio nickname o password?',
+        <>Nell'<Link to="/profile">Area Personale</Link> tocca <strong>Modifica profilo</strong>. Il nickname si può cambiare una volta ogni 30 giorni; per la password serve quella attuale. Se l'hai dimenticata usa <Link to="/forgot-password">Password dimenticata?</Link> nella pagina di accesso.</>),
+      item('Posso salvare i miei dati o portarli su un nuovo profilo?',
+        <>Sì: in <strong>Modifica profilo → I tuoi dati</strong> scarichi un file JSON con visti, episodi, voti, preferiti, "guarda dopo", maratone, utenti seguiti e commenti. Da un nuovo profilo puoi caricare quel file e ritrovare i tuoi progressi (i commenti restano solo nel file).</>),
+      item('Cosa succede se elimino il mio account?',
+        <>Vengono eliminati <strong>per sempre tutti i tuoi progressi</strong> (visti, voti, preferiti, maratone, follow, notifiche e commenti con le relative risposte) e non è possibile recuperarli. Inoltre <strong>tutti i nickname che hai usato tornano liberi e potranno essere scelti da altri utenti</strong>. Per questo, prima di eliminare l'account, scarica i tuoi dati da <strong>Modifica profilo → I tuoi dati</strong>. L'eliminazione richiede tre passaggi di conferma e la tua password.</>),
       item('Come funziona il badge del grado?',
         <>Cresce con quello che hai completato: da <strong>Recluta S.H.I.E.L.D.</strong> fino a <strong>GOD OF MARVEL</strong>, passando per i gradi MCU (rossi), Marvel Fan (gialli) e Marvel GOD (celesti). Nel profilo passa il mouse sul badge, o toccalo, per vedere tutti i gradi e i loro colori.</>),
       item('I titoli non ancora usciti contano?',

@@ -24,6 +24,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByParentIdInOrderByCreatedAtAsc(Collection<Long> parentIds);
 
     List<Comment> findByParent(Comment parent);
+    // Tutti i commenti di un utente, per il salvataggio dei dati
+    @EntityGraph(attributePaths = {"media", "parent"})
+    List<Comment> findByUserOrderByCreatedAtAsc(User user);
 
     long countByMediaIdAndEpisodeNumberIsNull(Long mediaId);
 

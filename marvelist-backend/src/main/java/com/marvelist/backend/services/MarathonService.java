@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MarathonService {
 
-    private static final Set<String> VISION_ORDERS = Set.of("MCU", "FAN", "GOD");
-    private static final int MAX_BACKGROUND_LENGTH = 3_000_000; // ~2MB di immagine in base64
+    static final Set<String> VISION_ORDERS = Set.of("MCU", "FAN", "GOD");
+    static final int MAX_BACKGROUND_LENGTH = 3_000_000; // ~2MB di immagine in base64
     private static final DateTimeFormatter IT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final MarathonRepository marathonRepository;
