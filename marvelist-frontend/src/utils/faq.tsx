@@ -25,9 +25,25 @@ export const FAQ_SECTIONS: FaqSection[] = [
       item('Devo pagare per usare MARVEList?',
         <>Assolutamente no! Stark Industries finanzia interamente questo progetto.</>),
       item('Serve un account?',
-        <>Sì: Timeline, Road To, maratone e J.A.I.R.V.I.S. sono legati al tuo profilo, così ritrovi visti, voti e progressi su qualsiasi dispositivo. <Link to="/register">Registrati</Link> in pochi secondi: è gratis.</>),
+        <>Sì: Timeline, Road To, Community, maratone e J.A.I.R.V.I.S. sono legati al tuo profilo, così ritrovi visti, voti e progressi su qualsiasi dispositivo. <Link to="/register">Registrati</Link> in pochi secondi: è gratis.</>),
       item("Come posso segnalare un problema o proporre un'idea?",
         <>Scrivici a <a href="mailto:marvelist.app@gmail.com">marvelist.app@gmail.com</a>: segnalazioni di errori, idee su cosa aggiungere, titoli mancanti o qualsiasi altra cosa. Leggiamo tutto!</>),
+    ],
+  },
+  {
+    id: 'account', title: 'Account e accesso', items: [
+      item('Non mi è arrivata la mail di conferma: cosa faccio?',
+        <>Controlla anche nella cartella <strong>spam</strong> o "promozioni": il link vale 24 ore. Se non la trovi, <Link to="/register">registrati di nuovo</Link> con la stessa email: ti mandiamo un'altra mail e funziona anche il link di quella precedente. Tra una richiesta e l'altra aspetta un paio di minuti.</>),
+      item('Ho confermato la mail ma non riesco ad accedere',
+        <>Le maiuscole nell'email non contano, quindi "Mario@gmail.com" e "mario@gmail.com" sono lo stesso account. Se ti sei registrato più volte prima di confermare, vale la password dell'<strong>ultima</strong> registrazione. Se non la ricordi usa <Link to="/forgot-password">Password dimenticata?</Link>.</>),
+      item('Ho dimenticato la password',
+        <>Nella pagina di accesso tocca <Link to="/forgot-password">Password dimenticata?</Link> e scrivi la tua email: ti arriva un link per sceglierne una nuova. Il link vale 60 minuti e si può usare una sola volta. Dopo il cambio, su tutti gli altri dispositivi dovrai accedere di nuovo.</>),
+      item('Come cambio nickname, password o immagine profilo?',
+        <>Nell'<Link to="/profile">Area Personale</Link> tocca <strong>Modifica profilo</strong>, accanto a "Trova utenti". Il nickname è unico, resta tuo anche dopo averlo cambiato e si può cambiare <strong>una volta ogni 30 giorni</strong> (quando torna possibile ti arriva una notifica). Per cambiare la password serve quella attuale: chi era collegato con il tuo account da altri dispositivi dovrà accedere di nuovo. L'immagine profilo la cambi quando vuoi toccando l'avatar.</>),
+      item('Posso salvare i miei dati o portarli su un nuovo profilo?',
+        <>Sì: in <strong>Modifica profilo → I tuoi dati</strong> scarichi un file JSON con visti, episodi, voti, preferiti, "guarda dopo", maratone, utenti seguiti e commenti. Da un nuovo profilo puoi caricare quel file e ritrovare i tuoi progressi (i commenti restano solo nel file).</>),
+      item('Cosa succede se elimino il mio account?',
+        <>Vengono eliminati <strong>per sempre tutti i tuoi progressi</strong> (visti, voti, preferiti, maratone, follow, notifiche e commenti con le relative risposte) e non è possibile recuperarli. Inoltre <strong>tutti i nickname che hai usato tornano liberi e potranno essere scelti da altri utenti</strong>. Per questo, prima di eliminare l'account, scarica i tuoi dati da <strong>Modifica profilo → I tuoi dati</strong>. L'eliminazione richiede tre passaggi di conferma e la tua password.</>),
     ],
   },
   {
@@ -48,6 +64,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
     id: 'progressi', title: 'Schede e progressi', items: [
       item("Cos'è il voto MARVEList?",
         <>È la media dei voti dati con gli scudi da tutti gli utenti di MARVEList, da 0,5 a 10. Lo trovi nelle schede di film e serie e nei singoli episodi, accanto al voto TMDB, con il numero di voti tra parentesi. Quando voti, la media si aggiorna subito.</>),
+      item('Dove posso vedere un film o una serie in Italia?',
+        <>Nella scheda del titolo, sotto la trama, il riquadro <strong>Dove vederlo in Italia</strong> mostra le piattaforme in abbonamento o gratuite e, se c'è, dove noleggiarlo o comprarlo. Toccando una piattaforma apri la pagina con i link diretti. Se non è su nessuna piattaforma compare <strong>Non disponibile in Italia</strong> con la bandiera dell'Hydra. I dati arrivano da JustWatch e si aggiornano da soli; per le serie divise in stagioni valgono le piattaforme della serie intera.</>),
       item('Come segno quanto ho visto di un film?',
         <>Nella scheda del film sposta lo slider (o scrivi i minuti) e premi <strong>Salva</strong>. Il film compare in "Continua a guardare" nel profilo; quando arrivi alla durata completa diventa visto da solo.</>),
       item('E per le serie TV?',
@@ -65,19 +83,11 @@ export const FAQ_SECTIONS: FaqSection[] = [
     ],
   },
   {
-    id: 'gradi', title: 'Profilo e gradi', items: [
-      item('Come cambio nickname o password?',
-        <>Nell'<Link to="/profile">Area Personale</Link> tocca <strong>Modifica profilo</strong>. Il nickname si può cambiare una volta ogni 30 giorni; per la password serve quella attuale. Se l'hai dimenticata usa <Link to="/forgot-password">Password dimenticata?</Link> nella pagina di accesso.</>),
-      item('Posso salvare i miei dati o portarli su un nuovo profilo?',
-        <>Sì: in <strong>Modifica profilo → I tuoi dati</strong> scarichi un file JSON con visti, episodi, voti, preferiti, "guarda dopo", maratone, utenti seguiti e commenti. Da un nuovo profilo puoi caricare quel file e ritrovare i tuoi progressi (i commenti restano solo nel file).</>),
-      item('Cosa succede se elimino il mio account?',
-        <>Vengono eliminati <strong>per sempre tutti i tuoi progressi</strong> (visti, voti, preferiti, maratone, follow, notifiche e commenti con le relative risposte) e non è possibile recuperarli. Inoltre <strong>tutti i nickname che hai usato tornano liberi e potranno essere scelti da altri utenti</strong>. Per questo, prima di eliminare l'account, scarica i tuoi dati da <strong>Modifica profilo → I tuoi dati</strong>. L'eliminazione richiede tre passaggi di conferma e la tua password.</>),
+    id: 'gradi', title: 'Gradi', items: [
       item('Come funziona il badge del grado?',
         <>Cresce con quello che hai completato: da <strong>Recluta S.H.I.E.L.D.</strong> fino a <strong>GOD OF MARVEL</strong>, passando per i gradi MCU (rossi), Marvel Fan (gialli) e Marvel GOD (celesti). Nel profilo passa il mouse sul badge, o toccalo, per vedere tutti i gradi e i loro colori.</>),
       item('I titoli non ancora usciti contano?',
         <>No: i titoli "in arrivo" non contano come mancanti. Quando escono entrano nel conteggio e il grado si aggiorna da solo.</>),
-      item('Posso cambiare nickname e immagine profilo?',
-        <>Sì, nel profilo. Il nickname lo scegli al primo accesso ed è unico: nessun altro può usarlo, e resta tuo anche se poi lo cambi. Poi puoi cambiarlo con la matita accanto al nome <strong>una volta ogni 30 giorni</strong>: quando è di nuovo possibile ti arriva una notifica. L'immagine invece la cambi quando vuoi toccando l'avatar.</>),
     ],
   },
   {
@@ -94,6 +104,13 @@ export const FAQ_SECTIONS: FaqSection[] = [
   },
   {
     id: 'social', title: 'Community e amici', items: [
+      item('Cosa trovo nella pagina Community?',
+        <>Nella <Link to="/community">Community</Link>, accanto a Road To nel menu, trovi:<br />
+          <strong>Prossime uscite:</strong> film, serie e nuovi episodi in arrivo, in ordine di data.<br />
+          <strong>Usciti da poco:</strong> i titoli dell'ultimo mese e i nuovi episodi delle ultime due settimane.<br />
+          <strong>Top 10 visti della settimana:</strong> i titoli che negli ultimi 7 giorni sono stati segnati come visti dal maggior numero di persone (per le serie contano anche i nuovi episodi visti; segnare un'intera fase come vista non conta).<br />
+          <strong>Top 10 più votati:</strong> i titoli con il voto MARVEList più alto, tra quelli con almeno 5 voti; a parità di voto passa sopra chi ha ricevuto più voti.<br />
+          Le due classifiche si aggiornano ogni ora.</>),
       item('Come seguo un altro utente?',
         <>Tocca il nome o l'avatar di chi ha scritto un commento, oppure usa <strong>Trova utenti</strong> nel tuo profilo, e premi <strong>Segui</strong>. Da quel momento nel suo profilo vedi il grado, tutte le sue maratone, i titoli che sta guardando (senza sapere a che punto è) e i preferiti. Chi segui e chi ti segue lo vede solo il proprietario del profilo.</>),
       item('Posso mettere mi piace e rispondere ai commenti?',
@@ -106,8 +123,6 @@ export const FAQ_SECTIONS: FaqSection[] = [
   },
   {
     id: 'extra', title: 'Road To, News e J.A.I.R.V.I.S.', items: [
-      item('Cosa trovo nella pagina Community?',
-        <>Nella <Link to="/community">Community</Link> ci sono le <strong>prossime uscite</strong> (film, serie e nuovi episodi in arrivo), i titoli <strong>usciti da poco</strong>, la <strong>Top 10 visti della settimana</strong> (i titoli segnati come visti da più utenti negli ultimi 7 giorni; segnare un'intera fase come vista non conta) e la <strong>Top 10 più votati</strong>, in base alla media dei voti di tutti gli utenti (entrano solo i titoli con almeno 5 voti). Le due classifiche si aggiornano ogni ora.</>),
       item('Da dove arrivano le notizie del Daily Bugle?',
         <>Le <Link to="/news">News</Link> raccolgono gli articoli italiani sul mondo Marvel degli ultimi 14 giorni, tramite Google News. Ogni titolo apre l'articolo sul sito della testata; se la notizia parla di un film o di una serie del catalogo trovi anche il link alla sua scheda.</>),
       item('Cosa sono le Road To?',

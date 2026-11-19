@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -76,11 +77,20 @@ public class CommunityService {
                 .toList();
     }
 
-    // Voto MARVEList di ogni titolo (media dei voti di tutti gli utenti), dal più alto; a parità vince chi ha più voti.
+    // Voto MARVEList di ogni titolo (media dei voti di tutti gli utenti), dal più alto.
+    // A parità di voto mostrato (es. 8,3 e 8,3) passa sopra chi ha ricevuto più voti, anche se la media esatta è un po' più bassa.
     // Entrano solo i titoli con almeno MIN_VOTES voti, così un singolo 10 non scavalca titoli votati da tanti
     List<TopRated> topRated() {
-        return progressRepository.topRated(MIN_VOTES, PageRequest.of(0, TOP_SIZE)).stream()
+        return sortTopRated(progressRepository.ratedTitles(MIN_VOTES).stream()
                 .map(r -> new TopRated((Long) r[0], round(r[1]), ((Number) r[2]).longValue()))
+                .toList());
+    }
+
+    static List<TopRated> sortTopRated(List<TopRated> titles) {
+        return titles.stream()
+                .sorted(Comparator.comparingDouble(TopRated::average).reversed()
+                        .thenComparing(Comparator.comparingLong(TopRated::count).reversed()))
+                .limit(TOP_SIZE)
                 .toList();
     }
 

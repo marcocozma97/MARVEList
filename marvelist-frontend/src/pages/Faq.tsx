@@ -41,7 +41,7 @@ const Faq = () => {
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
             <input
               type="search"
-              placeholder="Cerca una domanda o una parola…"
+              placeholder="Cerca una domanda…"
               aria-label="Cerca nelle FAQ"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

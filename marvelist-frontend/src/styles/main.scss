@@ -4086,21 +4086,16 @@ $eyes-y: 26.8%;
 }
 .faq-search-count { flex-shrink: 0; color: $watcher-cyan; font-size: 0.8rem; font-weight: 700; }
 
-// Su telefono le categorie scorrono in orizzontale invece di andare a capo
+// Le categorie vanno sempre a capo: su qualsiasi schermo si vedono tutte, nessuna resta tagliata
 .faq-chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   @media (max-width: 575.98px) {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    margin: 0 -16px;
-    padding: 2px 16px 6px;
-    scrollbar-width: none;
-    scroll-snap-type: x proximity;
-    &::-webkit-scrollbar { display: none; }
+    gap: 6px;
+    // Su schermi strettissimi una categoria lunga va a capo invece di uscire dallo schermo
+    .faq-chip { padding: 6px 12px; font-size: 0.8rem; white-space: normal; text-align: center; }
   }
 }
 .faq-chip {
@@ -4113,6 +4108,7 @@ $eyes-y: 26.8%;
   font-size: 0.85rem;
   font-weight: 600;
   white-space: nowrap;
+  max-width: 100%;
   cursor: pointer;
   transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.2s var(--ease-spring);
   &:hover { border-color: rgba($watcher-cyan, 0.5); color: #fff; transform: translateY(-1px); }
