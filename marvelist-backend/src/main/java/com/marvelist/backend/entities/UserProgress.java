@@ -3,6 +3,7 @@ package com.marvelist.backend.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,9 @@ public class UserProgress {
     @CollectionTable(name = "user_progress_episodes", joinColumns = @JoinColumn(name = "progress_id"))
     @Column(name = "episode_number")
     private Set<Integer> watchedEpisodes = new HashSet<>();
+
+    // Ultimo aggiornamento dei progressi (episodi, minuti, visto): ordina "Continua a guardare"
+    private Instant updatedAt;
 
     // Un film iniziato o una serie con almeno un episodio visto
     public boolean isStarted() {

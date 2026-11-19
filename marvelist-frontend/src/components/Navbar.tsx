@@ -52,6 +52,17 @@ const Navbar = () => {
   // Le maratone si aprono dal profilo: anche lì "Profilo" resta evidenziato
   const isProfileArea = location.pathname.startsWith('/profile') || location.pathname.startsWith('/marathons');
 
+  // Toccando la campanella quando le notifiche sono già aperte si chiudono: si torna alla pagina di prima
+  // (o alla Timeline, se le notifiche sono state aperte da un link diretto)
+  const toggleNotifications = (e: React.MouseEvent) => {
+    setMenuOpen(false);
+    if (location.pathname !== '/notifications') return;
+    e.preventDefault();
+    const canGoBack = ((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0;
+    if (canGoBack) navigate(-1);
+    else navigate('/timeline');
+  };
+
   // Campanella delle notifiche: nel menu su desktop, accanto all'hamburger quando il menu è chiuso a tendina
   const bell = (className: string) => (
     <NavLink
@@ -59,7 +70,7 @@ const Navbar = () => {
       className={({ isActive }) => `site-nav-bell ${className} ${isActive ? 'active' : ''}`}
       aria-label={unread ? `Notifiche, ${unread} da leggere` : 'Notifiche'}
       title="Notifiche"
-      onClick={() => setMenuOpen(false)}
+      onClick={toggleNotifications}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>
       <span className="site-nav-bell-label">Notifiche</span>

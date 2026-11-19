@@ -58,7 +58,9 @@ const Profile = () => {
         ]);
 
         setFavorites(allData.filter(item => favData.includes(item.id)));
-        setWatchlist(allData.filter(item => watchData.includes(item.id)));
+        // Stesso ordine del backend: prima i titoli aggiornati più di recente, in fondo quelli in "Guarda dopo"
+        const mediaById = new Map(allData.map(item => [item.id, item]));
+        setWatchlist(watchData.flatMap(id => mediaById.get(id) ?? []));
         setSeenIds(seenData);
         setWatchLaterIds(laterData);
         setAllMedia(allData);

@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +77,7 @@ public class MediaService {
         }
 
         userRepository.save(user);
+        progress.setUpdatedAt(Instant.now());
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
@@ -133,10 +135,16 @@ public class MediaService {
     public List<Long> getWatchlistMediaIdsByUser(String userEmail) {
         User user = findUser(userEmail);
         Set<Long> seenIds = user.getSeenMedia().stream().map(Media::getId).collect(Collectors.toSet());
+        Set<Long> laterIds = user.getWatchLaterMedia().stream().map(Media::getId).collect(Collectors.toSet());
+        // Prima i titoli aggiornati più di recente; quelli in "Guarda dopo" sempre in fondo, con lo stesso criterio.
+        // I progressi salvati prima di questa data non hanno l'ora: vanno dopo, dal più recente creato
         return progressRepository.findAllByUser(user).stream()
                 .filter(UserProgress::isStarted)
+                .filter(p -> !seenIds.contains(p.getMedia().getId()))
+                .sorted(Comparator.comparing((UserProgress p) -> laterIds.contains(p.getMedia().getId()))
+                        .thenComparing(UserProgress::getUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(UserProgress::getId, Comparator.reverseOrder()))
                 .map(p -> p.getMedia().getId())
-                .filter(id -> !seenIds.contains(id))
                 .toList();
     }
 
@@ -190,6 +198,7 @@ public class MediaService {
         else user.getSeenMedia().remove(media);
 
         userRepository.save(user);
+        progress.setUpdatedAt(Instant.now());
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
@@ -224,6 +233,8 @@ public class MediaService {
         }).toList();
 
         userRepository.save(user);
+        Instant now = Instant.now();
+        progresses.forEach(p -> p.setUpdatedAt(now));
         progressRepository.saveAll(progresses);
         progresses.forEach(p -> syncMarathons(user, p.getMedia(), wasSeen.get(p.getMedia().getId()), before.get(p.getMedia().getId()), p));
         return progresses.stream().map(p -> toResponse(user, p.getMedia(), p)).toList();
@@ -260,6 +271,7 @@ public class MediaService {
         }
 
         userRepository.save(user);
+        progress.setUpdatedAt(Instant.now());
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
