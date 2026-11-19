@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { mediaService, type MediaItem } from '../services/mediaService';
-import { communityService, type TopRated, type TopWatched } from '../services/communityService';
+import { communityService, type Rankings } from '../services/communityService';
 import { getPosterUrl } from '../utils/poster';
 import { availableFrom, episodeAirDate, formatDay, isUpcoming, todayIso } from '../utils/upcoming';
 import PosterFallback from '../components/PosterFallback';
@@ -115,8 +115,7 @@ const TopList = ({ items, empty }: { items: { media: MediaItem; detail: React.Re
 const CommunityPage = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [media, setMedia] = useState<MediaItem[]>([]);
-  const [topWatched, setTopWatched] = useState<TopWatched[]>([]);
-  const [topRated, setTopRated] = useState<TopRated[]>([]);
+  const [rankings, setRankings] = useState<Rankings>({ topWatched: [], topRated: [], updatedAt: null });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -124,13 +123,11 @@ const CommunityPage = () => {
     let active = true;
     Promise.all([
       mediaService.getAllMedia(),
-      communityService.getTopWatched().catch((): TopWatched[] => []),
-      communityService.getTopRated().catch((): TopRated[] => []),
-    ]).then(([all, watched, rated]) => {
+      communityService.getRankings().catch((): Rankings => ({ topWatched: [], topRated: [], updatedAt: null })),
+    ]).then(([all, ranks]) => {
       if (!active) return;
       setMedia(all);
-      setTopWatched(watched);
-      setTopRated(rated);
+      setRankings(ranks);
     }).catch(err => console.error('Errore nel caricamento della Community', err))
       .finally(() => active && setIsLoading(false));
     return () => { active = false; };
@@ -141,11 +138,11 @@ const CommunityPage = () => {
 
   const today = todayIso();
   const byId = new Map(media.map(m => [m.id, m]));
-  const watchedItems = topWatched.flatMap(t => {
+  const watchedItems = rankings.topWatched.flatMap(t => {
     const m = byId.get(t.mediaId);
     return m ? [{ media: m, detail: t.users === 1 ? '1 utente questa settimana' : `${t.users} utenti questa settimana` }] : [];
   });
-  const ratedItems = topRated.flatMap(t => {
+  const ratedItems = rankings.topRated.flatMap(t => {
     const m = byId.get(t.mediaId);
     return m ? [{
       media: m,
@@ -173,11 +170,14 @@ const CommunityPage = () => {
         <ReleaseRow items={recentReleases(media, today)} empty="Nessuna novità nelle ultime settimane." />
       </section>
 
+      <p className="rankings-updated">
+        Classifiche aggiornate ogni ora{rankings.updatedAt ? ` · ultimo aggiornamento alle ${new Date(rankings.updatedAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}` : ''}
+      </p>
       <div className="top-grid">
         <section className="profile-section">
           <div className="section-heading">
             <h2 className="section-title">Top 10 visti della settimana</h2>
-            <span className="section-hint">Titoli segnati come visti da più utenti negli ultimi 7 giorni</span>
+            <span className="section-hint">Persone che negli ultimi 7 giorni hanno segnato il titolo come visto</span>
           </div>
           <TopList items={watchedItems} empty="Ancora nessuna visione questa settimana: segna qualcosa come visto e apri la classifica!" />
         </section>
@@ -185,7 +185,7 @@ const CommunityPage = () => {
         <section className="profile-section">
           <div className="section-heading">
             <h2 className="section-title">Top 10 più votati</h2>
-            <span className="section-hint">Media dei voti di tutti gli utenti, solo titoli con almeno 5 voti</span>
+            <span className="section-hint">Voto MARVEList di ogni titolo, solo con almeno 5 voti</span>
           </div>
           <TopList items={ratedItems} empty="Ancora nessun titolo con almeno 5 voti: vota con gli scudi i titoli che hai visto!" />
         </section>

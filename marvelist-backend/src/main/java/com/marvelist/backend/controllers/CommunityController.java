@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/community")
 @RequiredArgsConstructor
@@ -23,13 +21,9 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.ratings(mediaId));
     }
 
-    @GetMapping("/top-watched")
-    public ResponseEntity<List<CommunityService.TopWatched>> topWatched() {
-        return ResponseEntity.ok(communityService.topWatchedThisWeek());
-    }
-
-    @GetMapping("/top-rated")
-    public ResponseEntity<List<CommunityService.TopRated>> topRated() {
-        return ResponseEntity.ok(communityService.topRated());
+    // Top 10 visti della settimana e Top 10 più votati, aggiornate ogni ora
+    @GetMapping("/rankings")
+    public ResponseEntity<CommunityService.Rankings> rankings() {
+        return ResponseEntity.ok(communityService.rankings());
     }
 }

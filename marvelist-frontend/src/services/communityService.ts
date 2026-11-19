@@ -11,8 +11,10 @@ export interface MediaRatings {
 export interface TopWatched { mediaId: number; users: number }
 export interface TopRated { mediaId: number; average: number; count: number }
 
+// Classifiche ricalcolate dal server ogni ora
+export interface Rankings { topWatched: TopWatched[]; topRated: TopRated[]; updatedAt: string | null }
+
 export const communityService = {
   getRatings: async (mediaId: number): Promise<MediaRatings> => (await api.get(`/community/ratings/${mediaId}`)).data,
-  getTopWatched: async (): Promise<TopWatched[]> => (await api.get('/community/top-watched')).data,
-  getTopRated: async (): Promise<TopRated[]> => (await api.get('/community/top-rated')).data,
+  getRankings: async (): Promise<Rankings> => (await api.get('/community/rankings')).data,
 };
