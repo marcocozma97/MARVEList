@@ -20,10 +20,14 @@ interface Pool { seen: number; total: number }
 export const RANK_LADDER: { title: string; tone: RankTone; requirement: string }[] = [
   { title: 'Recluta S.H.I.E.L.D.', tone: 'grey', requirement: 'Il punto di partenza' },
   { title: 'Soldato S.H.I.E.L.D.', tone: 'red', requirement: 'Primo film o serie MCU completato' },
+  { title: 'Colonnello S.H.I.E.L.D.', tone: 'red', requirement: "25% dell'MCU" },
   { title: 'Generale S.H.I.E.L.D.', tone: 'red', requirement: "50% dell'MCU" },
+  { title: 'Capo S.H.I.E.L.D.', tone: 'red', requirement: "75% dell'MCU" },
   { title: 'Eroe', tone: 'red-bright', requirement: "100% dell'MCU" },
   { title: 'Avenger', tone: 'yellow', requirement: "MCU completato, poi un titolo presente solo in Marvel Fan" },
+  { title: 'New Avenger', tone: 'yellow', requirement: '25% di Marvel Fan' },
   { title: 'Avenger OG', tone: 'yellow', requirement: '50% di Marvel Fan' },
+  { title: 'Continent Avenger', tone: 'yellow', requirement: '75% di Marvel Fan' },
   { title: 'Planet Avenger', tone: 'yellow-bright', requirement: '100% di Marvel Fan' },
   { title: 'Solar Avenger', tone: 'sky-1', requirement: 'Marvel Fan completato (MCU compreso), poi un titolo presente solo in Marvel GOD' },
   { title: 'Universe Avenger', tone: 'sky-2', requirement: '25% di Marvel GOD' },
@@ -67,16 +71,20 @@ export const computeRank = (allMedia: MediaItem[], seenIds: Iterable<number>): R
   if (done(mcu) && fan.seen > 0) {
     const f = pct(fan);
     if (done(fan)) return { title: 'Planet Avenger', tone: 'yellow-bright', next: step('Solar Avenger', 1, 0), stats };
-    if (f >= 0.5) return { title: 'Avenger OG', tone: 'yellow', next: step('Planet Avenger', fan.total - fan.seen, (f - 0.5) / 0.5), stats };
-    return { title: 'Avenger', tone: 'yellow', next: step('Avenger OG', toReach(fan, 0.5), f / 0.5), stats };
+    if (f >= 0.75) return { title: 'Continent Avenger', tone: 'yellow', next: step('Planet Avenger', fan.total - fan.seen, (f - 0.75) / 0.25), stats };
+    if (f >= 0.5) return { title: 'Avenger OG', tone: 'yellow', next: step('Continent Avenger', toReach(fan, 0.75), (f - 0.5) / 0.25), stats };
+    if (f >= 0.25) return { title: 'New Avenger', tone: 'yellow', next: step('Avenger OG', toReach(fan, 0.5), (f - 0.25) / 0.25), stats };
+    return { title: 'Avenger', tone: 'yellow', next: step('New Avenger', toReach(fan, 0.25), f / 0.25), stats };
   }
 
   // MCU
   if (mcu.seen > 0) {
     const m = pct(mcu);
     if (done(mcu)) return { title: 'Eroe', tone: 'red-bright', next: step('Avenger', 1, 0), stats };
-    if (m >= 0.5) return { title: 'Generale S.H.I.E.L.D.', tone: 'red', next: step('Eroe', mcu.total - mcu.seen, (m - 0.5) / 0.5), stats };
-    return { title: 'Soldato S.H.I.E.L.D.', tone: 'red', next: step('Generale S.H.I.E.L.D.', toReach(mcu, 0.5), m / 0.5), stats };
+    if (m >= 0.75) return { title: 'Capo S.H.I.E.L.D.', tone: 'red', next: step('Eroe', mcu.total - mcu.seen, (m - 0.75) / 0.25), stats };
+    if (m >= 0.5) return { title: 'Generale S.H.I.E.L.D.', tone: 'red', next: step('Capo S.H.I.E.L.D.', toReach(mcu, 0.75), (m - 0.5) / 0.25), stats };
+    if (m >= 0.25) return { title: 'Colonnello S.H.I.E.L.D.', tone: 'red', next: step('Generale S.H.I.E.L.D.', toReach(mcu, 0.5), (m - 0.25) / 0.25), stats };
+    return { title: 'Soldato S.H.I.E.L.D.', tone: 'red', next: step('Colonnello S.H.I.E.L.D.', toReach(mcu, 0.25), m / 0.25), stats };
   }
 
   return { title: 'Recluta S.H.I.E.L.D.', tone: 'grey', next: step('Soldato S.H.I.E.L.D.', 1, 0), stats };

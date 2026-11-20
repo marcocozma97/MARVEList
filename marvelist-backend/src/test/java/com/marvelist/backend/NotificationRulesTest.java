@@ -176,6 +176,20 @@ class NotificationRulesTest {
     }
 
     @Test
+    void gradiIntermediAl25EAl75PerCento() {
+        List<Media> all = new java.util.ArrayList<>();
+        for (long i = 1; i <= 4; i++) all.add(Media.builder().id(i).visionOrder("MCU").upcoming(false).build());
+        for (long i = 11; i <= 14; i++) all.add(Media.builder().id(i).visionOrder("FAN").upcoming(false).build());
+        assertEquals("Colonnello S.H.I.E.L.D.", RankCalculator.compute(all, java.util.Set.of(1L)).title());
+        assertEquals("Capo S.H.I.E.L.D.", RankCalculator.compute(all, java.util.Set.of(1L, 2L, 3L)).title());
+        java.util.Set<Long> mcu = java.util.Set.of(1L, 2L, 3L, 4L);
+        java.util.function.Function<List<Long>, java.util.Set<Long>> with = fan -> {
+            java.util.Set<Long> s = new java.util.HashSet<>(mcu); s.addAll(fan); return s; };
+        assertEquals("New Avenger", RankCalculator.compute(all, with.apply(List.of(11L))).title());
+        assertEquals("Continent Avenger", RankCalculator.compute(all, with.apply(List.of(11L, 12L, 13L))).title());
+    }
+
+    @Test
     void ilPrimoNicknameSiSceglieSubitoPoiOgniTrentaGiorni() {
         User user = User.builder().id(1L).name("Tony").email("tony@stark.it").role(Role.USER).build();
         UserService service = userService(user);

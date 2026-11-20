@@ -120,6 +120,25 @@ describe('grado del profilo', () => {
     const moreGod = [1, 2, 3].map(() => media({ visionOrder: 'GOD' })); // 1 GOD visto su 5 = 20%
     expect(computeRank([...all, ...moreGod], [mcu1.id, mcu2.id, fan1.id, fan2.id, god1.id]).title).toBe('Solar Avenger');
   });
+  it("gradi intermedi dell'MCU al 25% e al 75%", () => {
+    const list = [1, 2, 3, 4, 5, 6, 7, 8].map(() => media());
+    const ids = list.map(m => m.id);
+    expect(computeRank(list, ids.slice(0, 1)).title).toBe('Soldato S.H.I.E.L.D.');
+    expect(computeRank(list, ids.slice(0, 2)).title).toBe('Colonnello S.H.I.E.L.D.');
+    expect(computeRank(list, ids.slice(0, 4)).title).toBe('Generale S.H.I.E.L.D.');
+    expect(computeRank(list, ids.slice(0, 6)).title).toBe('Capo S.H.I.E.L.D.');
+    expect(computeRank(list, ids).title).toBe('Eroe');
+  });
+  it('gradi intermedi di Marvel Fan al 25% e al 75%', () => {
+    const mcu = media();
+    const fan = [1, 2, 3, 4].map(() => media({ visionOrder: 'FAN' }));
+    const list = [mcu, ...fan];
+    const seen = (n: number) => [mcu.id, ...fan.slice(0, n).map(m => m.id)];
+    expect(computeRank(list, seen(1)).title).toBe('New Avenger');
+    expect(computeRank(list, seen(2)).title).toBe('Avenger OG');
+    expect(computeRank(list, seen(3)).title).toBe('Continent Avenger');
+    expect(computeRank(list, seen(4)).title).toBe('Planet Avenger');
+  });
   it('Marvel Fan completo senza titoli GOD resta Planet Avenger', () => {
     expect(computeRank(all, [mcu1.id, mcu2.id, fan1.id, fan2.id]).title).toBe('Planet Avenger');
   });

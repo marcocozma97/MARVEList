@@ -1719,12 +1719,9 @@
     "title": "Deadpool",
     "year": 2016,
     "phase": 2,
-    "chrono": 50,
-    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
-      "mcu",
       "marvel-fan"
     ],
     "tmdbId": 293660,
@@ -2182,12 +2179,9 @@
     "title": "Deadpool 2",
     "year": 2018,
     "phase": 3,
-    "chrono": 51,
-    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
-      "mcu",
       "marvel-fan"
     ],
     "tmdbId": 383498,
@@ -2891,7 +2885,8 @@
     "type": "tv",
     "episodes": 5,
     "tags": [
-      "animation"
+      "animation",
+      "marvel-fan"
     ],
     "tmdbId": 232125
   },
@@ -3015,7 +3010,8 @@
     "type": "tv",
     "episodes": 5,
     "tags": [
-      "animation"
+      "animation",
+      "marvel-fan"
     ],
     "tmdbId": 232125
   },
@@ -3162,12 +3158,9 @@
     "title": "Deadpool & Wolverine",
     "year": 2024,
     "phase": 5,
-    "chrono": 52,
-    "chronoEra": "La Saga del Multiverso",
     "type": "movie",
     "tags": [
       "xmen",
-      "mcu",
       "marvel-fan"
     ],
     "tmdbId": 533535,

@@ -34,12 +34,16 @@ public final class RankCalculator {
         }
         if (mcu.done() && fan.seen() > 0) {
             if (fan.done()) return new RankInfo("Planet Avenger", "yellow-bright");
+            if (fan.pct() >= 0.75) return new RankInfo("Continent Avenger", "yellow");
             if (fan.pct() >= 0.5) return new RankInfo("Avenger OG", "yellow");
+            if (fan.pct() >= 0.25) return new RankInfo("New Avenger", "yellow");
             return new RankInfo("Avenger", "yellow");
         }
         if (mcu.seen() > 0) {
             if (mcu.done()) return new RankInfo("Eroe", "red-bright");
+            if (mcu.pct() >= 0.75) return new RankInfo("Capo S.H.I.E.L.D.", "red");
             if (mcu.pct() >= 0.5) return new RankInfo("Generale S.H.I.E.L.D.", "red");
+            if (mcu.pct() >= 0.25) return new RankInfo("Colonnello S.H.I.E.L.D.", "red");
             return new RankInfo("Soldato S.H.I.E.L.D.", "red");
         }
         return new RankInfo("Recluta S.H.I.E.L.D.", "grey");
