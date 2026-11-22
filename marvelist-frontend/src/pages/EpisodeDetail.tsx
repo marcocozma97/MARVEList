@@ -8,6 +8,7 @@ import ShieldRating from '../components/ShieldRating';
 import Community from '../components/Community';
 import { episodeAirDate, formatDay, isEpisodeOut, isUpcoming, releaseLabel } from '../utils/upcoming';
 import { seasonNumber, seriesTitle } from '../utils/community';
+import { errorMessage } from '../utils/marathon';
 import SlowLoader from '../components/SlowLoader';
 import { MissingOverview } from '../components/SnapGauntlet';
 import MarvelistVote from '../components/MarvelistVote';
@@ -34,6 +35,7 @@ const EpisodeDetail = () => {
   const [minutesDraft, setMinutesDraft] = useState<{ episode: number; value: number } | null>(null);
   const [isSavingMinutes, setIsSavingMinutes] = useState(false);
   const [minutesNote, setMinutesNote] = useState<string | null>(null);
+  const [minutesError, setMinutesError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -131,6 +133,7 @@ const EpisodeDetail = () => {
   const changeMinutes = (value: number) => {
     setMinutesDraft({ episode, value: clampMinutes(value) });
     setMinutesNote(null);
+    setMinutesError(null);
   };
 
   const saveMinutes = async (value = shownMinutes) => {
@@ -138,6 +141,7 @@ const EpisodeDetail = () => {
     const next = clampMinutes(value);
     setMinutesDraft({ episode, value: next });
     setIsSavingMinutes(true);
+    setMinutesError(null);
     const request = ++progressRequest.current;
     try {
       const saved = await mediaService.updateEpisodeMinutes(media.id, episode, next, runtime);
@@ -148,7 +152,7 @@ const EpisodeDetail = () => {
       }
     } catch (e) {
       setMinutesNote(null);
-      console.error(e);
+      setMinutesError(errorMessage(e, 'Salvataggio non riuscito. Riprova tra poco.'));
     } finally {
       setIsSavingMinutes(false);
     }
@@ -287,7 +291,8 @@ const EpisodeDetail = () => {
                           </button>
                         )}
                       </div>
-                      {minutesDirty && !isSavingMinutes && <p className="detail-hint">Modifica non ancora salvata.</p>}
+                      {minutesError && <p className="form-error mt-2" role="alert">{minutesError}</p>}
+                      {minutesDirty && !isSavingMinutes && !minutesError && <p className="detail-hint">Modifica non ancora salvata.</p>}
                       {minutesNote && <p className="save-note" role="status">{minutesNote}</p>}
                     </>
                   ) : (
