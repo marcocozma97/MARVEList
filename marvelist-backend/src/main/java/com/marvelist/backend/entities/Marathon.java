@@ -42,6 +42,12 @@ public class Marathon {
 
     private boolean mixedDays; // Film e serie TV nello stesso giorno
 
+    private Boolean chronological;
+
+    public boolean isChronological() {
+        return Boolean.TRUE.equals(chronological) && "MCU".equals(visionOrder);
+    }
+
     private int maxFilmsPerWeek;
 
     private int maxEpisodesPerDay;

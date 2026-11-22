@@ -13,6 +13,7 @@ export interface MarathonRequest {
   maxFilmsPerWeek: number;
   maxEpisodesPerDay: number;
   mediaIds: number[];
+  chronological?: boolean;
 }
 
 export interface MarathonPlan {
@@ -68,6 +69,7 @@ export interface MarathonItem {
 
 export interface MarathonDetail extends Omit<MarathonSummary, 'feasible' | 'nextDate'> {
   expectedEnd: string | null;
+  chronological?: boolean;
   hideSeen: boolean;
   mixedDays: boolean;
   maxFilmsPerWeek: number;

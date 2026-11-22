@@ -45,7 +45,8 @@ public record AccountBackup(
             boolean mixedDays,
             int maxFilmsPerWeek,
             int maxEpisodesPerDay,
-            List<MarathonItemData> items
+            List<MarathonItemData> items,
+            Boolean chronological
     ) {}
 
     public record MarathonItemData(

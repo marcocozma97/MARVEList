@@ -19,7 +19,8 @@ public final class MarathonDtos {
             boolean mixedDays,
             int maxFilmsPerWeek,
             int maxEpisodesPerDay,
-            List<Long> mediaIds
+            List<Long> mediaIds,
+            Boolean chronological
     ) {}
 
     // Esito della pianificazione: se non c'è tempo, requiredEndDate dice fino a quando servirebbe
@@ -80,7 +81,8 @@ public final class MarathonDtos {
             List<ItemResponse> items,
             List<DayResponse> days,
             PlanResponse plan,
-            LocalDate expectedEnd
+            LocalDate expectedEnd,
+            boolean chronological
     ) {}
 
     public record PublicMarathon(

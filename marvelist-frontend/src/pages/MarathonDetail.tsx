@@ -108,7 +108,7 @@ const MarathonDetail = () => {
         <div className="marathon-hero-scrim" />
         <div className="container marathon-hero-content">
           <Link to="/profile" className="back-link">← Profilo</Link>
-          <span className="chip chip-accent">{VISION_ORDER_LABELS[marathon.visionOrder]}</span>
+          <span className="chip chip-accent">{VISION_ORDER_LABELS[marathon.visionOrder]}{marathon.chronological ? ' · cronologico' : ''}</span>
           <h1 className="marathon-title">{marathon.name}</h1>
           <p className="marathon-dates">
             {formatDay(marathon.startDate)} → {formatDay(marathon.expectedEnd ?? marathon.endDate)}

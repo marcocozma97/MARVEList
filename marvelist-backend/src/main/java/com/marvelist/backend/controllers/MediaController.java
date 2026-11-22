@@ -109,6 +109,14 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.getEpisodeRatings(authentication.getName(), mediaId));
     }
 
+    public record EpisodeMinutesRequest(Integer minutes, Integer runtime) {}
+
+    @PutMapping("/{mediaId}/episodes/{episode}/minutes")
+    public ResponseEntity<ProgressResponse> updateEpisodeMinutes(@PathVariable Long mediaId, @PathVariable Integer episode,
+                                                                 @RequestBody EpisodeMinutesRequest request, Authentication authentication) {
+        return ResponseEntity.ok(mediaService.updateEpisodeMinutes(authentication.getName(), mediaId, episode, request.minutes(), request.runtime()));
+    }
+
     @PutMapping("/{mediaId}/episodes/{episode}/rating")
     public ResponseEntity<Map<Integer, Double>> rateEpisode(@PathVariable Long mediaId, @PathVariable Integer episode,
                                                             @RequestBody RatingRequest request, Authentication authentication) {

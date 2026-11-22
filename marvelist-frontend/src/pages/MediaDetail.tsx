@@ -429,6 +429,8 @@ const MediaDetail = () => {
                           <div className="episodes-grid">
                             {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map(ep => {
                               const isWatched = watchedEpisodes.includes(ep);
+                              const partial = progress?.partialEpisodes?.[ep];
+                              const partialPct = !isWatched && partial?.runtime ? Math.max(4, Math.min(96, Math.round((partial.minutes / partial.runtime) * 100))) : 0;
                               const epRating = episodeRatings[ep];
                               const out = isEpisodeOut(episodeMedia, ep);
                               const date = episodeAirDate(episodeMedia, ep);
@@ -437,8 +439,9 @@ const MediaDetail = () => {
                                 <Link
                                   key={ep}
                                   to={`/media/${dbMedia.id}/episodes/${ep}`}
-                                  className={`ep-box ${isWatched ? 'watched' : ''} ${epRating ? 'rated' : ''} ${out ? '' : 'is-unaired'}`}
-                                  aria-label={`Episodio ${ep}${out ? '' : `, ${outLabel}`}${isWatched ? ', visto' : ''}${epRating ? `, voto ${epRating}` : ''}: apri la scheda`}
+                                  className={`ep-box ${isWatched ? 'watched' : ''} ${partialPct ? 'is-partial' : ''} ${epRating ? 'rated' : ''} ${out ? '' : 'is-unaired'}`}
+                                  style={partialPct ? { '--partial': `${partialPct}%` } as React.CSSProperties : undefined}
+                                  aria-label={`Episodio ${ep}${out ? '' : `, ${outLabel}`}${isWatched ? ', visto' : ''}${partial && !isWatched ? `, visti ${partial.minutes} minuti su ${partial.runtime}` : ''}${epRating ? `, voto ${epRating}` : ''}: apri la scheda`}
                                   title={!out ? `Episodio ${ep}: ${outLabel}` : epRating ? `Il tuo voto: ${String(epRating).replace('.', ',')}` : `Apri l'episodio ${ep}`}
                                 >
                                   {ep}

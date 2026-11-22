@@ -7,7 +7,9 @@ export const getProgressPercent = (media: MediaItem, progress?: MediaProgress | 
   if (media.type === 'FILM') {
     return media.runtime ? Math.min(100, Math.round((progress.minutesWatched / media.runtime) * 100)) : 0;
   }
-  return media.episodes ? Math.min(100, Math.round((progress.watchedEpisodes.length / media.episodes) * 100)) : 0;
+  if (!media.episodes) return 0;
+  const partial = Object.values(progress.partialEpisodes ?? {}).reduce((sum, p) => sum + (p.runtime ? Math.min(1, p.minutes / p.runtime) : 0), 0);
+  return Math.min(100, Math.round(((progress.watchedEpisodes.length + partial) / media.episodes) * 100));
 };
 
 // Trama breve: le prime frasi intere che stanno nel limite, altrimenti taglio sulla parola

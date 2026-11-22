@@ -73,6 +73,9 @@ public class SocialService {
                     if (isSeen) seriesSeen++;
                     int watchedEps = p != null ? p.getWatchedEpisodes().size() : 0;
                     minutes += 45L * (isSeen ? (media.getEpisodes() != null ? media.getEpisodes() : watchedEps) : watchedEps);
+                    if (!isSeen && p != null) {
+                        minutes += p.getPartialEpisodes().values().stream().mapToInt(e -> e.getMinutes() == null ? 0 : e.getMinutes()).sum();
+                    }
                 }
             }
             favorites = owner.getFavoriteMedia().stream().map(Media::getId).sorted().toList();

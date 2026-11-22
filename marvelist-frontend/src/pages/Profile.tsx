@@ -128,7 +128,8 @@ const Profile = () => {
     const seen = seenIds.includes(media.id);
     if (media.type === 'FILM') return total + (seen ? (media.runtime ?? 120) : (p?.minutesWatched ?? 0));
     const episodes = seen ? (media.episodes ?? p?.watchedEpisodes.length ?? 0) : (p?.watchedEpisodes.length ?? 0);
-    return total + episodes * 45;
+    const partialMinutes = seen ? 0 : Object.values(p?.partialEpisodes ?? {}).reduce((sum, e) => sum + e.minutes, 0);
+    return total + episodes * 45 + partialMinutes;
   }, 0);
   const watchedParts = splitWatchTime(minutesWatched); // mesi, giorni, ore, minuti
 

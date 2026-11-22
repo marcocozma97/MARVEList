@@ -38,7 +38,10 @@ export interface MediaProgress {
   rating: number | null;
   minutesWatched: number;
   watchedEpisodes: number[];
+  partialEpisodes?: Record<number, EpisodePartial>;
 }
+
+export interface EpisodePartial { minutes: number; runtime: number }
 
 export const mediaService = {
   // Chiamata per ottenere tutti i media per la Timeline
@@ -116,6 +119,9 @@ export const mediaService = {
     const response = await api.put(`/media/${mediaId}/rating`, { rating });
     return response.data;
   },
+
+  updateEpisodeMinutes: async (mediaId: number, episode: number, minutes: number, runtime: number): Promise<MediaProgress> =>
+    (await api.put(`/media/${mediaId}/episodes/${episode}/minutes`, { minutes, runtime })).data,
 
   getEpisodeRatings: async (mediaId: number): Promise<Record<number, number>> => {
     const response = await api.get(`/media/${mediaId}/episode-ratings`);

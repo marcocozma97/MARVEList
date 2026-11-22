@@ -162,6 +162,7 @@ public class MarathonService {
         marathon.setMixedDays(request.mixedDays());
         marathon.setMaxFilmsPerWeek(request.maxFilmsPerWeek());
         marathon.setMaxEpisodesPerDay(request.maxEpisodesPerDay());
+        marathon.setChronological("MCU".equals(request.visionOrder()) && Boolean.TRUE.equals(request.chronological()));
 
         // Titoli tolti dal form -> eliminati; titoli rimasti -> nuova posizione
         Set<Long> keep = media.stream().map(Media::getId).collect(Collectors.toSet());
@@ -357,7 +358,7 @@ public class MarathonService {
                 marathon.getMaxFilmsPerWeek(), marathon.getMaxEpisodesPerDay(), total, total - pendingCount(units),
                 items, days, toPlan(media, units, result, seenEpisodes(marathon.getUser(), marathon.isHideSeen()),
                         marathon.getItems().stream().collect(Collectors.toMap(i -> i.getMedia().getId(), Function.identity(), (x, y) -> x))),
-                expectedEnd(result));
+                expectedEnd(result), marathon.isChronological());
     }
 
     private void validate(MarathonRequest r) {

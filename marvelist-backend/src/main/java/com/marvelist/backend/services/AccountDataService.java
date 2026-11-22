@@ -113,7 +113,7 @@ public class AccountDataService {
                         m.getItems().stream().map(i -> new MarathonItemData(i.getMedia().getTitle(), i.getMedia().getReleaseYear(),
                                 i.getPosition(), i.isDone(), i.getDoneDate(),
                                 i.getDoneEpisodes().stream().sorted().toList(),
-                                new TreeMap<>(i.getEpisodeDoneDates()))).toList()))
+                                new TreeMap<>(i.getEpisodeDoneDates()))).toList(), m.isChronological()))
                 .toList();
 
         List<String> following = followRepository.findByFollowerOrderByCreatedAtDesc(user, Pageable.unpaged()).stream()
@@ -177,7 +177,8 @@ public class AccountDataService {
                     .startDate(m.startDate()).endDate(m.endDate())
                     .hideSeen(m.hideSeen()).mixedDays(m.mixedDays())
                     .maxFilmsPerWeek(Math.clamp(m.maxFilmsPerWeek(), 0, 50))
-                    .maxEpisodesPerDay(Math.clamp(m.maxEpisodesPerDay(), 0, 50)).build();
+                    .maxEpisodesPerDay(Math.clamp(m.maxEpisodesPerDay(), 0, 50))
+                    .chronological(Boolean.TRUE.equals(m.chronological())).build();
             for (MarathonItemData i : Objects.requireNonNullElse(m.items(), List.<MarathonItemData>of())) {
                 Media media = lookup.find(i.title(), i.year());
                 if (media == null) continue;
@@ -336,6 +337,7 @@ public class AccountDataService {
         delete("episode_ratings", "delete from episode_ratings where user_id = ?", id);
         delete("watch_events", "delete from watch_events where user_id = ?", id);
         delete("user_progress_episodes", "delete from user_progress_episodes where progress_id in (select id from user_progress where user_id = ?)", id);
+        delete("user_progress_partial_episodes", "delete from user_progress_partial_episodes where progress_id in (select id from user_progress where user_id = ?)", id);
         delete("user_progress", "delete from user_progress where user_id = ?", id);
         String items = "select i.id from marathon_items i join marathons m on m.id = i.marathon_id where m.user_id = ?";
         delete("marathon_item_episode_dates", "delete from marathon_item_episode_dates where item_id in (" + items + ")", id);

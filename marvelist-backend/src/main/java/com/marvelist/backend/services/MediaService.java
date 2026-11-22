@@ -2,6 +2,7 @@ package com.marvelist.backend.services;
 
 import com.marvelist.backend.dto.ProgressRequest;
 import com.marvelist.backend.dto.ProgressResponse;
+import com.marvelist.backend.entities.EpisodePartial;
 import com.marvelist.backend.entities.EpisodeRating;
 import com.marvelist.backend.entities.Marathon;
 import com.marvelist.backend.entities.MarathonItem;
@@ -75,6 +76,7 @@ public class MediaService {
             progress.setMinutesWatched(0);
             progress.getWatchedEpisodes().clear();
         }
+        progress.getPartialEpisodes().clear();
 
         userRepository.save(user);
         progress.setUpdatedAt(Instant.now());
@@ -190,6 +192,7 @@ public class MediaService {
                     .collect(Collectors.toSet());
             progress.getWatchedEpisodes().clear();
             progress.getWatchedEpisodes().addAll(episodes);
+            progress.getPartialEpisodes().keySet().removeIf(episodes::contains);
             completed = total != null && episodes.size() >= total;
         }
 
@@ -221,6 +224,7 @@ public class MediaService {
             wasSeen.put(media.getId(), user.getSeenMedia().contains(media));
             before.put(media.getId(), Set.copyOf(progress.getWatchedEpisodes()));
             progress.getWatchedEpisodes().clear();
+            progress.getPartialEpisodes().clear();
             if (seen) {
                 user.getSeenMedia().add(media);
                 progress.setMinutesWatched(media.getRuntime() != null ? media.getRuntime() : 0);
@@ -265,6 +269,7 @@ public class MediaService {
         } else {
             if (watched) progress.getWatchedEpisodes().add(episode);
             else progress.getWatchedEpisodes().remove(episode);
+            progress.getPartialEpisodes().remove(episode);
             boolean complete = media.getEpisodes() != null && progress.getWatchedEpisodes().size() >= media.getEpisodes();
             if (complete) user.getSeenMedia().add(media);
             else user.getSeenMedia().remove(media);
@@ -275,6 +280,44 @@ public class MediaService {
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
+    }
+
+    @Transactional
+    public ProgressResponse updateEpisodeMinutes(String userEmail, Long mediaId, Integer episode, Integer minutes, Integer runtime) {
+        User user = findUser(userEmail);
+        Media media = findMedia(mediaId);
+        requireReleased(media);
+        if (!"SERIE_TV".equals(media.getType()) || episode == null || episode < 1
+                || (media.getEpisodes() != null && episode > media.getEpisodes())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Episodio non valido");
+        }
+        if (runtime == null || runtime < 1 || runtime > 600) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Durata dell'episodio non valida");
+        }
+        requireEpisodeOut(media, episode);
+        int watched = Math.max(0, Math.min(runtime, minutes == null ? 0 : minutes));
+
+        UserProgress progress = findOrCreateProgress(user, media);
+        boolean wasSeen = user.getSeenMedia().contains(media);
+        Set<Integer> before = Set.copyOf(progress.getWatchedEpisodes());
+
+        progress.getPartialEpisodes().remove(episode);
+        if (watched >= runtime) {
+            progress.getWatchedEpisodes().add(episode);
+        } else {
+            progress.getWatchedEpisodes().remove(episode);
+            if (watched > 0) progress.getPartialEpisodes().put(episode, new EpisodePartial(watched, runtime));
+        }
+        boolean complete = media.getEpisodes() != null && progress.getWatchedEpisodes().size() >= media.getEpisodes();
+        if (complete) user.getSeenMedia().add(media);
+        else user.getSeenMedia().remove(media);
+
+        userRepository.save(user);
+        progress.setUpdatedAt(Instant.now());
+        progressRepository.save(progress);
+        syncMarathons(user, media, wasSeen, before, progress);
+        recordWatch(user, media, wasSeen, before, progress);
+        return toResponse(user, media, progress);
     }
 
     @Transactional
@@ -342,6 +385,7 @@ public class MediaService {
                 .rating(progress.getRating())
                 .minutesWatched(progress.getMinutesWatched() == null ? 0 : progress.getMinutesWatched())
                 .watchedEpisodes(progress.getWatchedEpisodes().stream().sorted().toList())
+                .partialEpisodes(new TreeMap<>(progress.getPartialEpisodes()))
                 .build();
     }
 

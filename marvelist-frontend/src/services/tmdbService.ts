@@ -37,6 +37,7 @@ export interface TmdbDetails {
   vote_average?: number;
   runtime?: number | null;
   number_of_episodes?: number;
+  episode_run_time?: number[];
   credits?: { cast?: TmdbCastMember[] };
   videos?: { results?: TmdbVideo[] };
   'watch/providers'?: { results?: Record<string, TmdbCountryProviders> };

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { mediaService, type MediaItem } from '../services/mediaService';
 import { marathonService, type MarathonPlan, type MarathonRequest } from '../services/marathonService';
-import { groupByPhase, matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
+import { groupByChrono, groupByPhase, matchesVisionOrder, sortByViewingOrder, VISION_ORDER_LABELS, type VisionOrder } from '../utils/ordering';
 import { addDays, errorMessage, formatDay, getBackgroundUrl, toIsoDay } from '../utils/marathon';
 import { getPosterUrl } from '../utils/poster';
 import PosterFallback from '../components/PosterFallback';
@@ -27,6 +27,8 @@ const MarathonForm = () => {
   const today = toIsoDay(new Date());
   const [name, setName] = useState('');
   const [visionOrder, setVisionOrder] = useState<VisionOrder>('MCU');
+  const [chronoChoice, setChronoChoice] = useState(false);
+  const chronological = visionOrder === 'MCU' && chronoChoice;
   const [hideSeen, setHideSeen] = useState(false);
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
   const [background, setBackground] = useState<string | null>(null);
@@ -62,6 +64,7 @@ const MarathonForm = () => {
           const itemIds = new Set(marathon.items.map(i => i.mediaId));
           setName(marathon.name);
           setVisionOrder(marathon.visionOrder);
+          setChronoChoice(!!marathon.chronological);
           setHideSeen(marathon.hideSeen);
           const uploaded = !!marathon.background?.startsWith('data:');
           setBackground(uploaded ? null : marathon.background);
@@ -86,15 +89,17 @@ const MarathonForm = () => {
   // Titoli: partenza scelta, meno quelli già visti (se richiesto) e quelli tolti a mano
   // I titoli in arrivo entrano solo se escono entro la data di fine della maratona
   const levelMedia = useMemo(() => allMedia.filter(m => matchesVisionOrder(m, visionOrder)), [allMedia, visionOrder]);
-  const candidates = useMemo(
-    () => sortByViewingOrder(levelMedia.filter(m => { const from = availableFrom(m); return !from || from <= endDate; })),
-    [levelMedia, endDate]
-  );
+  const candidates = useMemo(() => {
+    const available = levelMedia.filter(m => { const from = availableFrom(m); return !from || from <= endDate; });
+    return chronological
+      ? [...groupByChrono(available).values()].flat()
+      : sortByViewingOrder(available);
+  }, [levelMedia, endDate, chronological]);
   const upcomingExcluded = levelMedia.length - candidates.length;
   const visible = useMemo(() => hideSeen ? candidates.filter(m => !seenIds.has(m.id)) : candidates, [candidates, hideSeen, seenIds]);
   const included = useMemo(() => visible.filter(m => !excluded.has(m.id)), [visible, excluded]);
   const hiddenSeenCount = candidates.length - visible.length;
-  const phases = useMemo(() => [...groupByPhase(visible).entries()], [visible]);
+  const phases = useMemo(() => [...(chronological ? groupByChrono(visible) : groupByPhase(visible)).entries()], [visible, chronological]);
   const mediaIds = useMemo(() => included.map(m => m.id), [included]);
   const mediaKey = mediaIds.join(',');
 
@@ -127,6 +132,7 @@ const MarathonForm = () => {
     maxFilmsPerWeek,
     maxEpisodesPerDay,
     mediaIds,
+    chronological,
   });
 
   // L'anteprima del piano si ricalcola poco dopo ogni modifica, prima di salvare
@@ -138,7 +144,7 @@ const MarathonForm = () => {
       try {
         const result = await marathonService.preview({
           name: 'Anteprima', background: null, visionOrder, startDate, endDate, hideSeen,
-          mixedDays, maxFilmsPerWeek, maxEpisodesPerDay, mediaIds: mediaKey.split(',').map(Number),
+          mixedDays, maxFilmsPerWeek, maxEpisodesPerDay, mediaIds: mediaKey.split(',').map(Number), chronological,
         });
         if (request === planRequest.current) { setPlan(result); setPlanError(null); }
       } catch (e) {
@@ -148,7 +154,7 @@ const MarathonForm = () => {
       }
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [isLoading, mediaKey, visionOrder, startDate, endDate, hideSeen, mixedDays, maxFilmsPerWeek, maxEpisodesPerDay]);
+  }, [isLoading, mediaKey, visionOrder, startDate, endDate, hideSeen, mixedDays, maxFilmsPerWeek, maxEpisodesPerDay, chronological]);
 
   // Sfondo: la locandina di uno dei titoli inseriti
   const posterChoices = useMemo(() => included.filter(m => m.posterPath).slice(0, 36), [included]);
@@ -190,7 +196,7 @@ const MarathonForm = () => {
             className="marathon-preview-banner"
             style={backgroundUrl ? { backgroundImage: `linear-gradient(100deg, rgba(10,4,4,.9), rgba(10,4,4,.35)), url("${backgroundUrl}")` } : undefined}
           >
-            <span className="chip chip-accent">{VISION_ORDER_LABELS[visionOrder]}</span>
+            <span className="chip chip-accent">{VISION_ORDER_LABELS[visionOrder]}{chronological ? ' · cronologico' : ''}</span>
             <strong>{name.trim() || 'La tua maratona'}</strong>
             <span>{formatDay(startDate)} → {formatDay(endDate)}</span>
           </div>
@@ -214,6 +220,20 @@ const MarathonForm = () => {
               >{VISION_ORDER_LABELS[level]}</button>
             ))}
           </div>
+
+          {visionOrder === 'MCU' && (
+            <div className="marathon-order">
+              <div className="segmented" role="radiogroup" aria-label="Ordine dei titoli">
+                <button type="button" role="radio" aria-checked={!chronological} className={`segmented-option ${!chronological ? 'active' : ''}`} onClick={() => setChronoChoice(false)}>
+                  Ordine di uscita
+                </button>
+                <button type="button" role="radio" aria-checked={chronological} className={`segmented-option ${chronological ? 'active' : ''}`} onClick={() => setChronoChoice(true)}>
+                  Ordine cronologico
+                </button>
+              </div>
+              {chronological && <p className="form-hint">I titoli seguono gli eventi narrati, divisi per epoca della storia.</p>}
+            </div>
+          )}
 
           <label className="check-row">
             <input type="checkbox" checked={hideSeen} onChange={(e) => setHideSeen(e.target.checked)} />

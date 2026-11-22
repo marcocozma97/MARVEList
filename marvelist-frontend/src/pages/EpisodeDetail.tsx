@@ -31,6 +31,9 @@ const EpisodeDetail = () => {
   const marvelist = useMarvelistRatings(media?.id, ratings[episode]);
   const [isLoading, setIsLoading] = useState(true);
   const progressRequest = useRef(0);
+  const [minutesDraft, setMinutesDraft] = useState<{ episode: number; value: number } | null>(null);
+  const [isSavingMinutes, setIsSavingMinutes] = useState(false);
+  const [minutesNote, setMinutesNote] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -117,6 +120,38 @@ const EpisodeDetail = () => {
     if (!progress) return;
     const list = progress.watchedEpisodes;
     saveEpisodes(watched ? list.filter(e => e !== episode) : [...list, episode].sort((a, b) => a - b));
+  };
+
+  const runtime = details?.runtime || series.episode_run_time?.find(r => r > 0) || null;
+  const savedMinutes = watched ? (runtime ?? 0) : (progress?.partialEpisodes?.[episode]?.minutes ?? 0);
+  const shownMinutes = minutesDraft?.episode === episode ? minutesDraft.value : savedMinutes;
+  const minutesDirty = minutesDraft?.episode === episode && minutesDraft.value !== savedMinutes;
+  const clampMinutes = (value: number) => Math.max(0, Math.min(runtime ?? 0, Math.round(value || 0)));
+
+  const changeMinutes = (value: number) => {
+    setMinutesDraft({ episode, value: clampMinutes(value) });
+    setMinutesNote(null);
+  };
+
+  const saveMinutes = async (value = shownMinutes) => {
+    if (!media || !runtime) return;
+    const next = clampMinutes(value);
+    setMinutesDraft({ episode, value: next });
+    setIsSavingMinutes(true);
+    const request = ++progressRequest.current;
+    try {
+      const saved = await mediaService.updateEpisodeMinutes(media.id, episode, next, runtime);
+      if (request === progressRequest.current) {
+        setProgress(saved);
+        setMinutesDraft(null);
+        setMinutesNote(saved.watchedEpisodes.includes(episode) ? '✔ Episodio segnato come visto' : next > 0 ? '✔ Salvato: lo ritrovi in "Continua a guardare"' : '✔ Salvato');
+      }
+    } catch (e) {
+      setMinutesNote(null);
+      console.error(e);
+    } finally {
+      setIsSavingMinutes(false);
+    }
   };
 
   const rate = async (value: number | null) => {
@@ -212,6 +247,52 @@ const EpisodeDetail = () => {
                 <div className="detail-block">
                   <h2 className="section-label">Il tuo voto all'episodio</h2>
                   <ShieldRating value={rating} onChange={rate} />
+                </div>
+              )}
+
+              {progress && episodeOut && (
+                <div className="detail-block">
+                  <div className="section-label-row">
+                    <h2 className="section-label">Minuti visti</h2>
+                    <span className="minutes-readout"><strong>{shownMinutes}</strong>{runtime ? ` / ${runtime} min` : ' min'}</span>
+                  </div>
+                  {runtime ? (
+                    <>
+                      <input
+                        type="range"
+                        className="minutes-range"
+                        min={0}
+                        max={runtime}
+                        step={1}
+                        value={shownMinutes}
+                        onChange={(e) => changeMinutes(Number(e.target.value))}
+                        style={{ '--fill': `${Math.round((shownMinutes / runtime) * 100)}%` } as React.CSSProperties}
+                        aria-label="Minuti visti dell'episodio"
+                      />
+                      <div className="minutes-actions">
+                        <input
+                          type="number"
+                          className="minutes-input"
+                          min={0}
+                          max={runtime}
+                          value={shownMinutes}
+                          onChange={(e) => changeMinutes(Number(e.target.value))}
+                          aria-label="Minuti visti dell'episodio (numero)"
+                        />
+                        <button type="button" className="btn-chip" onClick={() => saveMinutes(0)} disabled={isSavingMinutes}>Azzera</button>
+                        <button type="button" className="btn-chip" onClick={() => saveMinutes(runtime)} disabled={isSavingMinutes}>Visto tutto</button>
+                        {minutesDirty && (
+                          <button type="button" className="btn-marvel btn-inline btn-save-minutes" onClick={() => saveMinutes()} disabled={isSavingMinutes}>
+                            {isSavingMinutes ? 'Salvo…' : 'Salva'}
+                          </button>
+                        )}
+                      </div>
+                      {minutesDirty && !isSavingMinutes && <p className="detail-hint">Modifica non ancora salvata.</p>}
+                      {minutesNote && <p className="save-note" role="status">{minutesNote}</p>}
+                    </>
+                  ) : (
+                    <p className="detail-hint">{isDetailsLoading ? 'Caricamento della durata…' : "Durata non disponibile: segna l'episodio come visto con il cerchio in alto."}</p>
+                  )}
                 </div>
               )}
 
