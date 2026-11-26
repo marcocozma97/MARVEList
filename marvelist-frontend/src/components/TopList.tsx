@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { MediaItem } from '../services/mediaService';
 import { getPosterUrl } from '../utils/poster';
 import PosterFallback from './PosterFallback';
+import { showFullTitle } from '../utils/fullTitle';
 
 export const TopPoster = ({ media, size = 'w342' }: { media: MediaItem; size?: string }) => {
   const url = getPosterUrl(media.posterPath, size);
@@ -15,12 +16,12 @@ const TopList = ({ items, empty, label, size = 0 }: { items: { media: MediaItem;
     <ol className="release-row top-row-list" aria-label={label}>
       {items.map(({ media, detail }, i) => (
         <li key={media.id}>
-          <Link to={`/media/${media.id}`} className="release-card top-card" aria-label={`${i + 1}° posto: ${media.title}`}>
+          <Link to={`/media/${media.id}`} className="release-card top-card" aria-label={`${i + 1}° posto: ${media.title}`} onMouseEnter={showFullTitle}>
             <span className="top-card-poster">
               <TopPoster media={media} />
               <span className={`top-card-rank ${i < 3 ? 'is-podium' : ''}`} aria-hidden="true">{i + 1}</span>
             </span>
-            <span className="release-title">{media.title}</span>
+            <span className="release-title" data-clamp>{media.title}</span>
             <span className="top-detail">{detail}</span>
           </Link>
         </li>

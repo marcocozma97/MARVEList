@@ -19,6 +19,7 @@ import { NoTrailer } from '../components/WestviewTV';
 import WatchProviders from '../components/WatchProviders';
 import MarvelistVote from '../components/MarvelistVote';
 import { useMarvelistRatings } from '../hooks/useMarvelistRatings';
+import { seasonNumber } from '../utils/community';
 
 const EMPTY_PROGRESS = (mediaId: number): MediaProgress => ({
   mediaId, seen: false, favorite: false, inWatchlist: false, watchLater: false, rating: null, minutesWatched: 0, watchedEpisodes: []
@@ -318,7 +319,10 @@ const MediaDetail = () => {
             <div className="detail-info">
               <span className="detail-kicker">{dbMedia.phase} · {isFilm ? 'Film' : 'Serie TV'}</span>
               <div className="detail-title-row">
-                <h1 id="detail-title" className="detail-title">{tmdbData.title || tmdbData.name || dbMedia.title}</h1>
+                <h1 id="detail-title" className="detail-title">
+                  {tmdbData.title || tmdbData.name || dbMedia.title}
+                  {!isFilm && <span className="detail-season">Stagione {seasonNumber(dbMedia.title)}</span>}
+                </h1>
                 {progress && (
                   <button
                     type="button"

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { MediaItem } from '../services/mediaService';
 import MediaPoster from './MediaPoster';
 import { isFullyOut, isUpcoming, releaseLabel } from '../utils/upcoming';
+import { showFullTitle } from '../utils/fullTitle';
 
 interface MediaCardProps {
   media: MediaItem;
@@ -23,7 +24,7 @@ const MediaCard = ({ media, seen = false, favorite = false, watchLater = false, 
 
   return (
     <article data-media-id={media.id} className={`media-card ${seen ? 'is-seen' : ''} ${upcoming ? 'is-upcoming' : ''} ${watchLater ? 'is-watch-later' : ''}`}>
-      <button type="button" className="media-card-open" onClick={open} aria-label={`Apri ${media.title}`}>
+      <button type="button" className="media-card-open" onClick={open} aria-label={`Apri ${media.title}`} onMouseEnter={showFullTitle}>
         <MediaPoster media={media} className="media-card-poster" />
         <span className="media-card-overlay" />
         {upcoming && (
@@ -36,7 +37,7 @@ const MediaCard = ({ media, seen = false, favorite = false, watchLater = false, 
         <span className="media-card-content">
           {rating != null && <span className="media-card-rating">🛡 {String(rating).replace('.', ',')}</span>}
           {watchLater && <span className="media-card-later">Guarda dopo</span>}
-          <span className="media-card-title">{media.title}</span>
+          <span className="media-card-title" data-clamp>{media.title}</span>
           <span className="media-card-meta">{media.type === 'FILM' ? 'Film' : 'Serie TV'} · {media.releaseYear}</span>
         </span>
       </button>

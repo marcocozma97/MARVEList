@@ -7,6 +7,7 @@ import { communityService, type Rankings } from '../services/communityService';
 import { availableFrom, episodeAirDate, formatDay, isUpcoming, todayIso } from '../utils/upcoming';
 import TopList, { TopPoster as Poster } from '../components/TopList';
 import SlowLoader from '../components/SlowLoader';
+import { showFullTitle } from '../utils/fullTitle';
 
 const MAX_RELEASES = 12;
 const RECENT_TITLE_DAYS = 30;   // film e serie usciti nell'ultimo mese
@@ -75,9 +76,9 @@ const ReleaseRow = ({ items, empty }: { items: Release[]; empty: string }) => (
   items.length === 0 ? <div className="empty-box">{empty}</div> : (
     <div className="release-row">
       {items.map(r => (
-        <Link key={r.key} to={r.to} className="release-card">
+        <Link key={r.key} to={r.to} className="release-card" onMouseEnter={showFullTitle}>
           <Poster media={r.media} />
-          <span className="release-title">{r.media.title}</span>
+          <span className="release-title" data-clamp>{r.media.title}</span>
           <span className="release-label">{r.label}</span>
         </Link>
       ))}

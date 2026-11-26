@@ -4,6 +4,7 @@ import type { MediaItem } from '../services/mediaService';
 import { userService, type TopTen, type TopTens, type TopTenTie } from '../services/userService';
 import { errorMessage } from '../utils/marathon';
 import { TopPoster } from './TopList';
+import { showFullTitle } from '../utils/fullTitle';
 
 const vote = (rating: number) => String(rating).replace('.', ',');
 
@@ -103,6 +104,7 @@ const TopTenConfirm = ({ topTen, name, mediaById, onClose, onSaved }: {
                         type="button"
                         className={`top-ten-choice ${picked ? 'is-picked' : ''} ${rank && !picked ? 'is-auto' : ''} ${out ? 'is-out' : ''}`}
                         onClick={() => toggle(i, id)}
+                        onMouseEnter={showFullTitle}
                         aria-pressed={picked}
                         aria-label={`${media.title}${rank ? `: ${rank}° posto` : out ? `: fuori dalla ${name}` : ''}`}
                       >
@@ -111,7 +113,7 @@ const TopTenConfirm = ({ topTen, name, mediaById, onClose, onSaved }: {
                           {rank && <span className="top-ten-choice-rank" aria-hidden="true">{rank}</span>}
                           {out && <span className="top-ten-choice-out" aria-hidden="true">Fuori</span>}
                         </span>
-                        <span className="top-ten-choice-title">{media.title}</span>
+                        <span className="top-ten-choice-title" data-clamp>{media.title}</span>
                       </button>
                     );
                   })}
