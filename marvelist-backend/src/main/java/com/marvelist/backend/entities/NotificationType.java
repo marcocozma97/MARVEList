@@ -12,5 +12,7 @@ public enum NotificationType {
     EPISODE_OUT,
     NICKNAME,
     JAIRVIS_OFFLINE,
+    TOP_TEN_FEATURE,
+    TOP_TEN,
     APP_AVAILABLE // Annuncio: MARVEList si può installare come app dal telefono
 }

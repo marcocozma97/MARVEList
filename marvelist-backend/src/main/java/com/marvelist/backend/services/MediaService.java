@@ -42,6 +42,7 @@ public class MediaService {
     private final EpisodeRatingRepository episodeRatingRepository;
     private final MarathonRepository marathonRepository;
     private final WatchEventRepository watchEventRepository;
+    private final TopTenService topTenService;
 
     public List<Media> getAllMedia() {
         return mediaRepository.findAllBySortOrderIsNotNullOrderBySortOrderAsc();
@@ -328,6 +329,7 @@ public class MediaService {
         UserProgress progress = findOrCreateProgress(user, media);
         progress.setRating(rating);
         progressRepository.save(progress);
+        topTenService.ratingChanged(user);
         return toResponse(user, media, progress);
     }
 

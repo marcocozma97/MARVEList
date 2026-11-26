@@ -6460,6 +6460,95 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 }
 .top-detail { color: var(--text-muted); font-size: 0.8rem; }
 .top-vote { color: var(--gold); }
+
+.top-ten-heading { display: inline-flex; align-items: center; gap: 12px; }
+.top-ten-cup {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(241, 196, 15, 0.65);
+  background: rgba(241, 196, 15, 0.14);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  animation: top-ten-cup-pulse 1.8s ease-in-out infinite;
+  transition: transform 0.2s var(--ease-out), background 0.2s;
+  &:hover, &:focus-visible { transform: scale(1.08); background: rgba(241, 196, 15, 0.26); }
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+@keyframes top-ten-cup-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.45); }
+  50% { box-shadow: 0 0 0 9px rgba(241, 196, 15, 0); }
+}
+
+.top-ten-modal { width: min(640px, 100%); max-height: min(780px, calc(100vh - 32px)); }
+.top-ten-intro { margin: 0 0 18px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
+.top-ten-tie { margin-bottom: 22px; }
+.top-ten-tie-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-bottom: 10px;
+  strong { color: var(--gold); font-size: 1rem; }
+  span { color: var(--text-muted); font-size: 0.86rem; }
+}
+.top-ten-choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; }
+.top-ten-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-light);
+  text-align: left;
+  cursor: pointer;
+  .cm-poster-img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: var(--radius-sm); border: 2px solid var(--border-color); transition: border-color 0.2s, opacity 0.2s, transform 0.2s var(--ease-out); }
+  &:hover .cm-poster-img, &:focus-visible .cm-poster-img { transform: translateY(-2px); }
+  &.is-picked .cm-poster-img { border-color: var(--gold); }
+  &.is-auto .cm-poster-img { border-color: rgba(241, 196, 15, 0.5); }
+  &.is-out .cm-poster-img { opacity: 0.4; }
+}
+.top-ten-choice-poster { position: relative; display: block; }
+.top-ten-choice-rank {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  background: var(--gold);
+  color: #1a1200;
+  font-family: 'Anton', sans-serif;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+  .is-auto & { background: rgba(241, 196, 15, 0.7); }
+}
+.top-ten-choice-out {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.top-ten-choice-title { font-size: 0.8rem; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.top-ten-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+.notif-type-cup { background: var(--gold); color: #1a1200; }
 // Schede di "Modifica profilo" su due righe sui telefoni, così sono tutte visibili
 @media (max-width: 520px) {
   .edit-profile-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }

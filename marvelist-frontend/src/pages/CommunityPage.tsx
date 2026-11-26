@@ -4,9 +4,8 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { mediaService, type MediaItem } from '../services/mediaService';
 import { communityService, type Rankings } from '../services/communityService';
-import { getPosterUrl } from '../utils/poster';
 import { availableFrom, episodeAirDate, formatDay, isUpcoming, todayIso } from '../utils/upcoming';
-import PosterFallback from '../components/PosterFallback';
+import TopList, { TopPoster as Poster } from '../components/TopList';
 import SlowLoader from '../components/SlowLoader';
 
 const MAX_RELEASES = 12;
@@ -72,13 +71,6 @@ const recentReleases = (media: MediaItem[], today: string): Release[] => {
     .slice(0, MAX_RELEASES);
 };
 
-const Poster = ({ media, size = 'w342' }: { media: MediaItem; size?: string }) => {
-  const url = getPosterUrl(media.posterPath, size);
-  return url
-    ? <img src={url} alt="" loading="lazy" className="cm-poster-img" />
-    : <PosterFallback title={media.title} className="cm-poster-img" />;
-};
-
 const ReleaseRow = ({ items, empty }: { items: Release[]; empty: string }) => (
   items.length === 0 ? <div className="empty-box">{empty}</div> : (
     <div className="release-row">
@@ -90,26 +82,6 @@ const ReleaseRow = ({ items, empty }: { items: Release[]; empty: string }) => (
         </Link>
       ))}
     </div>
-  )
-);
-
-// Classifica in riga a scorrimento: la posizione è scritta in grande sulla locandina, in giallo solo il podio
-const TopList = ({ items, empty, label }: { items: { media: MediaItem; detail: React.ReactNode }[]; empty: string; label: string }) => (
-  items.length === 0 ? <div className="empty-box">{empty}</div> : (
-    <ol className="release-row top-row-list" aria-label={label}>
-      {items.map(({ media, detail }, i) => (
-        <li key={media.id}>
-          <Link to={`/media/${media.id}`} className="release-card top-card" aria-label={`${i + 1}° posto: ${media.title}`}>
-            <span className="top-card-poster">
-              <Poster media={media} />
-              <span className={`top-card-rank ${i < 3 ? 'is-podium' : ''}`} aria-hidden="true">{i + 1}</span>
-            </span>
-            <span className="release-title">{media.title}</span>
-            <span className="top-detail">{detail}</span>
-          </Link>
-        </li>
-      ))}
-    </ol>
   )
 );
 

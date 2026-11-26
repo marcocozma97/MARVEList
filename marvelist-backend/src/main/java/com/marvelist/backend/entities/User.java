@@ -74,6 +74,11 @@ public class User implements UserDetails {
 
     private Instant privacyAcceptedAt;
 
+    @Column(columnDefinition = "text")
+    private String topTenOrder;
+
+    private Boolean topTenPending;
+
     // Film visti dall'utente
     @Builder.Default
     @ManyToMany

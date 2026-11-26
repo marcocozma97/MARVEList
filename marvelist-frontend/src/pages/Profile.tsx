@@ -5,7 +5,7 @@ import { setProfile } from '../store/authSlice';
 import { Navigate, Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { mediaService, type MediaItem, type MediaProgress } from '../services/mediaService';
-import { userService, type UserStats } from '../services/userService';
+import { userService, type TopTen, type UserStats } from '../services/userService';
 import { marathonService, type MarathonSummary } from '../services/marathonService';
 import { errorMessage, formatDay, dayLabel, getBackgroundUrl } from '../utils/marathon';
 import { getProgressPercent } from '../utils/progress';
@@ -18,6 +18,8 @@ import { AVATARS, AVATAR_GROUPS } from '../utils/avatars';
 import PeopleModal, { type PeopleTab } from '../components/PeopleModal';
 import SlowLoader from '../components/SlowLoader';
 import EditProfileModal from '../components/EditProfileModal';
+import TopList from '../components/TopList';
+import TopTenConfirm from '../components/TopTenConfirm';
 
 const Profile = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -31,6 +33,8 @@ const Profile = () => {
   const [allMedia, setAllMedia] = useState<MediaItem[]>([]);
   const [progressById, setProgressById] = useState<Record<number, MediaProgress>>({});
   const [marathons, setMarathons] = useState<MarathonSummary[]>([]);
+  const [topTen, setTopTen] = useState<TopTen | null>(null);
+  const [showTopTenConfirm, setShowTopTenConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -46,7 +50,7 @@ const Profile = () => {
       try {
         setIsLoading(true);
         // Ogni sezione è indipendente: se una chiamata fallisce le altre si vedono comunque
-        const [favData, watchData, seenData, laterData, allData, progressData, me, marathonData] = await Promise.all([
+        const [favData, watchData, seenData, laterData, allData, progressData, me, marathonData, topTenData] = await Promise.all([
           mediaService.getFavorites().catch((): number[] => []),
           mediaService.getWatchlist().catch((): number[] => []),
           mediaService.getSeenIds().catch((): number[] => []),
@@ -54,7 +58,8 @@ const Profile = () => {
           mediaService.getAllMedia(),
           mediaService.getAllProgress().catch((): MediaProgress[] => []),
           userService.getMe().catch(() => null),
-          marathonService.list().catch((): MarathonSummary[] => [])
+          marathonService.list().catch((): MarathonSummary[] => []),
+          userService.getTopTen().catch(() => null)
         ]);
 
         setFavorites(allData.filter(item => favData.includes(item.id)));
@@ -66,6 +71,7 @@ const Profile = () => {
         setAllMedia(allData);
         setProgressById(Object.fromEntries(progressData.map(p => [p.mediaId, p])));
         setMarathons(marathonData);
+        setTopTen(topTenData);
         if (me) {
           dispatch(setProfile(me));
           setSocial({ followers: me.followers, following: me.following });
@@ -151,6 +157,11 @@ const Profile = () => {
   }
 
   const nickname = profile?.nickname ?? 'Agente';
+  const mediaById = new Map(allMedia.map(m => [m.id, m]));
+  const topTenItems = (topTen?.items ?? []).flatMap(e => {
+    const media = mediaById.get(e.mediaId);
+    return media ? [{ media, detail: <strong className="top-vote">🛡 {String(e.rating).replace('.', ',')}</strong> }] : [];
+  });
 
   return (
     <div className="container page profile-page">
@@ -313,6 +324,25 @@ const Profile = () => {
 
       <section className="profile-section">
         <div className="section-heading">
+          <div className="top-ten-heading">
+            <h2 className="section-title">La tua Top 10</h2>
+            {topTen?.needsConfirmation && (
+              <button type="button" className="top-ten-cup" onClick={() => setShowTopTenConfirm(true)} aria-label="Conferma la tua Top 10: scegli l'ordine dei titoli con lo stesso voto" title="Conferma la tua Top 10">
+                <span aria-hidden="true">🏆</span>
+              </button>
+            )}
+          </div>
+          <span className="section-hint">{topTen?.needsConfirmation ? 'Hai titoli con lo stesso voto: tocca la coppa e scegli' : 'I titoli a cui hai dato il voto più alto'}</span>
+        </div>
+        <TopList
+          items={topTenItems}
+          label="La tua Top 10"
+          empty={<>Non hai ancora votato nessun titolo. Apri un film o una serie dalla <Link to="/timeline">Timeline</Link> e votalo con gli scudi: i tuoi preferiti finiscono qui.</>}
+        />
+      </section>
+
+      <section className="profile-section">
+        <div className="section-heading">
           <h2 className="section-title">I tuoi preferiti</h2>
           {favorites.length > 0 && <span className="section-hint">{favorites.length === 1 ? '1 titolo' : `${favorites.length} titoli`}</span>}
         </div>
@@ -335,6 +365,15 @@ const Profile = () => {
           </div>
         )}
       </section>
+
+      {showTopTenConfirm && topTen?.needsConfirmation && (
+        <TopTenConfirm
+          topTen={topTen}
+          mediaById={mediaById}
+          onClose={() => setShowTopTenConfirm(false)}
+          onSaved={saved => { setTopTen(saved); setShowTopTenConfirm(false); }}
+        />
+      )}
 
       {showEditProfile && profile && (
         <EditProfileModal

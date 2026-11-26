@@ -2,7 +2,7 @@ import { api } from './api';
 
 export const NOTIFICATIONS_READ_EVENT = 'marvelist:notifications-read';
 
-export type NotificationType = 'FOLLOW' | 'LIKE' | 'REPLY' | 'NEW_MEDIA' | 'RELEASE_30' | 'RELEASE_7' | 'RELEASE_1' | 'RELEASED' | 'EPISODE_OUT' | 'NICKNAME' | 'JAIRVIS_OFFLINE' | 'APP_AVAILABLE';
+export type NotificationType = 'FOLLOW' | 'LIKE' | 'REPLY' | 'NEW_MEDIA' | 'RELEASE_30' | 'RELEASE_7' | 'RELEASE_1' | 'RELEASED' | 'EPISODE_OUT' | 'NICKNAME' | 'JAIRVIS_OFFLINE' | 'APP_AVAILABLE' | 'TOP_TEN_FEATURE' | 'TOP_TEN';
 
 export interface NotificationItem {
   id: number;

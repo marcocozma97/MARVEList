@@ -6,6 +6,7 @@ import com.marvelist.backend.auth.PasswordRequests;
 import com.marvelist.backend.dto.UserProfileRequest;
 import jakarta.validation.Valid;
 import com.marvelist.backend.dto.UserProfileResponse;
+import com.marvelist.backend.services.TopTenService;
 import com.marvelist.backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class UserController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final TopTenService topTenService;
 
     // Profilo dell'utente loggato (nickname e avatar)
     @GetMapping("/me")
@@ -44,6 +46,16 @@ public class UserController {
             @Valid @RequestBody PasswordRequests.Change request, Authentication authentication) {
         return ResponseEntity.ok(authenticationService.changePassword(
                 authentication.getName(), request.currentPassword(), request.newPassword()));
+    }
+
+    @GetMapping("/me/top-ten")
+    public ResponseEntity<TopTenService.TopTen> getTopTen(Authentication authentication) {
+        return ResponseEntity.ok(topTenService.get(authentication.getName()));
+    }
+
+    @PutMapping("/me/top-ten")
+    public ResponseEntity<TopTenService.TopTen> confirmTopTen(@RequestBody TopTenService.TopTenRequest request, Authentication authentication) {
+        return ResponseEntity.ok(topTenService.confirm(authentication.getName(), request.order()));
     }
 
     @GetMapping("/nickname-available")

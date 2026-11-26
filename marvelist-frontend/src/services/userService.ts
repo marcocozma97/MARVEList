@@ -65,7 +65,15 @@ export interface FollowState {
   followers: number;
 }
 
+export interface TopTenEntry { mediaId: number; rating: number }
+export interface TopTenTie { rating: number; slots: number; mediaIds: number[] }
+export interface TopTen { items: TopTenEntry[]; needsConfirmation: boolean; ties: TopTenTie[] }
+
 export const userService = {
+  getTopTen: async (): Promise<TopTen> => (await api.get('/users/me/top-ten')).data,
+
+  confirmTopTen: async (order: number[]): Promise<TopTen> => (await api.put('/users/me/top-ten', { order })).data,
+
   getMe: async (): Promise<UserProfile> => {
     const response = await api.get('/users/me');
     return response.data;

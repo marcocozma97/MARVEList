@@ -8,7 +8,7 @@ import { getPosterUrl } from '../utils/poster';
 import Avatar from '../components/Avatar';
 
 const ICONS: Record<NotificationType, string> = {
-  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎', JAIRVIS_OFFLINE: '⚡', APP_AVAILABLE: '↓'
+  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎', JAIRVIS_OFFLINE: '⚡', APP_AVAILABLE: '↓', TOP_TEN_FEATURE: '🏆', TOP_TEN: '🏆'
 };
 
 const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7', 'RELEASE_1', 'RELEASED', 'EPISODE_OUT'];
@@ -16,7 +16,7 @@ const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7',
 const isMediaNotice = (n: NotificationItem) => MEDIA_TYPES.includes(n.type);
 
 const target = (n: NotificationItem) => {
-  if (n.type === 'NICKNAME') return '/profile';
+  if (n.type === 'NICKNAME' || n.type === 'TOP_TEN_FEATURE' || n.type === 'TOP_TEN') return '/profile';
   if (n.type === 'JAIRVIS_OFFLINE') return '/jairvis';
   if (n.type === 'APP_AVAILABLE') return '/'; // nella home c'è la guida all'installazione
   if (n.type === 'FOLLOW' || n.mediaId === null) return `/users/${n.actorId}`;
@@ -45,6 +45,8 @@ const message = (n: NotificationItem) => {
     case 'EPISODE_OUT': return <>È uscito l'episodio {n.episode} di {title}! Ora puoi segnarlo come visto.</>;
     case 'NICKNAME': return <>Sono passati 30 giorni: se vuoi, ora puoi cambiare di nuovo il tuo nickname.</>;
     case 'APP_AVAILABLE': return <>Novità: <strong>MARVEList ora è anche un'app!</strong> Apri il sito dal telefono e installala dalla home, sotto «Esplora la Timeline»: la trovi tra le tue app e si aggiorna da sola.</>;
+    case 'TOP_TEN_FEATURE': return <>Novità: nel tuo profilo c'è <strong>la tua Top 10</strong>, con i titoli a cui hai dato il voto più alto. Vai a controllare che sia giusta: se accanto al titolo vedi la coppa 🏆, toccala e scegli l'ordine dei titoli con lo stesso voto.</>;
+    case 'TOP_TEN': return <>Nella tua <strong>Top 10</strong> ci sono titoli con lo stesso voto: tocca la coppa 🏆 nel profilo e conferma quale preferisci.</>;
     case 'JAIRVIS_OFFLINE': return <>Allarme dal laboratorio Stark: il reattore di <strong>J.A.I.R.V.I.S.</strong> ha esaurito l'energia. I fondi per l'IA sono finiti e DUM-E e U lo hanno messo in manutenzione.</>;
   }
 };
@@ -111,12 +113,14 @@ const Notifications = () => {
                       <span className="notif-poster notif-jairvis" aria-hidden="true" />
                     ) : n.type === 'APP_AVAILABLE' ? (
                       <img className="notif-poster notif-app" src="/icon-192.png" alt="" />
+                    ) : n.type === 'TOP_TEN_FEATURE' || n.type === 'TOP_TEN' ? (
+                      <span className="notif-poster notif-poster-empty" aria-hidden="true">🏆</span>
                     ) : n.type === 'NICKNAME' ? (
                       <Avatar avatarId={profile?.avatar} name={profile?.nickname ?? ''} size={44} />
                     ) : (
                       <Avatar avatarId={n.actorAvatar} name={n.actorName} size={44} />
                     )}
-                    <span className={`notif-type notif-type-${n.type === 'EPISODE_OUT' ? 'released' : n.type === 'JAIRVIS_OFFLINE' ? 'jairvis' : n.type === 'APP_AVAILABLE' ? 'app' : n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
+                    <span className={`notif-type notif-type-${n.type === 'EPISODE_OUT' ? 'released' : n.type === 'JAIRVIS_OFFLINE' ? 'jairvis' : n.type === 'APP_AVAILABLE' ? 'app' : n.type.startsWith('TOP_TEN') ? 'cup' : n.type.toLowerCase().replace(/_\d+$/, '')}`} aria-hidden="true">{ICONS[n.type]}</span>
                   </span>
                   <span className="notif-body">
                     <span className="notif-text">{message(n)}</span>
