@@ -159,7 +159,7 @@ const Profile = () => {
   const nickname = profile?.nickname ?? 'Agente';
   const mediaById = new Map(allMedia.map(m => [m.id, m]));
   const topTenEntries = topTen?.items ?? Object.values(progressById)
-    .filter(p => p.rating != null)
+    .filter(p => p.rating != null && (mediaById.get(p.mediaId)?.type !== 'SERIE_TV' || seenIds.includes(p.mediaId)))
     .map(p => ({ mediaId: p.mediaId, rating: p.rating as number }))
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 10);

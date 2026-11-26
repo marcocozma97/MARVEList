@@ -84,6 +84,7 @@ public class MediaService {
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
+        topTenService.ratingChanged(user);
         return toResponse(user, media, progress);
     }
 
@@ -206,6 +207,7 @@ public class MediaService {
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
+        topTenService.ratingChanged(user);
         return toResponse(user, media, progress);
     }
 
@@ -242,6 +244,7 @@ public class MediaService {
         progresses.forEach(p -> p.setUpdatedAt(now));
         progressRepository.saveAll(progresses);
         progresses.forEach(p -> syncMarathons(user, p.getMedia(), wasSeen.get(p.getMedia().getId()), before.get(p.getMedia().getId()), p));
+        topTenService.ratingChanged(user);
         return progresses.stream().map(p -> toResponse(user, p.getMedia(), p)).toList();
     }
 
@@ -281,6 +284,7 @@ public class MediaService {
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
+        topTenService.ratingChanged(user);
     }
 
     @Transactional
@@ -318,6 +322,7 @@ public class MediaService {
         progressRepository.save(progress);
         syncMarathons(user, media, wasSeen, before, progress);
         recordWatch(user, media, wasSeen, before, progress);
+        topTenService.ratingChanged(user);
         return toResponse(user, media, progress);
     }
 

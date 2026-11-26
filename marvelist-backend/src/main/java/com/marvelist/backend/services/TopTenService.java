@@ -1,5 +1,6 @@
 package com.marvelist.backend.services;
 
+import com.marvelist.backend.entities.Media;
 import com.marvelist.backend.entities.Notification;
 import com.marvelist.backend.entities.NotificationType;
 import com.marvelist.backend.entities.User;
@@ -123,8 +124,10 @@ public class TopTenService {
     }
 
     private List<Entry> rated(User user) {
+        Set<Long> seen = user.getSeenMedia().stream().map(Media::getId).collect(Collectors.toSet());
         return progressRepository.findAllByUser(user).stream()
                 .filter(p -> p.getRating() != null)
+                .filter(p -> !"SERIE_TV".equals(p.getMedia().getType()) || seen.contains(p.getMedia().getId()))
                 .map((UserProgress p) -> new Entry(p.getMedia().getId(), p.getRating()))
                 .toList();
     }
