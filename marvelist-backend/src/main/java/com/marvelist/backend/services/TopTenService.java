@@ -9,8 +9,6 @@ import com.marvelist.backend.repositories.NotificationRepository;
 import com.marvelist.backend.repositories.UserProgressRepository;
 import com.marvelist.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,23 +73,14 @@ public class TopTenService {
         userRepository.save(user);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void announceOnce() {
-        if (notificationRepository.existsByType(TOP_TEN_FEATURE)) return;
-        List<Notification> created = new ArrayList<>();
-        List<User> pending = new ArrayList<>();
-        for (User user : userRepository.findAll()) {
-            if (!user.isEnabled()) continue;
-            created.add(notice(user, TOP_TEN_FEATURE));
-            if (compute(user).needsConfirmation()) {
-                user.setTopTenPending(true);
-                pending.add(user);
-            }
+    public void announceTo(User user) {
+        if (notificationRepository.existsByRecipientAndType(user, TOP_TEN_FEATURE)) return;
+        notificationRepository.save(notice(user, TOP_TEN_FEATURE));
+        if (!Boolean.TRUE.equals(user.getTopTenPending()) && compute(user).needsConfirmation()) {
+            user.setTopTenPending(true);
+            userRepository.save(user);
         }
-        notificationRepository.saveAll(created);
-        userRepository.saveAll(pending);
-        System.out.println("--- ANNUNCIO DELLA TOP 10 PERSONALE INVIATO A " + created.size() + " UTENTI ---");
     }
 
     TopTen compute(User user) {

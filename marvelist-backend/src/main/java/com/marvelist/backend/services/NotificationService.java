@@ -40,6 +40,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final MediaRepository mediaRepository;
+    private final TopTenService topTenService;
     private final Set<Long> generating = ConcurrentHashMap.newKeySet();
 
     @Transactional
@@ -106,6 +107,7 @@ public class NotificationService {
         if (!generating.add(user.getId())) return;
         try {
             nicknameReminder(user);
+            topTenService.announceTo(user);
             mediaNotifications(user, EpisodeSchedule.today());
         } finally {
             generating.remove(user.getId());

@@ -25,6 +25,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     boolean existsByType(NotificationType type);
 
+    boolean existsByRecipientAndType(User recipient, NotificationType type);
+
     boolean existsByRecipientAndTypeAndCreatedAtAfter(User recipient, NotificationType type, java.time.Instant since);
 
     @Query("select n.media.id, n.type, n.episodeNumber from Notification n where n.recipient = :recipient and n.media.id in :ids and n.type in :types")
