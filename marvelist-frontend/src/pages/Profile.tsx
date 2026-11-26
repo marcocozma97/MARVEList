@@ -331,13 +331,19 @@ const Profile = () => {
         <div className="section-heading">
           <div className="top-ten-heading">
             <h2 className="section-title">La tua Top 10</h2>
-            {topTen?.needsConfirmation && (
-              <button type="button" className="top-ten-cup" onClick={() => setShowTopTenConfirm(true)} aria-label="Conferma la tua Top 10: scegli l'ordine dei titoli con lo stesso voto" title="Conferma la tua Top 10">
+            {topTen && topTen.ties.length > 0 && (
+              <button
+                type="button"
+                className={`top-ten-cup ${topTen.needsConfirmation ? 'is-pending' : ''}`}
+                onClick={() => setShowTopTenConfirm(true)}
+                aria-label={topTen.needsConfirmation ? "Conferma la tua Top 10: scegli l'ordine dei titoli con lo stesso voto" : "Cambia l'ordine dei titoli con lo stesso voto"}
+                title={topTen.needsConfirmation ? 'Conferma la tua Top 10' : "Cambia l'ordine dei pari merito"}
+              >
                 <span aria-hidden="true">🏆</span>
               </button>
             )}
           </div>
-          <span className="section-hint">{topTen?.needsConfirmation ? 'Hai titoli con lo stesso voto: tocca la coppa e scegli' : 'I titoli a cui hai dato il voto più alto'}</span>
+          <span className="section-hint">{topTen?.needsConfirmation ? 'Hai titoli con lo stesso voto: tocca la coppa e scegli' : topTen && topTen.ties.length > 0 ? "Tocca la coppa per cambiare l'ordine dei pari merito" : 'I titoli a cui hai dato il voto più alto'}</span>
         </div>
         <TopList
           items={topTenItems}
@@ -372,7 +378,7 @@ const Profile = () => {
         )}
       </section>
 
-      {showTopTenConfirm && topTen?.needsConfirmation && (
+      {showTopTenConfirm && topTen && topTen.ties.length > 0 && (
         <TopTenConfirm
           topTen={topTen}
           mediaById={mediaById}

@@ -66,7 +66,7 @@ export interface FollowState {
 }
 
 export interface TopTenEntry { mediaId: number; rating: number }
-export interface TopTenTie { rating: number; slots: number; mediaIds: number[] }
+export interface TopTenTie { rating: number; slots: number; mediaIds: number[]; confirmed: boolean }
 export interface TopTen { items: TopTenEntry[]; needsConfirmation: boolean; ties: TopTenTie[] }
 
 export const userService = {

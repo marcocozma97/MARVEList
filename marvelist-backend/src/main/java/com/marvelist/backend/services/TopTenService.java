@@ -33,7 +33,7 @@ public class TopTenService {
 
     public record Entry(Long mediaId, Double rating) {}
 
-    public record Tie(Double rating, int slots, List<Long> mediaIds) {}
+    public record Tie(Double rating, int slots, List<Long> mediaIds, boolean confirmed) {}
 
     public record TopTen(List<Entry> items, boolean needsConfirmation, List<Tie> ties) {}
 
@@ -114,13 +114,14 @@ public class TopTenService {
         int above = 0;
         for (Map.Entry<Double, List<Entry>> group : groups.entrySet()) {
             List<Entry> members = group.getValue();
-            if (members.size() > 1 && members.stream().anyMatch(e -> !saved.containsKey(e.mediaId()))) {
+            if (members.size() > 1) {
                 ties.add(new Tie(group.getKey(), Math.min(members.size(), SIZE - above),
-                        members.stream().map(Entry::mediaId).toList()));
+                        members.stream().map(Entry::mediaId).toList(),
+                        members.stream().allMatch(e -> saved.containsKey(e.mediaId()))));
             }
             above += members.size();
         }
-        return new TopTen(sorted.subList(0, Math.min(SIZE, sorted.size())), !ties.isEmpty(), ties);
+        return new TopTen(sorted.subList(0, Math.min(SIZE, sorted.size())), ties.stream().anyMatch(t -> !t.confirmed()), ties);
     }
 
     private List<Entry> rated(User user) {

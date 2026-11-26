@@ -15,7 +15,7 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
   onClose: () => void;
   onSaved: (topTen: TopTen) => void;
 }) => {
-  const [picks, setPicks] = useState<number[][]>(() => topTen.ties.map(() => []));
+  const [picks, setPicks] = useState<number[][]>(() => topTen.ties.map(tie => tie.confirmed ? tie.mediaIds.slice(0, needed(tie)) : []));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,13 +70,13 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
 
   return createPortal(
     <div className="people-backdrop" onClick={onClose}>
-      <div className="people-modal top-ten-modal" role="dialog" aria-modal="true" aria-label="Conferma la tua Top 10" onClick={(e) => e.stopPropagation()}>
+      <div className="people-modal top-ten-modal" role="dialog" aria-modal="true" aria-label={topTen.needsConfirmation ? 'Conferma la tua Top 10' : "Cambia l'ordine dei pari merito"} onClick={(e) => e.stopPropagation()}>
         <div className="people-head">
-          <h2 className="edit-profile-title"><span aria-hidden="true">🏆</span> Conferma la tua Top 10</h2>
+          <h2 className="edit-profile-title"><span aria-hidden="true">🏆</span> {topTen.needsConfirmation ? 'Conferma la tua Top 10' : 'I tuoi pari merito'}</h2>
           <button type="button" className="close-btn" onClick={onClose} aria-label="Chiudi">×</button>
         </div>
         <div className="people-body top-ten-body">
-          <p className="top-ten-intro">Hai dato lo stesso voto a più titoli. Tocca le locandine nell'ordine in cui li preferisci: il primo che tocchi sale più in alto. Per cambiare, tocca di nuovo una locandina scelta.</p>
+          <p className="top-ten-intro">Hai dato lo stesso voto a più titoli. Tocca le locandine nell'ordine in cui li preferisci: il primo che tocchi sale più in alto. Per cambiare, tocca di nuovo una locandina scelta.{!topTen.needsConfirmation && " Qui trovi l'ordine che hai già confermato: puoi cambiarlo quando vuoi."}</p>
           {topTen.ties.map((tie, i) => {
             const full = tie.slots === tie.mediaIds.length;
             return (
@@ -122,7 +122,7 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
           <div className="top-ten-actions">
             <button type="button" className="btn-ghost" onClick={onClose} disabled={saving}>Più tardi</button>
             <button type="button" className="btn-marvel" onClick={save} disabled={!allComplete || saving}>
-              {saving ? 'Salvo…' : 'Conferma la Top 10'}
+              {saving ? 'Salvo…' : topTen.needsConfirmation ? 'Conferma la Top 10' : 'Salva il nuovo ordine'}
             </button>
           </div>
         </div>
