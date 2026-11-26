@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.marvelist.backend.entities.NotificationType.TOP_TEN;
-import static com.marvelist.backend.entities.NotificationType.TOP_TEN_FEATURE;
+import static com.marvelist.backend.entities.NotificationType.TOP_TEN_SPLIT;
 
 @Service
 @RequiredArgsConstructor
@@ -35,21 +35,25 @@ public class TopTenService {
 
     public record TopTen(List<Entry> items, boolean needsConfirmation, List<Tie> ties) {}
 
+    public record TopTens(TopTen films, TopTen series, boolean needsConfirmation) {}
+
     public record TopTenRequest(List<Long> order) {}
+
+    private record Rated(Long mediaId, Double rating, boolean series) {}
 
     private final UserRepository userRepository;
     private final UserProgressRepository progressRepository;
     private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
-    public TopTen get(String email) {
+    public TopTens get(String email) {
         return compute(findUser(email));
     }
 
     @Transactional
-    public TopTen confirm(String email, List<Long> order) {
+    public TopTens confirm(String email, List<Long> order) {
         User user = findUser(email);
-        Set<Long> rated = rated(user).stream().map(Entry::mediaId).collect(Collectors.toSet());
+        Set<Long> rated = rated(user).stream().map(Rated::mediaId).collect(Collectors.toSet());
         List<Long> clean = Stream.concat(order == null ? Stream.empty() : order.stream(), parse(user.getTopTenOrder()).stream())
                 .filter(Objects::nonNull)
                 .filter(rated::contains)
@@ -57,7 +61,7 @@ public class TopTenService {
                 .limit(MAX_SAVED)
                 .toList();
         user.setTopTenOrder(clean.stream().map(String::valueOf).collect(Collectors.joining(",")));
-        TopTen result = compute(user);
+        TopTens result = compute(user);
         if (!result.needsConfirmation()) user.setTopTenPending(false);
         userRepository.save(user);
         return result;
@@ -75,19 +79,25 @@ public class TopTenService {
 
     @Transactional
     public void announceTo(User user) {
-        if (notificationRepository.existsByRecipientAndType(user, TOP_TEN_FEATURE)) return;
-        notificationRepository.save(notice(user, TOP_TEN_FEATURE));
+        if (notificationRepository.existsByRecipientAndType(user, TOP_TEN_SPLIT)) return;
+        notificationRepository.save(notice(user, TOP_TEN_SPLIT));
         if (!Boolean.TRUE.equals(user.getTopTenPending()) && compute(user).needsConfirmation()) {
             user.setTopTenPending(true);
             userRepository.save(user);
         }
     }
 
-    TopTen compute(User user) {
+    TopTens compute(User user) {
         Map<Long, Integer> saved = new HashMap<>();
         for (Long id : parse(user.getTopTenOrder())) saved.putIfAbsent(id, saved.size());
+        List<Rated> rated = rated(user);
+        TopTen films = rank(rated.stream().filter(r -> !r.series()).map(r -> new Entry(r.mediaId(), r.rating())).toList(), saved);
+        TopTen series = rank(rated.stream().filter(Rated::series).map(r -> new Entry(r.mediaId(), r.rating())).toList(), saved);
+        return new TopTens(films, series, films.needsConfirmation() || series.needsConfirmation());
+    }
 
-        List<Entry> sorted = rated(user).stream()
+    private static TopTen rank(List<Entry> entries, Map<Long, Integer> saved) {
+        List<Entry> sorted = entries.stream()
                 .sorted(Comparator.comparing(Entry::rating).reversed()
                         .thenComparing(e -> saved.getOrDefault(e.mediaId(), Integer.MAX_VALUE))
                         .thenComparing(Entry::mediaId))
@@ -113,12 +123,12 @@ public class TopTenService {
         return new TopTen(sorted.subList(0, Math.min(SIZE, sorted.size())), ties.stream().anyMatch(t -> !t.confirmed()), ties);
     }
 
-    private List<Entry> rated(User user) {
+    private List<Rated> rated(User user) {
         Set<Long> seen = user.getSeenMedia().stream().map(Media::getId).collect(Collectors.toSet());
         return progressRepository.findAllByUser(user).stream()
                 .filter(p -> p.getRating() != null)
                 .filter(p -> !"SERIE_TV".equals(p.getMedia().getType()) || seen.contains(p.getMedia().getId()))
-                .map((UserProgress p) -> new Entry(p.getMedia().getId(), p.getRating()))
+                .map((UserProgress p) -> new Rated(p.getMedia().getId(), p.getRating(), "SERIE_TV".equals(p.getMedia().getType())))
                 .toList();
     }
 

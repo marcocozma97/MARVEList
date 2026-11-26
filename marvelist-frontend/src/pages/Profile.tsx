@@ -5,7 +5,7 @@ import { setProfile } from '../store/authSlice';
 import { Navigate, Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { mediaService, type MediaItem, type MediaProgress } from '../services/mediaService';
-import { userService, type TopTen, type UserStats } from '../services/userService';
+import { userService, type TopTenKind, type TopTens, type UserStats } from '../services/userService';
 import { marathonService, type MarathonSummary } from '../services/marathonService';
 import { errorMessage, formatDay, dayLabel, getBackgroundUrl } from '../utils/marathon';
 import { getProgressPercent } from '../utils/progress';
@@ -33,8 +33,8 @@ const Profile = () => {
   const [allMedia, setAllMedia] = useState<MediaItem[]>([]);
   const [progressById, setProgressById] = useState<Record<number, MediaProgress>>({});
   const [marathons, setMarathons] = useState<MarathonSummary[]>([]);
-  const [topTen, setTopTen] = useState<TopTen | null>(null);
-  const [showTopTenConfirm, setShowTopTenConfirm] = useState(false);
+  const [topTens, setTopTens] = useState<TopTens | null>(null);
+  const [topTenConfirm, setTopTenConfirm] = useState<TopTenKind | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -71,7 +71,7 @@ const Profile = () => {
         setAllMedia(allData);
         setProgressById(Object.fromEntries(progressData.map(p => [p.mediaId, p])));
         setMarathons(marathonData);
-        setTopTen(topTenData);
+        setTopTens(topTenData);
         if (me) {
           dispatch(setProfile(me));
           setSocial({ followers: me.followers, following: me.following });
@@ -158,15 +158,22 @@ const Profile = () => {
 
   const nickname = profile?.nickname ?? 'Agente';
   const mediaById = new Map(allMedia.map(m => [m.id, m]));
-  const topTenEntries = topTen?.items ?? Object.values(progressById)
-    .filter(p => p.rating != null && (mediaById.get(p.mediaId)?.type !== 'SERIE_TV' || seenIds.includes(p.mediaId)))
-    .map(p => ({ mediaId: p.mediaId, rating: p.rating as number }))
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 10);
-  const topTenItems = topTenEntries.flatMap(e => {
-    const media = mediaById.get(e.mediaId);
-    return media ? [{ media, detail: <strong className="top-vote">🛡 {String(e.rating).replace('.', ',')}</strong> }] : [];
-  });
+  const topTenItems = (kind: TopTenKind) => {
+    const series = kind === 'series';
+    const entries = topTens?.[kind].items ?? Object.values(progressById)
+      .filter(p => p.rating != null && (mediaById.get(p.mediaId)?.type === 'SERIE_TV') === series && (!series || seenIds.includes(p.mediaId)))
+      .map(p => ({ mediaId: p.mediaId, rating: p.rating as number }))
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 10);
+    return entries.flatMap(e => {
+      const media = mediaById.get(e.mediaId);
+      return media ? [{ media, detail: <strong className="top-vote">🛡 {String(e.rating).replace('.', ',')}</strong> }] : [];
+    });
+  };
+  const topTenSections: { kind: TopTenKind; name: string; empty: React.ReactNode }[] = [
+    { kind: 'films', name: 'Top 10 Film', empty: <>Non hai ancora votato nessun film. Apri un film dalla <Link to="/timeline">Timeline</Link> e votalo con gli scudi: i tuoi preferiti finiscono qui.</> },
+    { kind: 'series', name: 'Top 10 Serie TV', empty: <>Nessuna serie completata e votata. Quando finisci una serie (o una stagione) e la voti con gli scudi, entra qui.</> },
+  ];
 
   return (
     <div className="container page profile-page">
@@ -327,31 +334,31 @@ const Profile = () => {
         )}
       </section>
 
-      <section className="profile-section">
-        <div className="section-heading">
-          <div className="top-ten-heading">
-            <h2 className="section-title">La tua Top 10</h2>
-            {topTen && topTen.ties.length > 0 && (
-              <button
-                type="button"
-                className={`top-ten-cup ${topTen.needsConfirmation ? 'is-pending' : ''}`}
-                onClick={() => setShowTopTenConfirm(true)}
-                aria-label={topTen.needsConfirmation ? "Conferma la tua Top 10: scegli l'ordine dei titoli con lo stesso voto" : "Cambia l'ordine dei titoli con lo stesso voto"}
-                title={topTen.needsConfirmation ? 'Conferma la tua Top 10' : "Cambia l'ordine dei pari merito"}
-              >
-                <span aria-hidden="true">🏆</span>
-              </button>
-            )}
-          </div>
-          <span className="section-hint">{topTen?.needsConfirmation ? 'Hai titoli con lo stesso voto: tocca la coppa e scegli' : topTen && topTen.ties.length > 0 ? "Tocca la coppa per cambiare l'ordine dei pari merito" : 'I titoli a cui hai dato il voto più alto'}</span>
-        </div>
-        <TopList
-          items={topTenItems}
-          size={10}
-          label="La tua Top 10"
-          empty={<>Non hai ancora votato nessun titolo. Apri un film o una serie dalla <Link to="/timeline">Timeline</Link> e votalo con gli scudi: i tuoi preferiti finiscono qui.</>}
-        />
-      </section>
+      {topTenSections.map(({ kind, name, empty }) => {
+        const topTen = topTens?.[kind];
+        return (
+          <section key={kind} className="profile-section">
+            <div className="section-heading">
+              <div className="top-ten-heading">
+                <h2 className="section-title">La tua {name}</h2>
+                {topTen && topTen.ties.length > 0 && (
+                  <button
+                    type="button"
+                    className={`top-ten-cup ${topTen.needsConfirmation ? 'is-pending' : ''}`}
+                    onClick={() => setTopTenConfirm(kind)}
+                    aria-label={topTen.needsConfirmation ? `Conferma la tua ${name}: scegli l'ordine dei titoli con lo stesso voto` : `Cambia l'ordine dei pari merito della tua ${name}`}
+                    title={topTen.needsConfirmation ? `Conferma la tua ${name}` : "Cambia l'ordine dei pari merito"}
+                  >
+                    <span aria-hidden="true">🏆</span>
+                  </button>
+                )}
+              </div>
+              <span className="section-hint">{topTen?.needsConfirmation ? 'Hai titoli con lo stesso voto: tocca la coppa e scegli' : topTen && topTen.ties.length > 0 ? "Tocca la coppa per cambiare l'ordine dei pari merito" : kind === 'films' ? 'I film a cui hai dato il voto più alto' : 'Le serie completate a cui hai dato il voto più alto'}</span>
+            </div>
+            <TopList items={topTenItems(kind)} size={10} label={`La tua ${name}`} empty={empty} />
+          </section>
+        );
+      })}
 
       <section className="profile-section">
         <div className="section-heading">
@@ -378,12 +385,13 @@ const Profile = () => {
         )}
       </section>
 
-      {showTopTenConfirm && topTen && topTen.ties.length > 0 && (
+      {topTenConfirm && topTens && topTens[topTenConfirm].ties.length > 0 && (
         <TopTenConfirm
-          topTen={topTen}
+          topTen={topTens[topTenConfirm]}
+          name={topTenSections.find(s => s.kind === topTenConfirm)?.name ?? 'Top 10'}
           mediaById={mediaById}
-          onClose={() => setShowTopTenConfirm(false)}
-          onSaved={saved => { setTopTen(saved); setShowTopTenConfirm(false); }}
+          onClose={() => setTopTenConfirm(null)}
+          onSaved={saved => { setTopTens(saved); setTopTenConfirm(null); }}
         />
       )}
 

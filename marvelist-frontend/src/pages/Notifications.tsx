@@ -8,7 +8,7 @@ import { getPosterUrl } from '../utils/poster';
 import Avatar from '../components/Avatar';
 
 const ICONS: Record<NotificationType, string> = {
-  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎', JAIRVIS_OFFLINE: '⚡', APP_AVAILABLE: '↓', TOP_TEN_FEATURE: '🏆', TOP_TEN: '🏆'
+  FOLLOW: '＋', LIKE: '♥', REPLY: '↩', NEW_MEDIA: '★', RELEASE_30: '⏳', RELEASE_7: '⏳', RELEASE_1: '⏳', RELEASED: '▶', EPISODE_OUT: '▶', NICKNAME: '✎', JAIRVIS_OFFLINE: '⚡', APP_AVAILABLE: '↓', TOP_TEN_FEATURE: '🏆', TOP_TEN: '🏆', TOP_TEN_SPLIT: '🏆'
 };
 
 const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7', 'RELEASE_1', 'RELEASED', 'EPISODE_OUT'];
@@ -16,7 +16,7 @@ const MEDIA_TYPES: NotificationType[] = ['NEW_MEDIA', 'RELEASE_30', 'RELEASE_7',
 const isMediaNotice = (n: NotificationItem) => MEDIA_TYPES.includes(n.type);
 
 const target = (n: NotificationItem) => {
-  if (n.type === 'NICKNAME' || n.type === 'TOP_TEN_FEATURE' || n.type === 'TOP_TEN') return '/profile';
+  if (n.type === 'NICKNAME' || n.type === 'TOP_TEN_FEATURE' || n.type === 'TOP_TEN' || n.type === 'TOP_TEN_SPLIT') return '/profile';
   if (n.type === 'JAIRVIS_OFFLINE') return '/jairvis';
   if (n.type === 'APP_AVAILABLE') return '/'; // nella home c'è la guida all'installazione
   if (n.type === 'FOLLOW' || n.mediaId === null) return `/users/${n.actorId}`;
@@ -47,6 +47,7 @@ const message = (n: NotificationItem) => {
     case 'APP_AVAILABLE': return <>Novità: <strong>MARVEList ora è anche un'app!</strong> Apri il sito dal telefono e installala dalla home, sotto «Esplora la Timeline»: la trovi tra le tue app e si aggiorna da sola.</>;
     case 'TOP_TEN_FEATURE': return <>Novità: nel tuo profilo c'è <strong>la tua Top 10</strong>, con i titoli a cui hai dato il voto più alto. Vai a controllare che sia giusta: se accanto al titolo vedi la coppa 🏆, toccala e scegli l'ordine dei titoli con lo stesso voto.</>;
     case 'TOP_TEN': return <>Nella tua <strong>Top 10</strong> ci sono titoli con lo stesso voto: tocca la coppa 🏆 nel profilo e conferma quale preferisci.</>;
+    case 'TOP_TEN_SPLIT': return <>Novità: la tua Top 10 ora è divisa in due, <strong>la tua Top 10 Film</strong> e <strong>la tua Top 10 Serie TV</strong>. Le trovi nel profilo, con i voti che hai già dato. Se qualcosa non ti è chiaro, consulta la sezione <strong>FAQ</strong>.</>;
     case 'JAIRVIS_OFFLINE': return <>Allarme dal laboratorio Stark: il reattore di <strong>J.A.I.R.V.I.S.</strong> ha esaurito l'energia. I fondi per l'IA sono finiti e DUM-E e U lo hanno messo in manutenzione.</>;
   }
 };
@@ -113,7 +114,7 @@ const Notifications = () => {
                       <span className="notif-poster notif-jairvis" aria-hidden="true" />
                     ) : n.type === 'APP_AVAILABLE' ? (
                       <img className="notif-poster notif-app" src="/icon-192.png" alt="" />
-                    ) : n.type === 'TOP_TEN_FEATURE' || n.type === 'TOP_TEN' ? (
+                    ) : n.type.startsWith('TOP_TEN') ? (
                       <span className="notif-poster notif-poster-empty" aria-hidden="true">🏆</span>
                     ) : n.type === 'NICKNAME' ? (
                       <Avatar avatarId={profile?.avatar} name={profile?.nickname ?? ''} size={44} />

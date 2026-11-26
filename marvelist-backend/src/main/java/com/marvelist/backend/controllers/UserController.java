@@ -49,12 +49,12 @@ public class UserController {
     }
 
     @GetMapping("/me/top-ten")
-    public ResponseEntity<TopTenService.TopTen> getTopTen(Authentication authentication) {
+    public ResponseEntity<TopTenService.TopTens> getTopTen(Authentication authentication) {
         return ResponseEntity.ok(topTenService.get(authentication.getName()));
     }
 
     @PutMapping("/me/top-ten")
-    public ResponseEntity<TopTenService.TopTen> confirmTopTen(@RequestBody TopTenService.TopTenRequest request, Authentication authentication) {
+    public ResponseEntity<TopTenService.TopTens> confirmTopTen(@RequestBody TopTenService.TopTenRequest request, Authentication authentication) {
         return ResponseEntity.ok(topTenService.confirm(authentication.getName(), request.order()));
     }
 

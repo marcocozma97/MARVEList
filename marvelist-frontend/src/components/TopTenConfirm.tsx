@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { MediaItem } from '../services/mediaService';
-import { userService, type TopTen, type TopTenTie } from '../services/userService';
+import { userService, type TopTen, type TopTens, type TopTenTie } from '../services/userService';
 import { errorMessage } from '../utils/marathon';
 import { TopPoster } from './TopList';
 
@@ -9,11 +9,12 @@ const vote = (rating: number) => String(rating).replace('.', ',');
 
 const needed = (tie: TopTenTie) => tie.slots < tie.mediaIds.length ? tie.slots : tie.mediaIds.length - 1;
 
-const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
+const TopTenConfirm = ({ topTen, name, mediaById, onClose, onSaved }: {
   topTen: TopTen;
+  name: string;
   mediaById: Map<number, MediaItem>;
   onClose: () => void;
-  onSaved: (topTen: TopTen) => void;
+  onSaved: (topTens: TopTens) => void;
 }) => {
   const [picks, setPicks] = useState<number[][]>(() => topTen.ties.map(tie => tie.confirmed ? tie.mediaIds.slice(0, needed(tie)) : []));
   const [saving, setSaving] = useState(false);
@@ -70,9 +71,9 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
 
   return createPortal(
     <div className="people-backdrop" onClick={onClose}>
-      <div className="people-modal top-ten-modal" role="dialog" aria-modal="true" aria-label={topTen.needsConfirmation ? 'Conferma la tua Top 10' : "Cambia l'ordine dei pari merito"} onClick={(e) => e.stopPropagation()}>
+      <div className="people-modal top-ten-modal" role="dialog" aria-modal="true" aria-label={topTen.needsConfirmation ? `Conferma la tua ${name}` : `Pari merito della tua ${name}`} onClick={(e) => e.stopPropagation()}>
         <div className="people-head">
-          <h2 className="edit-profile-title"><span aria-hidden="true">🏆</span> {topTen.needsConfirmation ? 'Conferma la tua Top 10' : 'I tuoi pari merito'}</h2>
+          <h2 className="edit-profile-title"><span aria-hidden="true">🏆</span> {topTen.needsConfirmation ? `Conferma la tua ${name}` : `Pari merito: ${name}`}</h2>
           <button type="button" className="close-btn" onClick={onClose} aria-label="Chiudi">×</button>
         </div>
         <div className="people-body top-ten-body">
@@ -103,7 +104,7 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
                         className={`top-ten-choice ${picked ? 'is-picked' : ''} ${rank && !picked ? 'is-auto' : ''} ${out ? 'is-out' : ''}`}
                         onClick={() => toggle(i, id)}
                         aria-pressed={picked}
-                        aria-label={`${media.title}${rank ? `: ${rank}° posto` : out ? ': fuori dalla Top 10' : ''}`}
+                        aria-label={`${media.title}${rank ? `: ${rank}° posto` : out ? `: fuori dalla ${name}` : ''}`}
                       >
                         <span className="top-ten-choice-poster">
                           <TopPoster media={media} size="w185" />
@@ -122,7 +123,7 @@ const TopTenConfirm = ({ topTen, mediaById, onClose, onSaved }: {
           <div className="top-ten-actions">
             <button type="button" className="btn-ghost" onClick={onClose} disabled={saving}>Più tardi</button>
             <button type="button" className="btn-marvel" onClick={save} disabled={!allComplete || saving}>
-              {saving ? 'Salvo…' : topTen.needsConfirmation ? 'Conferma la Top 10' : 'Salva il nuovo ordine'}
+              {saving ? 'Salvo…' : topTen.needsConfirmation ? `Conferma la ${name}` : 'Salva il nuovo ordine'}
             </button>
           </div>
         </div>

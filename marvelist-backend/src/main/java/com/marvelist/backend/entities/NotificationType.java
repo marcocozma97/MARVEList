@@ -14,5 +14,6 @@ public enum NotificationType {
     JAIRVIS_OFFLINE,
     TOP_TEN_FEATURE,
     TOP_TEN,
+    TOP_TEN_SPLIT,
     APP_AVAILABLE // Annuncio: MARVEList si può installare come app dal telefono
 }

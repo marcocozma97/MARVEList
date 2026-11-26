@@ -68,11 +68,13 @@ export interface FollowState {
 export interface TopTenEntry { mediaId: number; rating: number }
 export interface TopTenTie { rating: number; slots: number; mediaIds: number[]; confirmed: boolean }
 export interface TopTen { items: TopTenEntry[]; needsConfirmation: boolean; ties: TopTenTie[] }
+export interface TopTens { films: TopTen; series: TopTen; needsConfirmation: boolean }
+export type TopTenKind = 'films' | 'series';
 
 export const userService = {
-  getTopTen: async (): Promise<TopTen> => (await api.get('/users/me/top-ten')).data,
+  getTopTen: async (): Promise<TopTens> => (await api.get('/users/me/top-ten')).data,
 
-  confirmTopTen: async (order: number[]): Promise<TopTen> => (await api.put('/users/me/top-ten', { order })).data,
+  confirmTopTen: async (order: number[]): Promise<TopTens> => (await api.put('/users/me/top-ten', { order })).data,
 
   getMe: async (): Promise<UserProfile> => {
     const response = await api.get('/users/me');
