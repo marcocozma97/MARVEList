@@ -6461,6 +6461,15 @@ a.cm-author { color: #fff; text-decoration: none; &:hover { text-decoration: und
 .top-detail { color: var(--text-muted); font-size: 0.8rem; }
 .top-vote { color: var(--gold); }
 
+.top-card.is-free { cursor: default; .release-title { color: var(--text-muted); } &:hover .top-card-poster { transform: none; border-color: var(--border-color); } }
+.top-card-free {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0 10px, transparent 10px 20px), var(--darker-bg);
+  border: 1px dashed rgba(255, 255, 255, 0.18) !important;
+  border-radius: var(--radius-sm) !important;
+}
 .top-ten-heading { display: inline-flex; align-items: center; gap: 12px; }
 .top-ten-cup {
   display: inline-grid;

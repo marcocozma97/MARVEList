@@ -158,7 +158,12 @@ const Profile = () => {
 
   const nickname = profile?.nickname ?? 'Agente';
   const mediaById = new Map(allMedia.map(m => [m.id, m]));
-  const topTenItems = (topTen?.items ?? []).flatMap(e => {
+  const topTenEntries = topTen?.items ?? Object.values(progressById)
+    .filter(p => p.rating != null)
+    .map(p => ({ mediaId: p.mediaId, rating: p.rating as number }))
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 10);
+  const topTenItems = topTenEntries.flatMap(e => {
     const media = mediaById.get(e.mediaId);
     return media ? [{ media, detail: <strong className="top-vote">🛡 {String(e.rating).replace('.', ',')}</strong> }] : [];
   });
@@ -336,6 +341,7 @@ const Profile = () => {
         </div>
         <TopList
           items={topTenItems}
+          size={10}
           label="La tua Top 10"
           empty={<>Non hai ancora votato nessun titolo. Apri un film o una serie dalla <Link to="/timeline">Timeline</Link> e votalo con gli scudi: i tuoi preferiti finiscono qui.</>}
         />
